@@ -18,6 +18,20 @@ class Registration extends Model
     const STATUS_CANCELLED = 'cancelled';
 
     /**
+     * Payment status constants
+     */
+    const PAYMENT_PENDING = 'pending';
+    const PAYMENT_CONFIRMED = 'confirmed';
+    const PAYMENT_FAILED = 'failed';
+
+    /**
+     * Payment method constants
+     */
+    const PAYMENT_CASH = 'cash';
+    const PAYMENT_TRANSFER = 'transfer';
+    const PAYMENT_CARD = 'card';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -27,6 +41,12 @@ class Registration extends Model
         'tournament_id',
         'status',
         'registered_at',
+        'payment_method',
+        'payment_status',
+        'amount',
+        'payment_notes',
+        'payment_confirmed_at',
+        'payment_confirmed_by',
     ];
 
     /**
@@ -36,8 +56,11 @@ class Registration extends Model
      */
     protected $casts = [
         'registered_at' => 'datetime',
+        'payment_confirmed_at' => 'datetime',
         'user_id' => 'integer',
         'tournament_id' => 'integer',
+        'payment_confirmed_by' => 'integer',
+        'amount' => 'decimal:2',
     ];
 
     /**
@@ -57,6 +80,14 @@ class Registration extends Model
     }
 
     /**
+     * Relationship with User who confirmed the payment.
+     */
+    public function paymentConfirmedBy()
+    {
+        return $this->belongsTo(User::class, 'payment_confirmed_by');
+    }
+
+    /**
      * Get all available statuses.
      */
     public static function getStatuses()
@@ -69,11 +100,51 @@ class Registration extends Model
     }
 
     /**
+     * Get all available payment statuses.
+     */
+    public static function getPaymentStatuses()
+    {
+        return [
+            self::PAYMENT_PENDING,
+            self::PAYMENT_CONFIRMED,
+            self::PAYMENT_FAILED,
+        ];
+    }
+
+    /**
+     * Get all available payment methods.
+     */
+    public static function getPaymentMethods()
+    {
+        return [
+            self::PAYMENT_CASH,
+            self::PAYMENT_TRANSFER,
+            self::PAYMENT_CARD,
+        ];
+    }
+
+    /**
      * Scope to filter by status.
      */
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    /**
+     * Scope to filter by payment status.
+     */
+    public function scopePaymentStatus($query, $status)
+    {
+        return $query->where('payment_status', $status);
+    }
+
+    /**
+     * Scope to filter by payment method.
+     */
+    public function scopePaymentMethod($query, $method)
+    {
+        return $query->where('payment_method', $method);
     }
 
     /**
@@ -98,6 +169,14 @@ class Registration extends Model
     public function scopeCancelled($query)
     {
         return $query->where('status', self::STATUS_CANCELLED);
+    }
+
+    /**
+     * Scope to get pending payments.
+     */
+    public function scopePendingPayments($query)
+    {
+        return $query->where('payment_status', self::PAYMENT_PENDING);
     }
 
     /**
@@ -141,6 +220,22 @@ class Registration extends Model
     }
 
     /**
+     * Check if payment is pending.
+     */
+    public function isPaymentPending()
+    {
+        return $this->payment_status === self::PAYMENT_PENDING;
+    }
+
+    /**
+     * Check if payment is confirmed.
+     */
+    public function isPaymentConfirmed()
+    {
+        return $this->payment_status === self::PAYMENT_CONFIRMED;
+    }
+
+    /**
      * Confirm the registration.
      */
     public function confirm()
@@ -154,5 +249,18 @@ class Registration extends Model
     public function cancel()
     {
         $this->update(['status' => self::STATUS_CANCELLED]);
+    }
+
+    /**
+     * Confirm payment.
+     */
+    public function confirmPayment($confirmedBy = null)
+    {
+        $this->update([
+            'payment_status' => self::PAYMENT_CONFIRMED,
+            'payment_confirmed_at' => now(),
+            'payment_confirmed_by' => $confirmedBy ?: auth()->id(),
+            'status' => self::STATUS_CONFIRMED,
+        ]);
     }
 }

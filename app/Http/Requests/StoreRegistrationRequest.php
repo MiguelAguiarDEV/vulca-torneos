@@ -48,8 +48,14 @@ class StoreRegistrationRequest extends FormRequest
                     if ($tournament && $tournament->registration_ends_at && now()->isAfter($tournament->registration_ends_at)) {
                         $fail('El período de inscripción para este torneo ha terminado.');
                     }
+
+                    // Check if tournament is full
+                    if ($tournament && $tournament->registrations()->count() >= $tournament->max_participants) {
+                        $fail('Este torneo ya está completo.');
+                    }
                 }
-            ]
+            ],
+            'payment_method' => 'required|in:cash,transfer,card'
         ];
     }
 

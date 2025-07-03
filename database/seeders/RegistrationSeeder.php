@@ -43,11 +43,20 @@ class RegistrationSeeder extends Seeder
             
             foreach ($usersToRegister as $user) {
                 try {
+                    $paymentStatus = collect(['pending', 'confirmed', 'failed'])->random();
+                    $status = $paymentStatus === 'confirmed' ? 'confirmed' : 'pending';
+                    
                     Registration::create([
                         'user_id' => $user->id,
                         'tournament_id' => $tournament->id,
-                        'status' => collect(['pending', 'confirmed'])->random(),
-                        'registered_at' => Carbon::now()->subDays(rand(1, 30))
+                        'status' => $status,
+                        'registered_at' => Carbon::now()->subDays(rand(1, 30)),
+                        'payment_method' => collect(['cash', 'transfer', 'card'])->random(),
+                        'payment_status' => $paymentStatus,
+                        'amount' => $tournament->entry_fee,
+                        'payment_notes' => $paymentStatus === 'confirmed' ? 'Pago confirmado por administrador' : null,
+                        'payment_confirmed_at' => $paymentStatus === 'confirmed' ? Carbon::now()->subDays(rand(1, 15)) : null,
+                        'payment_confirmed_by' => $paymentStatus === 'confirmed' ? User::where('role', 'admin')->first()?->id : null,
                     ]);
                     $registrationCount++;
                 } catch (\Exception $e) {
