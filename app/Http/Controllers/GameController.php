@@ -54,9 +54,11 @@ class GameController extends Controller
      */
     public function index()
     {
-        $games = Game::with(['tournaments' => function ($query) {
-            $query->active()->orderBy('start_date', 'asc');
-        }])->get();
+        $games = Game::withCount(['tournaments' => function ($query) {
+            $query->active();
+        }])
+        ->orderBy('tournaments_count', 'desc')
+        ->get();
 
         return Inertia::render('Games/Index', [
             'games' => $games
