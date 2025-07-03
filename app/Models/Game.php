@@ -66,7 +66,6 @@ class Game extends Model
      */
     public function tournaments()
     {
-        // return $this->hasMany(Tournament::class);
-        // Uncomment when Tournament model is created
+        return $this->hasMany(Tournament::class);
     }
 }
