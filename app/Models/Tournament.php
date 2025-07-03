@@ -94,12 +94,11 @@ class Tournament extends Model
     }
 
     /**
-     * Relationship with registrations (to be created later).
+     * Relationship with registrations.
      */
     public function registrations()
     {
-        // return $this->hasMany(Registration::class);
-        // Uncomment when Registration model is created
+        return $this->hasMany(Registration::class);
     }
 
     /**

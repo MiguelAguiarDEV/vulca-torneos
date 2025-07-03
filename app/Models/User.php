@@ -107,4 +107,22 @@ class User extends Authenticatable
     {
         return $query->where('role', self::ROLE_USER);
     }
+
+    /**
+     * Relationship with registrations.
+     */
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class);
+    }
+
+    /**
+     * Relationship with tournaments through registrations.
+     */
+    public function tournaments()
+    {
+        return $this->belongsToMany(Tournament::class, 'registrations')
+                    ->withPivot('status', 'registered_at')
+                    ->withTimestamps();
+    }
 }
