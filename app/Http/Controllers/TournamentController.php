@@ -26,7 +26,7 @@ class TournamentController extends Controller
      * de inscripciones. Esta vista es pública.
      * 
      * @param \Illuminate\Http\Request $request Petición con filtros opcionales
-     * @return \Inertia\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index(Request $request)
     {
@@ -47,7 +47,7 @@ class TournamentController extends Controller
             ->orderBy('start_date', 'asc')
             ->get();
 
-        return Inertia::render('Tournaments/Index', [
+        return view('tournaments.index', [
             'tournaments' => $tournaments,
             'filters' => $request->only(['game_id', 'status'])
         ]);
