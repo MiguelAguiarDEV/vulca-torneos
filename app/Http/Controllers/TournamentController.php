@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tournament;
+use App\Models\Game;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -77,6 +78,80 @@ class TournamentController extends Controller
             'userRegistration' => $userRegistration,
             'canRegister' => $this->canUserRegister($tournament)
         ]);
+    }
+
+    /**
+     * Admin methods for tournament management
+     */
+    public function adminIndex()
+    {
+        $tournaments = Tournament::with('game')->get();
+        return view('admin.tournaments', compact('tournaments'));
+    }
+
+    public function adminCreate()
+    {
+        $games = Game::all();
+        return view('admin.tournaments.create', compact('games'));
+    }
+
+    public function adminStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'game_id' => 'required|exists:games,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'entry_fee' => 'required|numeric|min:0',
+        ]);
+
+        Tournament::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'game_id' => $request->game_id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'entry_fee' => $request->entry_fee,
+            'status' => Tournament::STATUS_DRAFT,
+        ]);
+
+        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo creado exitosamente.');
+    }
+
+    public function adminEdit(Tournament $tournament)
+    {
+        $games = Game::all();
+        return view('admin.tournaments.edit', compact('tournament', 'games'));
+    }
+
+    public function adminUpdate(Request $request, Tournament $tournament)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'game_id' => 'required|exists:games,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'entry_fee' => 'required|numeric|min:0',
+        ]);
+
+        $tournament->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'game_id' => $request->game_id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'entry_fee' => $request->entry_fee,
+        ]);
+
+        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo actualizado exitosamente.');
+    }
+
+    public function adminDestroy(Tournament $tournament)
+    {
+        $tournament->delete();
+        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo eliminado exitosamente.');
     }
 
     /**
