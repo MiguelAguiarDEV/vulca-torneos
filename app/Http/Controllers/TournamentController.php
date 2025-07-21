@@ -85,36 +85,64 @@ class TournamentController extends Controller
      */
     public function adminIndex()
     {
-        $tournaments = Tournament::with('game')->get();
-        return view('admin.tournaments', compact('tournaments'));
+        $tournaments = Tournament::with(['game', 'registrations'])
+            ->withCount('registrations')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return Inertia::render('Admin/Tournaments/Index', [
+            'tournaments' => $tournaments,
+        ]);
+    }
+
+    public function adminShow(Tournament $tournament)
+    {
+        $tournament->load([
+            'game',
+            'registrations.user' => function ($query) {
+                $query->select('id', 'name', 'email');
+            }
+        ]);
+
+        return Inertia::render('Admin/Tournaments/Show', [
+            'tournament' => $tournament,
+            'registrations' => $tournament->registrations,
+        ]);
     }
 
     public function adminCreate()
     {
         $games = Game::all();
-        return view('admin.tournaments.create', compact('games'));
+        return Inertia::render('Admin/Tournaments/Create', [
+            'games' => $games,
+        ]);
     }
 
     public function adminStore(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'game_id' => 'required|exists:games,id',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'entry_fee' => 'required|numeric|min:0',
+            'end_date' => 'nullable|date|after:start_date',
+            'registration_start' => 'nullable|date',
+            'registration_end' => 'nullable|date|after:registration_start',
+            'entry_fee' => 'nullable|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Tournament::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'game_id' => $request->game_id,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'entry_fee' => $request->entry_fee,
-            'status' => Tournament::STATUS_DRAFT,
-        ]);
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/tournaments'), $imageName);
+            $validatedData['image'] = '/uploads/tournaments/' . $imageName;
+        }
+
+        $validatedData['status'] = Tournament::STATUS_DRAFT;
+
+        Tournament::create($validatedData);
 
         return redirect()->route('admin.tournaments.index')->with('success', 'Torneo creado exitosamente.');
     }
@@ -122,28 +150,39 @@ class TournamentController extends Controller
     public function adminEdit(Tournament $tournament)
     {
         $games = Game::all();
-        return view('admin.tournaments.edit', compact('tournament', 'games'));
+        return Inertia::render('Admin/Tournaments/Edit', [
+            'tournament' => $tournament,
+            'games' => $games,
+        ]);
     }
 
     public function adminUpdate(Request $request, Tournament $tournament)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'game_id' => 'required|exists:games,id',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'entry_fee' => 'required|numeric|min:0',
+            'end_date' => 'nullable|date|after:start_date',
+            'registration_start' => 'nullable|date',
+            'registration_end' => 'nullable|date|after:registration_start',
+            'entry_fee' => 'nullable|numeric|min:0',
+            'status' => 'required|in:draft,published,registration_open,registration_closed,ongoing,finished,cancelled',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $tournament->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'game_id' => $request->game_id,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'entry_fee' => $request->entry_fee,
-        ]);
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/tournaments'), $imageName);
+            $validatedData['image'] = '/uploads/tournaments/' . $imageName;
+        } else {
+            // Remove image from update data if not provided to keep current image
+            unset($validatedData['image']);
+        }
+
+        $tournament->update($validatedData);
 
         return redirect()->route('admin.tournaments.index')->with('success', 'Torneo actualizado exitosamente.');
     }
@@ -170,11 +209,11 @@ class TournamentController extends Controller
             return false;
         }
 
-        if ($tournament->status !== 'active') {
+        if ($tournament->status !== 'registration_open') {
             return false;
         }
 
-        if ($tournament->registration_ends_at && now()->isAfter($tournament->registration_ends_at)) {
+        if ($tournament->registration_end && now()->isAfter($tournament->registration_end)) {
             return false;
         }
 

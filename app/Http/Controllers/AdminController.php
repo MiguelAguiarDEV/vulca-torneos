@@ -8,6 +8,7 @@ use App\Models\Tournament;
 use App\Models\Registration;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminController extends Controller
 {
@@ -27,15 +28,8 @@ class AdminController extends Controller
         }
 
         try {
-            $stats = [
-                'games' => Game::count(),
-                'tournaments' => Tournament::count(),
-                'registrations' => Registration::count(),
-                'users' => User::count(),
-            ];
-
-            // Use original view
-            return view('admin.dashboard', compact('stats'));
+            // Return React component with Inertia
+            return Inertia::render('Dashboard');
         } catch (\Exception $e) {
             // Log the error and return a simple error page
             \Log::error('Admin dashboard error: ' . $e->getMessage());
