@@ -33,7 +33,38 @@ class GameController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Debug logging
+        \Log::info('Game store request data:', [
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'description_length' => strlen($request->input('description', '')),
+            'has_image' => $request->hasFile('image')
+        ]);
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:games,name',
+            'description' => 'nullable|string|max:65535',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Manejo explícito para descripción
+        if (array_key_exists('description', $validatedData)) {
+            $validatedData['description'] = $validatedData['description'] ?: null;
+        }
+
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/games'), $imageName);
+            $validatedData['image'] = '/uploads/games/' . $imageName;
+        }
+
+        \Log::info('Validated data for game creation:', $validatedData);
+
+        $game = Game::create($validatedData);
+
+        return redirect()->route('admin.games.index')->with('success', 'Juego creado con éxito.');
     }
 
     /**

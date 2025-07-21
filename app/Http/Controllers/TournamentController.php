@@ -7,39 +7,26 @@ use App\Models\Game;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-/**
- * Controlador para la gestión pública de torneos.
- * 
- * Este controlador maneja la visualización pública de torneos TCG,
- * incluyendo listados con filtros y detalles de torneos específicos.
- * No requiere autenticación para visualizar la información.
- * 
- * @package App\Http\Controllers
- * @author Vulca Torneos Team
- */
 class TournamentController extends Controller
 {
     /**
-     * Muestra una lista de torneos con filtros opcionales.
-     * 
-     * Lista todos los torneos activos con posibilidad de filtrar por
-     * juego y estado. Incluye información del juego asociado y conteo
-     * de inscripciones. Esta vista es pública.
-     * 
-     * @param \Illuminate\Http\Request $request Petición con filtros opcionales
-     * @return \Illuminate\Contracts\View\View
+     * =====================================================
+     * MÉTODOS PÚBLICOS (No requieren autenticación)
+     * =====================================================
      */
-    public function index(Request $request)
+
+    /**
+     * Muestra una lista pública de torneos con filtros.
+     */
+    public function publicIndex(Request $request)
     {
         $query = Tournament::with(['game', 'registrations.user'])
             ->withCount('registrations');
 
-        // Filter by game if provided
         if ($request->has('game_id')) {
             $query->where('game_id', $request->game_id);
         }
 
-        // Filter by status if provided
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
@@ -48,6 +35,7 @@ class TournamentController extends Controller
             ->orderBy('start_date', 'asc')
             ->get();
 
+        // Esta vista es Blade, no Inertia. Asegúrate que exista.
         return view('tournaments.index', [
             'tournaments' => $tournaments,
             'filters' => $request->only(['game_id', 'status'])
@@ -55,10 +43,11 @@ class TournamentController extends Controller
     }
 
     /**
-     * Display the specified tournament.
+     * Muestra la página de detalles de un torneo público.
      */
-    public function show(Tournament $tournament)
+    public function publicShow(string $id)
     {
+        $tournament = Tournament::findOrFail($id);
         $tournament->load([
             'game',
             'registrations.user' => function ($query) {
@@ -81,22 +70,64 @@ class TournamentController extends Controller
     }
 
     /**
-     * Admin methods for tournament management
+     * =====================================================
+     * MÉTODOS DE RECURSO PARA ADMIN (Protegidos por middleware)
+     * =====================================================
      */
-    public function adminIndex()
+
+    /**
+     * Muestra la lista de torneos en el panel de administración.
+     */
+    public function index()
     {
         $tournaments = Tournament::with(['game', 'registrations'])
             ->withCount('registrations')
             ->orderBy('created_at', 'desc')
             ->get();
             
+        $games = Game::select('id', 'name', 'image')->get();
+            
         return Inertia::render('Admin/Tournaments/Index', [
             'tournaments' => $tournaments,
+            'games' => $games,
         ]);
     }
 
-    public function adminShow(Tournament $tournament)
+    /**
+     * Almacena un nuevo torneo creado desde el panel de administración.
+     */
+    public function store(Request $request)
     {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'game_id' => 'required|exists:games,id',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after:start_date',
+            'registration_start' => 'nullable|date',
+            'entry_fee' => 'nullable|numeric|min:0',
+            'status' => 'required|in:draft,published,registration_open,registration_closed,ongoing,finished,cancelled',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/tournaments'), $imageName);
+            $validatedData['image'] = '/uploads/tournaments/' . $imageName;
+        }
+
+        Tournament::create($validatedData);
+
+        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo creado exitosamente.');
+    }
+
+    /**
+     * Muestra los detalles de un torneo en el panel de administración.
+     */
+    public function show(string $id)
+    {
+        $tournament = Tournament::findOrFail($id);
         $tournament->load([
             'game',
             'registrations.user' => function ($query) {
@@ -110,16 +141,13 @@ class TournamentController extends Controller
         ]);
     }
 
-    public function adminCreate()
+    /**
+     * Actualiza un torneo existente desde el panel de administración.
+     */
+    public function update(Request $request, string $id)
     {
-        $games = Game::all();
-        return Inertia::render('Admin/Tournaments/Create', [
-            'games' => $games,
-        ]);
-    }
+        $tournament = Tournament::findOrFail($id);
 
-    public function adminStore(Request $request)
-    {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -127,58 +155,17 @@ class TournamentController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
             'registration_start' => 'nullable|date',
-            'registration_end' => 'nullable|date|after:registration_start',
-            'entry_fee' => 'nullable|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // Handle image upload if provided
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/tournaments'), $imageName);
-            $validatedData['image'] = '/uploads/tournaments/' . $imageName;
-        }
-
-        $validatedData['status'] = Tournament::STATUS_DRAFT;
-
-        Tournament::create($validatedData);
-
-        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo creado exitosamente.');
-    }
-
-    public function adminEdit(Tournament $tournament)
-    {
-        $games = Game::all();
-        return Inertia::render('Admin/Tournaments/Edit', [
-            'tournament' => $tournament,
-            'games' => $games,
-        ]);
-    }
-
-    public function adminUpdate(Request $request, Tournament $tournament)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'game_id' => 'required|exists:games,id',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
-            'registration_start' => 'nullable|date',
-            'registration_end' => 'nullable|date|after:registration_start',
             'entry_fee' => 'nullable|numeric|min:0',
             'status' => 'required|in:draft,published,registration_open,registration_closed,ongoing,finished,cancelled',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Handle image upload if provided
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/tournaments'), $imageName);
             $validatedData['image'] = '/uploads/tournaments/' . $imageName;
         } else {
-            // Remove image from update data if not provided to keep current image
             unset($validatedData['image']);
         }
 
@@ -187,21 +174,24 @@ class TournamentController extends Controller
         return redirect()->route('admin.tournaments.index')->with('success', 'Torneo actualizado exitosamente.');
     }
 
-    public function adminDestroy(Tournament $tournament)
+    /**
+     * Elimina un torneo desde el panel de administración.
+     */
+    public function destroy(string $id)
     {
+        $tournament = Tournament::findOrFail($id);
         $tournament->delete();
         return redirect()->route('admin.tournaments.index')->with('success', 'Torneo eliminado exitosamente.');
     }
 
     /**
+     * =====================================================
+     * MÉTODOS PRIVADOS
+     * =====================================================
+     */
+
+    /**
      * Determina si un usuario puede registrarse en un torneo.
-     * 
-     * Verifica múltiples condiciones para determinar si el usuario
-     * actual puede inscribirse en el torneo especificado, incluyendo
-     * autenticación, estado del torneo, capacidad y inscripción previa.
-     * 
-     * @param \App\Models\Tournament $tournament Torneo a verificar
-     * @return bool True si el usuario puede registrarse, false en caso contrario
      */
     private function canUserRegister(Tournament $tournament): bool
     {
@@ -213,11 +203,10 @@ class TournamentController extends Controller
             return false;
         }
 
-        if ($tournament->registration_end && now()->isAfter($tournament->registration_end)) {
+        if ($tournament->start_date && now()->isAfter($tournament->start_date)) {
             return false;
         }
 
-        // Check if user is already registered
         $existingRegistration = $tournament->registrations()
             ->where('user_id', auth()->id())
             ->first();

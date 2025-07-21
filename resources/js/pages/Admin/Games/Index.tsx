@@ -19,6 +19,13 @@ const Index: React.FC<IndexProps> = ({ games }) => {
     const [editDescription, setEditDescription] = useState<string>('');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [previewImage, setPreviewImage] = useState<string>('');
+    
+    // Estados para el modal de crear
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [createName, setCreateName] = useState<string>('');
+    const [createDescription, setCreateDescription] = useState<string>('');
+    const [createImageFile, setCreateImageFile] = useState<File | null>(null);
+    const [createPreviewImage, setCreatePreviewImage] = useState<string>('');
 
     const confirmDelete = (game: Game) => {
         setGameToDelete(game);
@@ -113,6 +120,56 @@ const Index: React.FC<IndexProps> = ({ games }) => {
         }
     };
 
+    // Funciones para el modal de crear
+    const openCreateModal = () => {
+        setShowCreateModal(true);
+    };
+
+    const closeCreateModal = () => {
+        setShowCreateModal(false);
+        setCreateName('');
+        setCreateDescription('');
+        setCreateImageFile(null);
+        setCreatePreviewImage('');
+    };
+
+    const saveCreate = () => {
+        // Validación del lado del cliente
+        if (!createName.trim()) {
+            alert('El nombre del juego es requerido');
+            return;
+        }
+
+        const data = new FormData();
+        data.append('name', createName.trim());
+        
+        // Manejo especial para descripción vacía
+        const description = createDescription ? createDescription.trim() : '';
+        data.append('description', description);
+        
+        if (createImageFile) {
+            data.append('image', createImageFile);
+        }
+        
+        router.post(route('admin.games.store'), data, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                console.log('Juego creado exitosamente');
+                closeCreateModal();
+            },
+            onError: (errors) => {
+                console.error('Error al crear el juego:', errors);
+                // Mostrar errores específicos de validación
+                let errorMessage = 'Error al crear el juego:\n';
+                Object.keys(errors).forEach(key => {
+                    errorMessage += `${key}: ${errors[key]}\n`;
+                });
+                alert(errorMessage);
+            }
+        });
+    };
+
     return (
         <AdminLayout title="Juegos" pageTitle="Gestión de Juegos">
             <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -129,13 +186,13 @@ const Index: React.FC<IndexProps> = ({ games }) => {
                     </p>
                 </div>
                 
-                <Link 
-                    href={route('admin.games.create')}
+                <button 
+                    onClick={openCreateModal}
                     className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
                 >
                     <Plus className="w-5 h-5 mr-2" />
                     Crear Nuevo Juego
-                </Link>
+                </button>
             </div>
 
             {games.length > 0 ? (
@@ -232,13 +289,13 @@ const Index: React.FC<IndexProps> = ({ games }) => {
                         Empieza creando tu primer juego para organizar torneos.
                     </p>
                     
-                    <Link
-                        href={route('admin.games.create')}
+                    <button
+                        onClick={openCreateModal}
                         className="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary-dark text-secondary font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
                     >
                         <Plus className="w-5 h-5 mr-2" />
                         Crear Mi Primer Juego
-                    </Link>
+                    </button>
                 </div>
             )}
 
@@ -327,6 +384,76 @@ const Index: React.FC<IndexProps> = ({ games }) => {
                             className="px-4 py-2 rounded-lg text-secondary bg-primary hover:bg-primary-dark transition-colors font-medium shadow-lg"
                         >
                             Guardar
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Create game modal */}
+            <Modal show={showCreateModal} onClose={closeCreateModal} maxWidth="md">
+                <div className="p-6 bg-secondary/95 backdrop-blur-sm border-2 border-primary rounded-lg">
+                    <h2 className="text-xl font-semibold text-text-primary mb-4">Crear Nuevo Juego</h2>
+                    
+                    {/* Nombre */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Nombre</label>
+                        <input
+                            type="text"
+                            value={createName}
+                            onChange={(e) => setCreateName(e.target.value)}
+                            className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                            placeholder="Nombre del juego"
+                        />
+                    </div>
+                    
+                    {/* Descripción */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Descripción</label>
+                        <textarea
+                            value={createDescription}
+                            onChange={(e) => setCreateDescription(e.target.value)}
+                            className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary h-20 resize-none"
+                            placeholder="Descripción del juego (opcional)"
+                        />
+                    </div>
+                    
+                    {/* Preview de imagen nueva */}
+                    {createPreviewImage && (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-text-primary mb-2">Vista previa</label>
+                            <img src={createPreviewImage} alt="Preview" className="w-24 h-24 object-cover rounded-lg border-2 border-primary/30" />
+                        </div>
+                    )}
+                    
+                    {/* Subir imagen */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Imagen del juego</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    setCreateImageFile(file);
+                                    setCreatePreviewImage(URL.createObjectURL(file));
+                                }
+                            }}
+                            className="w-full text-sm text-text-primary/70 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-secondary hover:file:bg-primary-dark file:cursor-pointer file:shadow-lg"
+                        />
+                    </div>
+                    
+                    <div className="flex justify-end space-x-3">
+                        <button 
+                            onClick={closeCreateModal} 
+                            className="px-4 py-2 rounded-lg text-text-primary bg-secondary-light hover:bg-secondary-lighter transition-colors border border-primary/30"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            onClick={saveCreate} 
+                            className="px-4 py-2 rounded-lg text-secondary bg-primary hover:bg-primary-dark transition-colors font-medium shadow-lg"
+                        >
+                            Crear Juego
                         </button>
                     </div>
                 </div>

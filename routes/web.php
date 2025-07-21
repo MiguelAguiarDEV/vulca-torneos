@@ -21,6 +21,10 @@ use App\Http\Controllers\AdminController;
 Route::get('/', [WelcomeController::class, 'index'])
     ->name('index.welcome');
 
+// Rutas públicas para torneos
+Route::get('/tournaments', [TournamentController::class, 'publicIndex'])->name('tournaments.index');
+Route::get('/tournaments/{tournament}', [TournamentController::class, 'publicShow'])->name('tournaments.show');
+
 Route::get('/game/{game}', [GameController::class, 'gameTournaments'])->name('games.tournaments');
 
 
@@ -44,15 +48,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('dashboard.index');
     
     Route::resource('games', GameController::class)->names('admin.games');
-    
-    // Tournament admin routes
-    Route::get('/tournaments', [TournamentController::class, 'adminIndex'])->name('admin.tournaments.index');
-    Route::get('/tournaments/create', [TournamentController::class, 'adminCreate'])->name('admin.tournaments.create');
-    Route::post('/tournaments', [TournamentController::class, 'adminStore'])->name('admin.tournaments.store');
-    Route::get('/tournaments/{tournament}', [TournamentController::class, 'adminShow'])->name('admin.tournaments.show');
-    Route::get('/tournaments/{tournament}/edit', [TournamentController::class, 'adminEdit'])->name('admin.tournaments.edit');
-    Route::put('/tournaments/{tournament}', [TournamentController::class, 'adminUpdate'])->name('admin.tournaments.update');
-    Route::delete('/tournaments/{tournament}', [TournamentController::class, 'adminDestroy'])->name('admin.tournaments.destroy');
+    Route::resource('tournaments', TournamentController::class)->names('admin.tournaments');
 
 });
 
