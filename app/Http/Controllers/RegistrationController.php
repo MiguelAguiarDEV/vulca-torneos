@@ -6,23 +6,38 @@ use App\Models\Registration;
 use App\Models\Tournament;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class RegistrationController extends Controller
 {
-    public function adminIndex()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
         $registrations = Registration::with(['user', 'tournament.game'])->latest()->get();
-        return view('admin.registrations', compact('registrations'));
-    }
-
-    public function adminCreate()
-    {
         $tournaments = Tournament::with('game')->get();
         $users = User::all();
-        return view('admin.registrations.create', compact('tournaments', 'users'));
+        
+        return Inertia::render('Admin/Registrations/Index', [
+            'registrations' => $registrations,
+            'tournaments' => $tournaments,
+            'users' => $users,
+        ]);
     }
 
-    public function adminStore(Request $request)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
         $request->validate([
             'user_selection_type' => 'required|in:existing,new',
@@ -36,24 +51,24 @@ class RegistrationController extends Controller
         ]);
 
         // Determine the user ID to use
-        if ($request->user_selection_type === 'existing') {
-            $userId = $request->user_id;
+        if ($request->input('user_selection_type') === 'existing') {
+            $userId = $request->input('user_id');
         } else {
             // Create new user or find existing by email
-            if ($request->new_user_email) {
+            if ($request->input('new_user_email')) {
                 // Check if user already exists by email
-                $existingUser = User::where('email', $request->new_user_email)->first();
+                $existingUser = User::where('email', $request->input('new_user_email'))->first();
                 if ($existingUser) {
                     $userId = $existingUser->id;
                 } else {
                     // Check if email is already used
-                    if (User::where('email', $request->new_user_email)->exists()) {
+                    if (User::where('email', $request->input('new_user_email'))->exists()) {
                         return redirect()->back()->withErrors(['new_user_email' => 'Este email ya está registrado.'])->withInput();
                     }
                     
                     $user = User::create([
-                        'name' => $request->new_user_name,
-                        'email' => $request->new_user_email,
+                        'name' => $request->input('new_user_name'),
+                        'email' => $request->input('new_user_email'),
                         'password' => bcrypt('password'), // Default password
                         'role' => 'user',
                     ]);
@@ -61,7 +76,7 @@ class RegistrationController extends Controller
                 }
             } else {
                 // Generate unique email if not provided
-                $baseEmail = str_replace(' ', '', strtolower($request->new_user_name)) . '@temp.local';
+                $baseEmail = str_replace(' ', '', strtolower($request->input('new_user_name'))) . '@temp.local';
                 $counter = 1;
                 $email = $baseEmail;
                 
@@ -71,7 +86,7 @@ class RegistrationController extends Controller
                 }
                 
                 $user = User::create([
-                    'name' => $request->new_user_name,
+                    'name' => $request->input('new_user_name'),
                     'email' => $email,
                     'password' => bcrypt('password'), // Default password
                     'role' => 'user',
@@ -82,7 +97,7 @@ class RegistrationController extends Controller
 
         // Check if user is already registered for this tournament
         $existingRegistration = Registration::where('user_id', $userId)
-            ->where('tournament_id', $request->tournament_id)
+            ->where('tournament_id', $request->input('tournament_id'))
             ->first();
 
         if ($existingRegistration) {
@@ -90,33 +105,51 @@ class RegistrationController extends Controller
         }
 
         // Get tournament entry fee
-        $tournament = Tournament::findOrFail($request->tournament_id);
+        $tournament = Tournament::findOrFail($request->input('tournament_id'));
 
         Registration::create([
             'user_id' => $userId,
-            'tournament_id' => $request->tournament_id,
+            'tournament_id' => $request->input('tournament_id'),
             'status' => Registration::STATUS_CONFIRMED,
             'registered_at' => now(),
-            'payment_method' => $request->payment_method,
-            'payment_status' => $request->payment_status,
+            'payment_method' => $request->input('payment_method'),
+            'payment_status' => $request->input('payment_status'),
             'amount' => $tournament->entry_fee,
-            'payment_notes' => $request->payment_notes,
-            'payment_confirmed_at' => $request->payment_status === 'confirmed' ? now() : null,
-            'payment_confirmed_by' => $request->payment_status === 'confirmed' ? auth()->id() : null,
+            'payment_notes' => $request->input('payment_notes'),
+            'payment_confirmed_at' => $request->input('payment_status') === 'confirmed' ? now() : null,
+            'payment_confirmed_by' => $request->input('payment_status') === 'confirmed' ? auth()->id() : null,
         ]);
 
-        return redirect()->route('admin.registrations.index')->with('success', 'Inscripción creada exitosamente.');
+        return redirect()->back()->with('success', 'Inscripción creada exitosamente.');
     }
 
-    public function adminEdit(Registration $registration)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
-        $tournaments = Tournament::with('game')->get();
-        $users = User::all();
-        return view('admin.registrations.edit', compact('registration', 'tournaments', 'users'));
+        $registration = Registration::with(['user', 'tournament.game'])->findOrFail($id);
+        
+        return Inertia::render('Admin/Registrations/Show', [
+            'registration' => $registration,
+        ]);
     }
 
-    public function adminUpdate(Request $request, Registration $registration)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
     {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $registration = Registration::findOrFail($id);
+        
         $request->validate([
             'payment_method' => 'required|in:cash,transfer,card',
             'payment_status' => 'required|in:pending,confirmed,failed',
@@ -124,20 +157,24 @@ class RegistrationController extends Controller
         ]);
 
         $registration->update([
-            'payment_method' => $request->payment_method,
-            'payment_status' => $request->payment_status,
-            'amount' => $registration->tournament->entry_fee,
-            'payment_notes' => $request->payment_notes,
-            'payment_confirmed_at' => $request->payment_status === 'confirmed' ? now() : null,
-            'payment_confirmed_by' => $request->payment_status === 'confirmed' ? auth()->id() : null,
+            'payment_method' => $request->input('payment_method'),
+            'payment_status' => $request->input('payment_status'),
+            'payment_notes' => $request->input('payment_notes'),
+            'payment_confirmed_at' => $request->input('payment_status') === 'confirmed' ? now() : null,
+            'payment_confirmed_by' => $request->input('payment_status') === 'confirmed' ? auth()->id() : null,
         ]);
 
-        return redirect()->route('admin.registrations.index')->with('success', 'Inscripción actualizada exitosamente.');
+        return redirect()->back()->with('success', 'Inscripción actualizada exitosamente.');
     }
 
-    public function adminDestroy(Registration $registration)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
+        $registration = Registration::findOrFail($id);
         $registration->delete();
-        return redirect()->route('admin.registrations.index')->with('success', 'Inscripción eliminada exitosamente.');
+        
+        return redirect()->back()->with('success', 'Inscripción eliminada exitosamente.');
     }
 }

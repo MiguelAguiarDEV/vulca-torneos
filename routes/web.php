@@ -49,6 +49,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     
     Route::resource('games', GameController::class)->names('admin.games');
     Route::resource('tournaments', TournamentController::class)->names('admin.tournaments');
+    Route::resource('registrations', RegistrationController::class)->names('admin.registrations');
 
 });
 
