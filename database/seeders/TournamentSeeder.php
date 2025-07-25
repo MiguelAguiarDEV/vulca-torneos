@@ -35,6 +35,8 @@ class TournamentSeeder extends Seeder
                 'registration_start' => Carbon::now()->addWeek(),
                 'registration_end' => Carbon::now()->addMonth()->subDays(3),
                 'entry_fee' => 25.00,
+                'has_registration_limit' => true,
+                'registration_limit' => 32,
                 'status' => 'published',
             ],
             [
@@ -48,6 +50,8 @@ class TournamentSeeder extends Seeder
                 'registration_start' => Carbon::now()->addWeek(),
                 'registration_end' => Carbon::now()->addWeeks(3)->subDays(2),
                 'entry_fee' => 15.00,
+                'has_registration_limit' => true,
+                'registration_limit' => 16,
                 'status' => 'registration_open',
             ],
             [
@@ -61,6 +65,8 @@ class TournamentSeeder extends Seeder
                 'registration_start' => Carbon::now(),
                 'registration_end' => Carbon::now()->addWeeks(2)->subDays(1),
                 'entry_fee' => 20.00,
+                'has_registration_limit' => false,
+                'registration_limit' => null,
                 'status' => 'registration_open',
             ]
         ];

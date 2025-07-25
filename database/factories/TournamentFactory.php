@@ -30,6 +30,8 @@ class TournamentFactory extends Factory
             'Open'
         ]);
 
+        $hasLimit = $this->faker->boolean(70); // 70% chance of having a limit
+
         return [
             'name' => $name,
             'slug' => \Illuminate\Support\Str::slug($name),
@@ -41,6 +43,8 @@ class TournamentFactory extends Factory
             'registration_start' => $registrationStart,
             'registration_end' => $registrationEnd,
             'entry_fee' => $this->faker->randomElement([0, 10, 15, 20, 25, 30]),
+            'has_registration_limit' => $hasLimit,
+            'registration_limit' => $hasLimit ? $this->faker->numberBetween(8, 64) : null,
             'status' => $this->faker->randomElement([
                 'draft',
                 'published',

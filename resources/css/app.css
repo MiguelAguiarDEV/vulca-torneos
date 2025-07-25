@@ -31,3 +31,15 @@
     --color-text-secondary: #f5f5f5;
     --color-text-muted: #9ca3af;
 }
+
+/* Estilo global para botones */
+button:hover {
+    cursor: pointer;
+}
+
+/* También para elementos con clases de botón comunes */
+.btn:hover,
+.button:hover,
+[role="button"]:hover {
+    cursor: pointer;
+}

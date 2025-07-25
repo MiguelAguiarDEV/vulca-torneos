@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
 import { router } from '@inertiajs/react';
-import { Plus, UserPlus, Trash2, Pencil, Calendar, Users, Trophy, CreditCard, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Plus, UserPlus, Trash2, Pencil, Calendar, Users, Trophy, CreditCard, CheckCircle, XCircle, Clock, Search } from 'lucide-react';
 import Modal from '@/components/Modal';
 
 // Tipo para una inscripción
@@ -62,6 +62,9 @@ interface IndexProps {
 const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [registrationToDelete, setRegistrationToDelete] = useState<Registration | null>(null);
+    
+    // Estado para búsqueda
+    const [searchTerm, setSearchTerm] = useState<string>('');
     
     // Estado para filtros
     const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>('all');
@@ -337,10 +340,14 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
 
     // Filtrar registrations según los filtros seleccionados
     const filteredRegistrations = registrations.filter(registration => {
+        const searchMatch = searchTerm === '' || 
+            registration.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            registration.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            registration.tournament.name.toLowerCase().includes(searchTerm.toLowerCase());
         const paymentStatusMatch = paymentStatusFilter === 'all' || registration.payment_status === paymentStatusFilter;
         const tournamentMatch = tournamentFilter === 'all' || registration.tournament.id.toString() === tournamentFilter;
         const gameMatch = gameFilter === 'all' || registration.tournament.game.id.toString() === gameFilter;
-        return paymentStatusMatch && tournamentMatch && gameMatch;
+        return searchMatch && paymentStatusMatch && tournamentMatch && gameMatch;
     });
 
     return (
@@ -371,8 +378,37 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
                 </button>
             </div>
 
-            {/* Filtros */}
+            {/* Búsqueda y Filtros */}
             <div className="mb-6 bg-secondary/95 backdrop-blur-sm border-2 border-primary/30 rounded-lg shadow-lg p-4">
+                {/* Campo de búsqueda */}
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-text-primary mb-2">Buscar inscripciones</label>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre, email o torneo..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full px-4 py-3 pl-10 bg-secondary-light border border-primary/30 rounded-lg text-text-primary placeholder-text-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary/70" />
+                        {searchTerm && (
+                            <button
+                                onClick={() => setSearchTerm('')}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-primary/50 hover:text-text-primary transition-colors"
+                            >
+                                <XCircle className="w-5 h-5" />
+                            </button>
+                        )}
+                    </div>
+                    {searchTerm && (
+                        <p className="text-sm text-text-primary/60 mt-2">
+                            Mostrando {filteredRegistrations.length} de {registrations.length} inscripciones
+                        </p>
+                    )}
+                </div>
+
+                {/* Filtros */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-text-primary mb-2">Estado de pago</label>
@@ -427,13 +463,14 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
                     <div className="flex items-end">
                         <button
                             onClick={() => {
+                                setSearchTerm('');
                                 setPaymentStatusFilter('all');
                                 setTournamentFilter('all');
                                 setGameFilter('all');
                             }}
                             className="w-full px-4 py-2 bg-secondary-light hover:bg-secondary-lighter text-text-primary border border-primary/30 rounded-lg transition-colors duration-200"
                         >
-                            Limpiar filtros
+                            Limpiar todo
                         </button>
                     </div>
                 </div>
@@ -567,17 +604,59 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
                 <div className="text-center py-20">
                     <div className="bg-secondary/95 backdrop-blur-sm border-2 border-primary/30 rounded-lg shadow-lg p-12 max-w-md mx-auto">
                         <UserPlus className="w-16 h-16 text-primary/50 mx-auto mb-6" />
-                        <h3 className="text-xl font-semibold text-text-primary mb-3">No hay inscripciones</h3>
-                        <p className="text-text-primary/70 mb-6">
-                            Comienza registrando la primera inscripción para un torneo.
-                        </p>
-                        <button 
-                            onClick={openCreateModal}
-                            className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Primera Inscripción
-                        </button>
+                        {searchTerm || paymentStatusFilter !== 'all' || tournamentFilter !== 'all' || gameFilter !== 'all' ? (
+                            <>
+                                <h3 className="text-xl font-semibold text-text-primary mb-3">No se encontraron inscripciones</h3>
+                                <p className="text-text-primary/70 mb-6">
+                                    No hay inscripciones que coincidan con los criterios de búsqueda o filtros seleccionados.
+                                </p>
+                                <button 
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setPaymentStatusFilter('all');
+                                        setTournamentFilter('all');
+                                        setGameFilter('all');
+                                    }}
+                                    className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                                >
+                                    <XCircle className="w-4 h-4 mr-2" />
+                                    Limpiar filtros
+                                </button>
+                            </>
+                        ) : registrations.length === 0 ? (
+                            <>
+                                <h3 className="text-xl font-semibold text-text-primary mb-3">No hay inscripciones</h3>
+                                <p className="text-text-primary/70 mb-6">
+                                    Comienza registrando la primera inscripción para un torneo.
+                                </p>
+                                <button 
+                                    onClick={openCreateModal}
+                                    className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Primera Inscripción
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="text-xl font-semibold text-text-primary mb-3">No se encontraron resultados</h3>
+                                <p className="text-text-primary/70 mb-6">
+                                    Intenta ajustar los criterios de búsqueda o filtros.
+                                </p>
+                                <button 
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setPaymentStatusFilter('all');
+                                        setTournamentFilter('all');
+                                        setGameFilter('all');
+                                    }}
+                                    className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                                >
+                                    <XCircle className="w-4 h-4 mr-2" />
+                                    Ver todas las inscripciones
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             )}

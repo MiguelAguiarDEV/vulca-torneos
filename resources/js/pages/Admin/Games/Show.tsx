@@ -1,7 +1,7 @@
 import React from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, Calendar, Users, Clock, Trophy, Gamepad } from 'lucide-react';
+import { ArrowLeft, Calendar, Users, Clock, Trophy, Gamepad, CreditCard } from 'lucide-react';
 
 // Tipos
 interface Game {
@@ -148,7 +148,7 @@ const Show: React.FC<ShowProps> = ({ game, tournaments, pendingRegistrations }) 
                                             <span>Inscrito: {registration.registration_date}</span>
                                         </div>
                                         <div className="flex items-center">
-                                            <span className="w-4 h-4 mr-2">💳</span>
+                                            <CreditCard className="w-4 h-4 mr-2" />
                                             <span>Pago: {registration.payment_status}</span>
                                         </div>
                                         <div className="text-sm text-text-primary/50">

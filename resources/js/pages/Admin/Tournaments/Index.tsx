@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
 import { router } from '@inertiajs/react';
-import { Plus, Trophy, Trash2, Pencil, Calendar, Users, GamepadIcon } from 'lucide-react';
+import { Plus, Trophy, Trash2, Pencil, Calendar, Users, GamepadIcon, DollarSign } from 'lucide-react';
 import Modal from '@/components/Modal';
 
 // Tipo para un torneo
@@ -21,8 +21,12 @@ interface Tournament {
     registration_start: string | null;
     registration_end: string | null;
     entry_fee: number | null;
+    has_registration_limit: boolean;
+    registration_limit: number | null;
     status: string;
     registrations_count: number;
+    available_spots?: number | null;
+    registration_progress?: number | null;
 }
 
 // Props del componente
@@ -49,6 +53,8 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
     const [createRegistrationStart, setCreateRegistrationStart] = useState<string>('');
     const [createEntryFee, setCreateEntryFee] = useState<string>('');
     const [createStatus, setCreateStatus] = useState<string>('draft');
+    const [createHasRegistrationLimit, setCreateHasRegistrationLimit] = useState<boolean>(false);
+    const [createRegistrationLimit, setCreateRegistrationLimit] = useState<string>('');
     const [createImageFile, setCreateImageFile] = useState<File | null>(null);
     const [createPreviewImage, setCreatePreviewImage] = useState<string>('');
     
@@ -63,6 +69,8 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
     const [editRegistrationStart, setEditRegistrationStart] = useState<string>('');
     const [editEntryFee, setEditEntryFee] = useState<string>('');
     const [editStatus, setEditStatus] = useState<string>('draft');
+    const [editHasRegistrationLimit, setEditHasRegistrationLimit] = useState<boolean>(false);
+    const [editRegistrationLimit, setEditRegistrationLimit] = useState<string>('');
     const [editImageFile, setEditImageFile] = useState<File | null>(null);
     const [editPreviewImage, setEditPreviewImage] = useState<string>('');
 
@@ -112,6 +120,8 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
         setCreateRegistrationStart('');
         setCreateEntryFee('');
         setCreateStatus('draft');
+        setCreateHasRegistrationLimit(false);
+        setCreateRegistrationLimit('');
         setCreateImageFile(null);
         setCreatePreviewImage('');
     };
@@ -130,12 +140,21 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
             alert('La fecha de inicio es requerida');
             return;
         }
+        if (createHasRegistrationLimit && (!createRegistrationLimit || parseInt(createRegistrationLimit) < 1)) {
+            alert('Si el torneo tiene límite de inscripciones, debe especificar un número válido mayor a 0');
+            return;
+        }
 
         const data = new FormData();
         data.append('name', createName.trim());
         data.append('game_id', createGameId.toString());
         data.append('start_date', createStartDate);
         data.append('status', createStatus);
+        data.append('has_registration_limit', createHasRegistrationLimit ? '1' : '0');
+        
+        if (createHasRegistrationLimit && createRegistrationLimit) {
+            data.append('registration_limit', createRegistrationLimit);
+        }
         
         const description = createDescription ? createDescription.trim() : '';
         data.append('description', description);
@@ -182,9 +201,33 @@ const formatDateForDisplay = (dateString: string | null | undefined): string => 
     }
 };
 
+// Función para convertir fecha del backend (YYYY-MM-DD) a formato YYYY-MM-DD para input type="date"
+const formatDateForInput = (dateString: string | null | undefined): string => {
+    if (!dateString) return '';
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}`;
+    } catch (error) {
+        console.error("Error formatting date for input:", dateString, error);
+        return '';
+    }
+};
+
 // Función para convertir fecha DD/MM/YYYY a formato YYYY-MM-DD para enviar al backend
 const formatDateForBackend = (dateString: string): string => {
     if (!dateString) return '';
+    
+    // Si ya está en formato YYYY-MM-DD (desde input date), devolverlo tal como está
+    const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+    if (isoDateRegex.test(dateString)) {
+        return dateString;
+    }
     
     // Verificar que el formato sea DD/MM/YYYY
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
@@ -203,12 +246,14 @@ const openEditModal = (tournament: Tournament) => {
     setEditGameId(tournament.game_id);
     setEditStatus(tournament.status);
     
-    // Formatear fechas para mostrar en formato DD/MM/YYYY
-    setEditStartDate(formatDateForDisplay(tournament.start_date));
-    setEditEndDate(formatDateForDisplay(tournament.end_date));
-    setEditRegistrationStart(formatDateForDisplay(tournament.registration_start));
+    // Formatear fechas para inputs de tipo date en formato YYYY-MM-DD
+    setEditStartDate(formatDateForInput(tournament.start_date));
+    setEditEndDate(formatDateForInput(tournament.end_date));
+    setEditRegistrationStart(formatDateForInput(tournament.registration_start));
     
     setEditEntryFee(tournament.entry_fee?.toString() || '0');
+    setEditHasRegistrationLimit(tournament.has_registration_limit || false);
+    setEditRegistrationLimit(tournament.registration_limit?.toString() || '');
     setEditPreviewImage(tournament.image || '');
     setEditImageFile(null);
     setShowEditModal(true);
@@ -223,6 +268,8 @@ const openEditModal = (tournament: Tournament) => {
         setEditRegistrationStart('');
         setEditEntryFee('');
         setEditStatus('draft');
+        setEditHasRegistrationLimit(false);
+        setEditRegistrationLimit('');
         setEditImageFile(null);
         setEditPreviewImage('');
     };
@@ -243,6 +290,10 @@ const openEditModal = (tournament: Tournament) => {
             alert('La fecha de inicio es requerida');
             return;
         }
+        if (editHasRegistrationLimit && (!editRegistrationLimit || parseInt(editRegistrationLimit) < 1)) {
+            alert('Si el torneo tiene límite de inscripciones, debe especificar un número válido mayor a 0');
+            return;
+        }
 
         const data = new FormData();
         data.append('_method', 'PUT');
@@ -250,6 +301,11 @@ const openEditModal = (tournament: Tournament) => {
         data.append('game_id', editGameId.toString());
         data.append('start_date', formatDateForBackend(editStartDate));
         data.append('status', editStatus);
+        data.append('has_registration_limit', editHasRegistrationLimit ? '1' : '0');
+        
+        if (editHasRegistrationLimit && editRegistrationLimit) {
+            data.append('registration_limit', editRegistrationLimit);
+        }
         
         const description = editDescription ? editDescription.trim() : '';
         data.append('description', description);
@@ -399,11 +455,28 @@ const openEditModal = (tournament: Tournament) => {
                                     </div>
                                     <div className="flex items-center">
                                         <Users className="w-4 h-4 mr-2" />
-                                        <span>{tournament.registrations_count} inscripciones</span>
+                                        <span>
+                                            {tournament.registrations_count}
+                                            {tournament.has_registration_limit 
+                                                ? ` / ${tournament.registration_limit} inscripciones`
+                                                : ' inscripciones'
+                                            }
+                                        </span>
+                                        {tournament.has_registration_limit && (
+                                            <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
+                                                (tournament.registrations_count / tournament.registration_limit!) >= 0.9 
+                                                    ? 'bg-error/20 text-error' 
+                                                    : (tournament.registrations_count / tournament.registration_limit!) >= 0.7 
+                                                        ? 'bg-warning/20 text-warning' 
+                                                        : 'bg-success/20 text-success'
+                                            }`}>
+                                                {Math.round((tournament.registrations_count / tournament.registration_limit!) * 100)}%
+                                            </span>
+                                        )}
                                     </div>
                                     {tournament.entry_fee && (
                                         <div className="flex items-center">
-                                            <span className="w-4 h-4 mr-2">💰</span>
+                                            <DollarSign className="w-4 h-4 mr-2" />
                                             <span>€{tournament.entry_fee}</span>
                                         </div>
                                     )}
@@ -596,6 +669,38 @@ const openEditModal = (tournament: Tournament) => {
                             />
                         </div>
                         
+                        {/* Límite de inscripciones */}
+                        <div className="md:col-span-2">
+                            <div className="flex items-center mb-3">
+                                <input
+                                    type="checkbox"
+                                    id="createHasLimit"
+                                    checked={createHasRegistrationLimit}
+                                    onChange={(e) => setCreateHasRegistrationLimit(e.target.checked)}
+                                    className="w-4 h-4 text-primary bg-secondary-light border-primary/30 rounded focus:ring-primary focus:ring-2"
+                                />
+                                <label htmlFor="createHasLimit" className="ml-2 text-sm font-medium text-text-primary">
+                                    El torneo tiene límite de inscripciones
+                                </label>
+                            </div>
+                            {createHasRegistrationLimit && (
+                                <div>
+                                    <label className="block text-sm font-medium text-text-primary mb-2">Número máximo de inscripciones</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={createRegistrationLimit}
+                                        onChange={(e) => setCreateRegistrationLimit(e.target.value)}
+                                        className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        placeholder="Ej: 32"
+                                    />
+                                    <p className="text-xs text-text-primary/60 mt-1">
+                                        Las inscripciones se cerrarán automáticamente al alcanzar este límite
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                        
                         {/* Preview de imagen nueva */}
                         {createPreviewImage && (
                             <div className="md:col-span-2">
@@ -703,8 +808,7 @@ const openEditModal = (tournament: Tournament) => {
                         <div>
                             <label className="block text-sm font-medium text-text-primary mb-2">Fecha de inicio</label>
                             <input
-                                type="text"
-                                placeholder="DD/MM/YYYY"
+                                type="date"
                                 value={editStartDate}
                                 onChange={(e) => setEditStartDate(e.target.value)}
                                 className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
@@ -715,8 +819,7 @@ const openEditModal = (tournament: Tournament) => {
                         <div>
                             <label className="block text-sm font-medium text-text-primary mb-2">Fecha de fin</label>
                             <input
-                                type="text"
-                                placeholder="DD/MM/YYYY"
+                                type="date"
                                 value={editEndDate}
                                 onChange={(e) => setEditEndDate(e.target.value)}
                                 className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
@@ -727,8 +830,7 @@ const openEditModal = (tournament: Tournament) => {
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-text-primary mb-2">Inicio inscripciones</label>
                             <input
-                                type="text"
-                                placeholder="DD/MM/YYYY"
+                                type="date"
                                 value={editRegistrationStart}
                                 onChange={(e) => setEditRegistrationStart(e.target.value)}
                                 className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
@@ -750,6 +852,38 @@ const openEditModal = (tournament: Tournament) => {
                                 className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                                 placeholder="0.00"
                             />
+                        </div>
+                        
+                        {/* Límite de inscripciones */}
+                        <div className="md:col-span-2">
+                            <div className="flex items-center mb-3">
+                                <input
+                                    type="checkbox"
+                                    id="editHasLimit"
+                                    checked={editHasRegistrationLimit}
+                                    onChange={(e) => setEditHasRegistrationLimit(e.target.checked)}
+                                    className="w-4 h-4 text-primary bg-secondary-light border-primary/30 rounded focus:ring-primary focus:ring-2"
+                                />
+                                <label htmlFor="editHasLimit" className="ml-2 text-sm font-medium text-text-primary">
+                                    El torneo tiene límite de inscripciones
+                                </label>
+                            </div>
+                            {editHasRegistrationLimit && (
+                                <div>
+                                    <label className="block text-sm font-medium text-text-primary mb-2">Número máximo de inscripciones</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={editRegistrationLimit}
+                                        onChange={(e) => setEditRegistrationLimit(e.target.value)}
+                                        className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        placeholder="Ej: 32"
+                                    />
+                                    <p className="text-xs text-text-primary/60 mt-1">
+                                        Las inscripciones se cerrarán automáticamente al alcanzar este límite
+                                    </p>
+                                </div>
+                            )}
                         </div>
                         
                         {/* Imagen actual */}

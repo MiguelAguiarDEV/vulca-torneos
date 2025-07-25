@@ -27,6 +27,19 @@ Route::get('/tournaments/{tournament}', [TournamentController::class, 'publicSho
 
 Route::get('/game/{game}', [GameController::class, 'gameTournaments'])->name('games.tournaments');
 
+/**
+ * =====================================================
+ * RUTAS PROTEGIDAS POR AUTENTICACIÓN
+ * =====================================================
+ * Estas rutas requieren que el usuario esté autenticado
+ */
+
+// Rutas para registro y cancelación en torneos (requieren autenticación)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/tournaments/{tournament}/register', [TournamentController::class, 'register'])->name('tournaments.register');
+    Route::delete('/tournaments/{tournament}/unregister', [TournamentController::class, 'unregister'])->name('tournaments.unregister');
+});
+
 
 
 

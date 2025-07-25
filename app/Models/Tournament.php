@@ -38,6 +38,8 @@ class Tournament extends Model
         'registration_start',
         'registration_end',
         'entry_fee',
+        'has_registration_limit',
+        'registration_limit',
         'status',
     ];
 
@@ -52,6 +54,8 @@ class Tournament extends Model
         'registration_start' => 'datetime',
         'registration_end' => 'datetime',
         'entry_fee' => 'decimal:2',
+        'has_registration_limit' => 'boolean',
+        'registration_limit' => 'integer',
         'game_id' => 'integer',
     ];
 
@@ -160,7 +164,46 @@ class Tournament extends Model
     public function isRegistrationOpen()
     {
         return $this->status === self::STATUS_REGISTRATION_OPEN 
-            && Carbon::now()->between($this->registration_start, $this->registration_end);
+            && Carbon::now()->between($this->registration_start, $this->registration_end)
+            && !$this->isRegistrationFull();
+    }
+
+    /**
+     * Check if registration is full.
+     */
+    public function isRegistrationFull()
+    {
+        if (!$this->has_registration_limit) {
+            return false;
+        }
+        
+        return $this->registrations()->count() >= $this->registration_limit;
+    }
+
+    /**
+     * Get available spots remaining.
+     */
+    public function getAvailableSpotsAttribute()
+    {
+        if (!$this->has_registration_limit) {
+            return null; // Unlimited
+        }
+        
+        $currentRegistrations = $this->registrations()->count();
+        return max(0, $this->registration_limit - $currentRegistrations);
+    }
+
+    /**
+     * Get registration progress percentage.
+     */
+    public function getRegistrationProgressAttribute()
+    {
+        if (!$this->has_registration_limit) {
+            return null; // No limit, no progress
+        }
+        
+        $currentRegistrations = $this->registrations()->count();
+        return min(100, ($currentRegistrations / $this->registration_limit) * 100);
     }
 
     /**

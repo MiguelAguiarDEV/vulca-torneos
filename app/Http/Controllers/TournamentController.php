@@ -15,30 +15,42 @@ class TournamentController extends Controller
      * =====================================================
      */
 
-    /**
-     * Muestra una lista pública de torneos con filtros.
+        /**
+     * Muestra la lista de torneos públicos.
      */
     public function publicIndex(Request $request)
     {
         $query = Tournament::with(['game', 'registrations.user'])
             ->withCount('registrations');
 
-        if ($request->has('game_id')) {
+        // Filtros
+        if ($request->filled('game_id')) {
             $query->where('game_id', $request->game_id);
         }
 
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $tournaments = $query->active()
-            ->orderBy('start_date', 'asc')
-            ->get();
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
 
-        // Esta vista es Blade, no Inertia. Asegúrate que exista.
-        return view('tournaments.index', [
+        // Solo torneos activos y publicados
+        $tournaments = $query->whereIn('status', ['published', 'registration_open', 'ongoing'])
+            ->orderBy('start_date', 'asc')
+            ->paginate(12);
+
+        $games = Game::select('id', 'name', 'image')->get();
+
+        return Inertia::render('Tournaments/Index', [
             'tournaments' => $tournaments,
-            'filters' => $request->only(['game_id', 'status'])
+            'games' => $games,
+            'filters' => $request->only(['game_id', 'status', 'search'])
         ]);
     }
 
@@ -106,9 +118,16 @@ class TournamentController extends Controller
             'end_date' => 'nullable|date|after:start_date',
             'registration_start' => 'nullable|date',
             'entry_fee' => 'nullable|numeric|min:0',
+            'has_registration_limit' => 'boolean',
+            'registration_limit' => 'nullable|integer|min:1|required_if:has_registration_limit,true',
             'status' => 'required|in:draft,published,registration_open,registration_closed,ongoing,finished,cancelled',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Set registration_limit to null if has_registration_limit is false
+        if (!$validatedData['has_registration_limit']) {
+            $validatedData['registration_limit'] = null;
+        }
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -156,9 +175,16 @@ class TournamentController extends Controller
             'end_date' => 'nullable|date|after:start_date',
             'registration_start' => 'nullable|date',
             'entry_fee' => 'nullable|numeric|min:0',
+            'has_registration_limit' => 'boolean',
+            'registration_limit' => 'nullable|integer|min:1|required_if:has_registration_limit,true',
             'status' => 'required|in:draft,published,registration_open,registration_closed,ongoing,finished,cancelled',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        // Set registration_limit to null if has_registration_limit is false
+        if (!$validatedData['has_registration_limit']) {
+            $validatedData['registration_limit'] = null;
+        }
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -191,6 +217,94 @@ class TournamentController extends Controller
      */
 
     /**
+     * Registra al usuario autenticado en un torneo.
+     */
+    public function register(Request $request, Tournament $tournament)
+    {
+        // Verificar que el usuario esté autenticado
+        if (!auth()->check()) {
+            return response()->json([
+                'message' => 'Debes iniciar sesión para registrarte en un torneo.'
+            ], 401);
+        }
+
+        $user = auth()->user();
+
+        // Verificar que el usuario puede registrarse
+        if (!$this->canUserRegister($tournament)) {
+            return response()->json([
+                'message' => 'No puedes registrarte en este torneo en este momento.'
+            ], 422);
+        }
+
+        try {
+            // Crear la inscripción
+            $registration = $tournament->registrations()->create([
+                'user_id' => $user->id,
+                'registration_date' => now(),
+                'payment_status' => $tournament->entry_fee > 0 ? 'pending' : 'completed',
+                'amount_paid' => $tournament->entry_fee ?? 0,
+            ]);
+
+            return response()->json([
+                'message' => 'Te has registrado exitosamente en el torneo.',
+                'registration' => $registration->load('user'),
+                'tournament' => $tournament->fresh(['registrations.user'])->withCount('registrations')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al registrarte en el torneo. Inténtalo de nuevo.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Cancela la inscripción del usuario en un torneo.
+     */
+    public function unregister(Request $request, Tournament $tournament)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'message' => 'Debes iniciar sesión para cancelar tu inscripción.'
+            ], 401);
+        }
+
+        $user = auth()->user();
+        
+        $registration = $tournament->registrations()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$registration) {
+            return response()->json([
+                'message' => 'No estás registrado en este torneo.'
+            ], 422);
+        }
+
+        // Verificar que el torneo aún permite cancelaciones
+        if ($tournament->start_date && now()->isAfter($tournament->start_date)) {
+            return response()->json([
+                'message' => 'No puedes cancelar tu inscripción una vez que el torneo ha comenzado.'
+            ], 422);
+        }
+
+        try {
+            $registration->delete();
+
+            return response()->json([
+                'message' => 'Has cancelado tu inscripción exitosamente.',
+                'tournament' => $tournament->fresh(['registrations.user'])->withCount('registrations')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al cancelar tu inscripción. Inténtalo de nuevo.'
+            ], 500);
+        }
+    }
+
+    /**
      * Determina si un usuario puede registrarse en un torneo.
      */
     private function canUserRegister(Tournament $tournament): bool
@@ -199,11 +313,15 @@ class TournamentController extends Controller
             return false;
         }
 
-        if ($tournament->status !== 'registration_open') {
+        if (!$tournament->isRegistrationOpen()) {
             return false;
         }
 
         if ($tournament->start_date && now()->isAfter($tournament->start_date)) {
+            return false;
+        }
+
+        if ($tournament->isRegistrationFull()) {
             return false;
         }
 
