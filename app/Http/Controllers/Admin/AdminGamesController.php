@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreGameRequest;
+use App\Http\Requests\Admin\UpdateGameRequest;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -31,7 +33,7 @@ class AdminGamesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGameRequest $request)
     {
         // Debug logging
         \Log::info('Game store request data:', [
@@ -41,11 +43,7 @@ class AdminGamesController extends Controller
             'has_image' => $request->hasFile('image')
         ]);
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:games,name',
-            'description' => 'nullable|string|max:65535',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $validatedData = $request->validated();
 
         // Manejo explícito para descripción
         if (array_key_exists('description', $validatedData)) {
@@ -128,7 +126,7 @@ class AdminGamesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateGameRequest $request, string $id)
     {
         $game = Game::findOrFail($id);
 
@@ -141,11 +139,7 @@ class AdminGamesController extends Controller
             'has_image' => $request->hasFile('image')
         ]);
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:games,name,' . $id,
-            'description' => 'nullable|string|max:65535',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $validatedData = $request->validated();
 
         // Manejo explícito para descripción
         if (array_key_exists('description', $validatedData)) {

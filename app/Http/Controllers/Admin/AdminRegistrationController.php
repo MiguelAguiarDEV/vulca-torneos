@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreRegistrationRequest;
+use App\Http\Requests\Admin\UpdateRegistrationRequest;
 use App\Models\Registration;
 use App\Models\Tournament;
 use App\Models\User;
@@ -38,18 +40,9 @@ class AdminRegistrationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRegistrationRequest $request)
     {
-        $request->validate([
-            'user_selection_type' => 'required|in:existing,new',
-            'user_id' => 'required_if:user_selection_type,existing|nullable|exists:users,id',
-            'new_user_name' => 'required_if:user_selection_type,new|nullable|string|max:255',
-            'new_user_email' => 'nullable|email|max:255',
-            'tournament_id' => 'required|exists:tournaments,id',
-            'payment_method' => 'required|in:cash,transfer,card',
-            'payment_status' => 'required|in:pending,confirmed,failed',
-            'payment_notes' => 'nullable|string',
-        ]);
+        $validatedData = $request->validated();
 
         // Determine the user ID to use
         if ($request->input('user_selection_type') === 'existing') {
@@ -62,11 +55,6 @@ class AdminRegistrationController extends Controller
                 if ($existingUser) {
                     $userId = $existingUser->id;
                 } else {
-                    // Check if email is already used
-                    if (User::where('email', $request->input('new_user_email'))->exists()) {
-                        return redirect()->back()->withErrors(['new_user_email' => 'Este email ya está registrado.'])->withInput();
-                    }
-                    
                     $user = User::create([
                         'name' => $request->input('new_user_name'),
                         'email' => $request->input('new_user_email'),
@@ -147,15 +135,11 @@ class AdminRegistrationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRegistrationRequest $request, string $id)
     {
         $registration = Registration::findOrFail($id);
         
-        $request->validate([
-            'payment_method' => 'required|in:cash,transfer,card',
-            'payment_status' => 'required|in:pending,confirmed,failed',
-            'payment_notes' => 'nullable|string',
-        ]);
+        $validatedData = $request->validated();
 
         $registration->update([
             'payment_method' => $request->input('payment_method'),

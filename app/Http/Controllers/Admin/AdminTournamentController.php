@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreTournamentRequest;
+use App\Http\Requests\Admin\UpdateTournamentRequest;
 use App\Models\Tournament;
 use App\Models\Game;
 use Illuminate\Http\Request;
@@ -37,21 +39,9 @@ class AdminTournamentController extends Controller
     /**
      * Almacena un nuevo torneo creado desde el panel de administración.
      */
-    public function store(Request $request)
+    public function store(StoreTournamentRequest $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'game_id' => 'required|exists:games,id',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
-            'registration_start' => 'nullable|date',
-            'entry_fee' => 'nullable|numeric|min:0',
-            'has_registration_limit' => 'boolean',
-            'registration_limit' => 'nullable|integer|min:1|required_if:has_registration_limit,true',
-            'status' => 'required|in:draft,published,registration_open,registration_closed,ongoing,finished,cancelled',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $validatedData = $request->validated();
 
         // Set registration_limit to null if has_registration_limit is false
         if (!$validatedData['has_registration_limit']) {
@@ -92,23 +82,11 @@ class AdminTournamentController extends Controller
     /**
      * Actualiza un torneo existente desde el panel de administración.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTournamentRequest $request, string $id)
     {
         $tournament = Tournament::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'game_id' => 'required|exists:games,id',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
-            'registration_start' => 'nullable|date',
-            'entry_fee' => 'nullable|numeric|min:0',
-            'has_registration_limit' => 'boolean',
-            'registration_limit' => 'nullable|integer|min:1|required_if:has_registration_limit,true',
-            'status' => 'required|in:draft,published,registration_open,registration_closed,ongoing,finished,cancelled',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $validatedData = $request->validated();
 
         // Set registration_limit to null if has_registration_limit is false
         if (!$validatedData['has_registration_limit']) {

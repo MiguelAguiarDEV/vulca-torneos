@@ -62,11 +62,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'index'])
         ->name('dashboard.index');
-    
     Route::resource('games', AdminGamesController::class)->names('admin.games');
     Route::resource('tournaments', AdminTournamentController::class)->names('admin.tournaments');
     Route::resource('registrations', AdminRegistrationController::class)->names('admin.registrations');
-
 });
 
 
