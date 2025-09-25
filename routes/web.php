@@ -7,7 +7,10 @@ use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\RegistrationController;
 
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminGamesController;
+use App\Http\Controllers\Admin\AdminTournamentController;
+use App\Http\Controllers\Admin\AdminRegistrationController;
 
 /**
  * =====================================================
@@ -59,11 +62,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'index'])
         ->name('dashboard.index');
-    
-    Route::resource('games', GameController::class)->names('admin.games');
-    Route::resource('tournaments', TournamentController::class)->names('admin.tournaments');
-    Route::resource('registrations', RegistrationController::class)->names('admin.registrations');
-
+    Route::resource('games', AdminGamesController::class)->names('admin.games');
+    Route::resource('tournaments', AdminTournamentController::class)->names('admin.tournaments');
+    Route::resource('registrations', AdminRegistrationController::class)->names('admin.registrations');
 });
 
 
