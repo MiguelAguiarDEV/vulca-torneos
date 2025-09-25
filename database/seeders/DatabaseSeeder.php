@@ -15,9 +15,18 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        // Crear un usuario de prueba
+        User::factory()->create(attributes: [
             'name' => 'Test User',
             'email' => 'test@example.com',
+        ]);
+
+        // Ejecutar todos los seeders relevantes
+        $this->call([
+            AdminUserSeeder::class,
+            GameSeeder::class,
+            TournamentSeeder::class,
+            RegistrationSeeder::class,
         ]);
     }
 }
