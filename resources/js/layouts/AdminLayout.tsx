@@ -1,8 +1,10 @@
-import Main from '@/components/Admin/Main/Main';
+// AdminLayout.tsx - FINAL Y LIMPIO
+import MobileHeader from '@/components/Admin/MobileHeader';
 import Sidebar from '@/components/Admin/Sidebar';
-import Background from '@/components/Background';
-import MobileHeader from '@/components/MobileHeader';
-import React, { useCallback, useState } from 'react';
+import Background from '@/components/UI/Background';
+import FlashMessages from '@/components/UI/FlashMessages';
+import { useAdminLayout } from '@/hooks/useAdminLayout';
+import React from 'react';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -11,15 +13,13 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children, title, pageTitle }: AdminLayoutProps) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const toggleSidebar = useCallback(() => {
-        setSidebarOpen((prev) => !prev);
-    }, []);
+    const { sidebarOpen, toggleSidebar, closeSidebar, flash } = useAdminLayout();
 
     return (
         <>
-            <title>{title ? `${title} - ${pageTitle}` : pageTitle}</title>
+            <title>{title ? `${title} - ${pageTitle}` : pageTitle} - Vulca Torneos</title>
             <Background />
+
             <div className="relative z-10 flex h-screen bg-transparent">
                 {/* Sidebar */}
                 <aside
@@ -35,9 +35,20 @@ export default function AdminLayout({ children, title, pageTitle }: AdminLayoutP
                 <div className="flex flex-1 flex-col overflow-hidden">
                     {/* Mobile Header */}
                     <MobileHeader onToggleSidebar={toggleSidebar} pageTitle={pageTitle} />
+
                     {/* Main Content Area */}
-                    <Main children={children} />
+                    <main className="flex-1 overflow-y-auto bg-transparent p-6">
+                        <div className="mx-auto max-w-7xl">
+                            <FlashMessages flash={flash} />
+                            {children}
+                        </div>
+                    </main>
                 </div>
+
+                {/* Mobile Overlay */}
+                {sidebarOpen && (
+                    <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden" onClick={closeSidebar} aria-label="Cerrar menú" />
+                )}
             </div>
         </>
     );

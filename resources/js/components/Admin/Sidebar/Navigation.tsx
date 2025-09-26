@@ -1,30 +1,22 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Gamepad2, Home, Trophy, Users } from 'lucide-react';
 
-const navigationItems = [
-    {
-        name: 'Inicio',
-        href: '/admin',
-        icon: Home,
-    },
-    {
-        name: 'Juegos',
-        href: '/admin/games',
-        icon: Gamepad2,
-    },
-    {
-        name: 'Torneos',
-        href: '/admin/tournaments',
-        icon: Trophy,
-    },
-    {
-        name: 'Inscripciones',
-        href: '/admin/registrations',
-        icon: Users,
-    },
+interface NavigationItem {
+    name: string;
+    href: string;
+    icon: React.ComponentType<{ className?: string }>;
+}
+
+const navigationItems: NavigationItem[] = [
+    { name: 'Inicio', href: '/admin', icon: Home },
+    { name: 'Juegos', href: '/admin/games', icon: Gamepad2 },
+    { name: 'Torneos', href: '/admin/tournaments', icon: Trophy },
+    { name: 'Inscripciones', href: '/admin/registrations', icon: Users },
 ];
-export default function NavItem() {
-    const currentPath = usePage().url;
+
+export default function Navigation() {
+    const { url: currentPath } = usePage();
+
     return (
         <nav className="mt-6 px-6">
             <ul className="space-y-2">
@@ -40,7 +32,7 @@ export default function NavItem() {
                                     isActive
                                         ? 'scale-105 bg-primary text-secondary shadow-lg'
                                         : 'text-text-primary hover:bg-primary-alpha-20 hover:text-primary'
-                                } `}
+                                }`}
                             >
                                 <Icon className="mr-3 h-5 w-5" />
                                 {item.name}

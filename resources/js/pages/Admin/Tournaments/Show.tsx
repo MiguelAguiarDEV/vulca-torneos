@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import Modal from '@/components/UI/Modal';
 import AdminLayout from '@/layouts/AdminLayout';
 import { Link, router } from '@inertiajs/react';
-import { ArrowLeft, Calendar, Users, Clock, Trophy, Gamepad, DollarSign, MapPin, Plus, Edit, Trash2, CheckCircle, XCircle, MoreVertical, Search } from 'lucide-react';
-import Modal from '@/components/Modal';
+import { ArrowLeft, Calendar, CheckCircle, Clock, DollarSign, Edit, Gamepad, Plus, Search, Trash2, Trophy, Users, XCircle } from 'lucide-react';
+import React, { useState } from 'react';
 
 // Tipos
 interface Game {
@@ -67,10 +67,10 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
     // Estados para modal de eliminación de inscripciones
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [registrationToDelete, setRegistrationToDelete] = useState<Registration | null>(null);
-    
+
     // Estado para búsqueda
     const [searchTerm, setSearchTerm] = useState<string>('');
-    
+
     // Estados para modal de crear inscripción
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [userSelectionType, setUserSelectionType] = useState<'existing' | 'new'>('existing');
@@ -80,14 +80,14 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
     const [paymentMethod, setPaymentMethod] = useState<string>('cash');
     const [paymentStatus, setPaymentStatus] = useState<string>('pending');
     const [paymentNotes, setPaymentNotes] = useState<string>('');
-    
+
     // Estados para modal de editar inscripción
     const [showEditModal, setShowEditModal] = useState(false);
     const [registrationToEdit, setRegistrationToEdit] = useState<Registration | null>(null);
     const [editPaymentMethod, setEditPaymentMethod] = useState<string>('');
     const [editPaymentStatus, setEditPaymentStatus] = useState<string>('');
     const [editPaymentNotes, setEditPaymentNotes] = useState<string>('');
-    
+
     // Estados para modal de editar torneo
     const [showEditTournamentModal, setShowEditTournamentModal] = useState(false);
     const [editName, setEditName] = useState<string>('');
@@ -109,76 +109,76 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         try {
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return '';
-            
+
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
-            
+
             return `${year}-${month}-${day}`;
         } catch (error) {
-            console.error("Error formatting date for input:", dateString, error);
+            console.error('Error formatting date for input:', dateString, error);
             return '';
         }
     };
 
     const formatDateForBackend = (dateString: string): string => {
         if (!dateString) return '';
-        
+
         const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
         if (isoDateRegex.test(dateString)) {
             return dateString;
         }
-        
+
         const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
         const match = dateString.match(dateRegex);
-        
+
         if (!match) return '';
-        
+
         const [, day, month, year] = match;
         return `${year}-${month}-${day}`;
     };
     const getStatusColor = (status: string) => {
         const statusColors: Record<string, string> = {
-            'draft': 'bg-secondary text-text-primary',
-            'published': 'bg-info text-text-primary',
-            'registration_open': 'bg-success text-text-primary',
-            'registration_closed': 'bg-warning text-secondary',
-            'ongoing': 'bg-primary text-secondary',
-            'finished': 'bg-secondary text-text-primary',
-            'cancelled': 'bg-error text-text-primary'
+            draft: 'bg-secondary text-text-primary',
+            published: 'bg-info text-text-primary',
+            registration_open: 'bg-success text-text-primary',
+            registration_closed: 'bg-warning text-secondary',
+            ongoing: 'bg-primary text-secondary',
+            finished: 'bg-secondary text-text-primary',
+            cancelled: 'bg-error text-text-primary',
         };
         return statusColors[status] || 'bg-secondary text-text-primary';
     };
 
     const getStatusText = (status: string) => {
         const statusTexts: Record<string, string> = {
-            'draft': 'Borrador',
-            'published': 'Publicado',
-            'registration_open': 'Inscripciones Abiertas',
-            'registration_closed': 'Inscripciones Cerradas',
-            'ongoing': 'En Curso',
-            'finished': 'Finalizado',
-            'cancelled': 'Cancelado'
+            draft: 'Borrador',
+            published: 'Publicado',
+            registration_open: 'Inscripciones Abiertas',
+            registration_closed: 'Inscripciones Cerradas',
+            ongoing: 'En Curso',
+            finished: 'Finalizado',
+            cancelled: 'Cancelado',
         };
         return statusTexts[status] || status;
     };
 
     const getRegistrationStatusColor = (status: string) => {
         const statusColors: Record<string, string> = {
-            'pending': 'bg-warning text-secondary',
-            'confirmed': 'bg-success text-text-primary',
-            'cancelled': 'bg-error text-text-primary',
-            'rejected': 'bg-error text-text-primary'
+            pending: 'bg-warning text-secondary',
+            confirmed: 'bg-success text-text-primary',
+            cancelled: 'bg-error text-text-primary',
+            rejected: 'bg-error text-text-primary',
         };
         return statusColors[status] || 'bg-secondary text-text-primary';
     };
 
     const getRegistrationStatusText = (status: string) => {
         const statusTexts: Record<string, string> = {
-            'pending': 'Pendiente',
-            'confirmed': 'Confirmada',
-            'cancelled': 'Cancelada',
-            'rejected': 'Rechazada'
+            pending: 'Pendiente',
+            confirmed: 'Confirmada',
+            cancelled: 'Cancelada',
+            rejected: 'Rechazada',
         };
         return statusTexts[status] || status;
     };
@@ -186,27 +186,27 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
     // Funciones adicionales para inscripciones
     const getPaymentStatusColor = (status: string) => {
         const statusColors: Record<string, string> = {
-            'pending': 'bg-warning text-secondary',
-            'confirmed': 'bg-success text-text-primary',
-            'failed': 'bg-error text-text-primary'
+            pending: 'bg-warning text-secondary',
+            confirmed: 'bg-success text-text-primary',
+            failed: 'bg-error text-text-primary',
         };
         return statusColors[status] || 'bg-secondary text-text-primary';
     };
 
     const getPaymentStatusText = (status: string) => {
         const statusTexts: Record<string, string> = {
-            'pending': 'Pendiente',
-            'confirmed': 'Confirmado',
-            'failed': 'Fallido'
+            pending: 'Pendiente',
+            confirmed: 'Confirmado',
+            failed: 'Fallido',
         };
         return statusTexts[status] || status;
     };
 
     const getPaymentMethodText = (method: string) => {
         const methodTexts: Record<string, string> = {
-            'cash': 'Efectivo',
-            'transfer': 'Transferencia',
-            'card': 'Tarjeta'
+            cash: 'Efectivo',
+            transfer: 'Transferencia',
+            card: 'Tarjeta',
         };
         return methodTexts[method] || method;
     };
@@ -234,7 +234,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                 onError: (errors) => {
                     console.error('Error al eliminar la inscripción:', errors);
                     alert('Error al eliminar la inscripción. Intenta nuevamente.');
-                }
+                },
             });
         }
     };
@@ -268,7 +268,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         const data = new FormData();
         data.append('user_selection_type', userSelectionType);
         data.append('tournament_id', tournament.id.toString());
-        
+
         if (userSelectionType === 'existing') {
             data.append('user_id', selectedUserId.toString());
         } else {
@@ -277,14 +277,14 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                 data.append('new_user_email', newUserEmail.trim());
             }
         }
-        
+
         data.append('payment_method', paymentMethod);
         data.append('payment_status', paymentStatus);
-        
+
         if (paymentNotes.trim()) {
             data.append('payment_notes', paymentNotes.trim());
         }
-        
+
         router.post(route('admin.registrations.store'), data, {
             preserveState: true,
             preserveScroll: true,
@@ -295,11 +295,11 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             onError: (errors) => {
                 console.error('Error al crear la inscripción:', errors);
                 let errorMessage = 'Error al crear la inscripción:\n';
-                Object.keys(errors).forEach(key => {
+                Object.keys(errors).forEach((key) => {
                     errorMessage += `${key}: ${errors[key]}\n`;
                 });
                 alert(errorMessage);
-            }
+            },
         });
     };
 
@@ -327,11 +327,11 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         data.append('_method', 'PUT');
         data.append('payment_method', editPaymentMethod);
         data.append('payment_status', editPaymentStatus);
-        
+
         if (editPaymentNotes.trim()) {
             data.append('payment_notes', editPaymentNotes.trim());
         }
-        
+
         router.post(route('admin.registrations.update', registrationToEdit.id), data, {
             preserveState: true,
             preserveScroll: true,
@@ -342,11 +342,11 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             onError: (errors) => {
                 console.error('Error al actualizar la inscripción:', errors);
                 let errorMessage = 'Error al actualizar la inscripción:\n';
-                Object.keys(errors).forEach(key => {
+                Object.keys(errors).forEach((key) => {
                     errorMessage += `${key}: ${errors[key]}\n`;
                 });
                 alert(errorMessage);
-            }
+            },
         });
     };
 
@@ -408,19 +408,19 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         data.append('start_date', formatDateForBackend(editStartDate));
         data.append('status', editStatus);
         data.append('has_registration_limit', editHasRegistrationLimit ? '1' : '0');
-        
+
         if (editHasRegistrationLimit && editRegistrationLimit) {
             data.append('registration_limit', editRegistrationLimit);
         }
-        
+
         const description = editDescription ? editDescription.trim() : '';
         data.append('description', description);
-        
+
         if (editEndDate) data.append('end_date', formatDateForBackend(editEndDate));
         if (editRegistrationStart) data.append('registration_start', formatDateForBackend(editRegistrationStart));
         if (editEntryFee) data.append('entry_fee', editEntryFee);
         if (editImageFile) data.append('image', editImageFile);
-        
+
         router.post(route('admin.tournaments.update', tournament.id), data, {
             preserveState: true,
             preserveScroll: true,
@@ -431,11 +431,11 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             onError: (errors) => {
                 console.error('Error al actualizar el torneo:', errors);
                 let errorMessage = 'Error al actualizar el torneo:\n';
-                Object.keys(errors).forEach(key => {
+                Object.keys(errors).forEach((key) => {
                     errorMessage += `${key}: ${errors[key]}\n`;
                 });
                 alert(errorMessage);
-            }
+            },
         });
     };
 
@@ -446,7 +446,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         data.append('payment_method', registration.payment_method);
         data.append('payment_status', 'confirmed');
         data.append('payment_notes', registration.payment_notes || '');
-        
+
         router.post(route('admin.registrations.update', registration.id), data, {
             preserveState: false,
             preserveScroll: true,
@@ -456,7 +456,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             onError: (errors) => {
                 console.error('Error al confirmar el pago:', errors);
                 alert('Error al confirmar el pago. Intenta nuevamente.');
-            }
+            },
         });
     };
 
@@ -466,7 +466,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         data.append('payment_method', registration.payment_method);
         data.append('payment_status', 'pending');
         data.append('payment_notes', registration.payment_notes || '');
-        
+
         router.post(route('admin.registrations.update', registration.id), data, {
             preserveState: false,
             preserveScroll: true,
@@ -476,7 +476,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             onError: (errors) => {
                 console.error('Error al cambiar estado del pago:', errors);
                 alert('Error al cambiar estado del pago. Intenta nuevamente.');
-            }
+            },
         });
     };
 
@@ -487,7 +487,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             data.append('payment_method', registration.payment_method);
             data.append('payment_status', 'failed');
             data.append('payment_notes', (registration.payment_notes || '') + ' - Inscripción cancelada por administrador');
-            
+
             router.post(route('admin.registrations.update', registration.id), data, {
                 preserveState: false,
                 preserveScroll: true,
@@ -497,71 +497,75 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                 onError: (errors) => {
                     console.error('Error al cancelar la inscripción:', errors);
                     alert('Error al cancelar la inscripción. Intenta nuevamente.');
-                }
+                },
             });
         }
     };
 
     // Filtrar inscripciones basado en el término de búsqueda
-    const filteredRegistrations = registrations ? registrations.filter(reg => 
-        reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    ) : [];
+    const filteredRegistrations = registrations
+        ? registrations.filter(
+              (reg) =>
+                  reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) || reg.user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+          )
+        : [];
 
     // Estadísticas totales (sin filtrar)
-    const totalConfirmedRegistrations = registrations ? registrations.filter(reg => reg.status === 'confirmed') : [];
-    const totalPendingRegistrations = registrations ? registrations.filter(reg => reg.status === 'pending') : [];
+    const totalConfirmedRegistrations = registrations ? registrations.filter((reg) => reg.status === 'confirmed') : [];
+    const totalPendingRegistrations = registrations ? registrations.filter((reg) => reg.status === 'pending') : [];
 
     // Estadísticas filtradas (para la visualización de la lista)
-    const confirmedRegistrations = filteredRegistrations.filter(reg => reg.status === 'confirmed');
-    const pendingRegistrations = filteredRegistrations.filter(reg => reg.status === 'pending');
+    const confirmedRegistrations = filteredRegistrations.filter((reg) => reg.status === 'confirmed');
+    const pendingRegistrations = filteredRegistrations.filter((reg) => reg.status === 'pending');
 
     return (
         <AdminLayout title={`Detalles - ${tournament.name}`} pageTitle={`Detalles del Torneo`}>
             {/* Header con información del torneo */}
             <div className="mb-8">
-                <div className="bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border-2 border-primary/30 p-6">
+                <div className="rounded-lg border-2 border-primary/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm">
                     <div className="flex items-center">
-                        <Link 
+                        <Link
                             href={route('admin.tournaments.index')}
-                            className="mr-6 p-3 text-text-primary hover:text-primary transition-all duration-200 rounded-lg hover:bg-primary/20 hover:scale-110 border border-primary/30 hover:border-primary"
+                            className="mr-6 rounded-lg border border-primary/30 p-3 text-text-primary transition-all duration-200 hover:scale-110 hover:border-primary hover:bg-primary/20 hover:text-primary"
                         >
-                            <ArrowLeft className="w-6 h-6" />
+                            <ArrowLeft className="h-6 w-6" />
                         </Link>
-                        <div className="flex items-center flex-grow">
+                        <div className="flex flex-grow items-center">
                             {tournament.image ? (
-                                <img 
-                                    src={tournament.image} 
+                                <img
+                                    src={tournament.image}
                                     alt={tournament.name}
-                                    className="w-24 h-24 object-cover rounded-lg border-2 border-primary mr-8 shadow-xl hover:scale-105 transition-transform duration-200"
+                                    className="mr-8 h-24 w-24 rounded-lg border-2 border-primary object-cover shadow-xl transition-transform duration-200 hover:scale-105"
                                 />
                             ) : (
-                                <div className="w-24 h-24 bg-secondary/80 rounded-lg flex items-center justify-center mr-8 border-2 border-primary shadow-xl hover:scale-105 transition-transform duration-200">
-                                    <Trophy className="w-12 h-12 text-primary" />
+                                <div className="mr-8 flex h-24 w-24 items-center justify-center rounded-lg border-2 border-primary bg-secondary/80 shadow-xl transition-transform duration-200 hover:scale-105">
+                                    <Trophy className="h-12 w-12 text-primary" />
                                 </div>
                             )}
                             <div className="flex-grow">
-                                <div className="flex items-center gap-4 mb-3">
+                                <div className="mb-3 flex items-center gap-4">
                                     <h1 className="text-5xl font-bold text-white drop-shadow-lg">{tournament.name}</h1>
-                                    <span className={`px-4 py-2 rounded-full text-sm font-medium shadow-lg ${getStatusColor(tournament.status)}`}>
+                                    <span className={`rounded-full px-4 py-2 text-sm font-medium shadow-lg ${getStatusColor(tournament.status)}`}>
                                         {getStatusText(tournament.status)}
                                     </span>
                                 </div>
                                 {tournament.description && (
-                                    <p className="text-xl text-white bg-secondary/50 backdrop-blur-sm rounded-lg px-4 py-2 border border-primary/20 mb-3">{tournament.description}</p>
+                                    <p className="mb-3 rounded-lg border border-primary/20 bg-secondary/50 px-4 py-2 text-xl text-white backdrop-blur-sm">
+                                        {tournament.description}
+                                    </p>
                                 )}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className="flex items-center bg-primary/20 backdrop-blur-sm rounded-lg px-3 py-2 border border-primary/30">
-                                            <Gamepad className="w-5 h-5 text-primary mr-2" />
-                                            <span className="text-white font-medium">{tournament.game.name}</span>
+                                        <div className="flex items-center rounded-lg border border-primary/30 bg-primary/20 px-3 py-2 backdrop-blur-sm">
+                                            <Gamepad className="mr-2 h-5 w-5 text-primary" />
+                                            <span className="font-medium text-white">{tournament.game.name}</span>
                                         </div>
                                     </div>
                                     <button
                                         onClick={openEditTournamentModal}
-                                        className="flex items-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                                        className="flex items-center rounded-lg bg-primary px-4 py-2 font-semibold text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary-dark hover:shadow-xl"
                                     >
-                                        <Edit className="w-4 h-4 mr-2" />
+                                        <Edit className="mr-2 h-4 w-4" />
                                         Editar Torneo
                                     </button>
                                 </div>
@@ -572,41 +576,45 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             </div>
 
             {/* Información del torneo */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                <div className="bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border-2 border-primary/30 p-6">
-                    <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center">
-                        <Calendar className="w-5 h-5 mr-2 text-primary" />
+            <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
+                <div className="rounded-lg border-2 border-primary/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm">
+                    <h3 className="mb-4 flex items-center text-lg font-semibold text-text-primary">
+                        <Calendar className="mr-2 h-5 w-5 text-primary" />
                         Fechas del Torneo
                     </h3>
                     <div className="space-y-3 text-text-primary/70">
                         <div>
                             <span className="font-medium">Inicio:</span>
-                            <span className="ml-2">{new Date(tournament.start_date).toLocaleDateString('es-ES', { 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}</span>
+                            <span className="ml-2">
+                                {new Date(tournament.start_date).toLocaleDateString('es-ES', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                })}
+                            </span>
                         </div>
                         {tournament.end_date && (
                             <div>
                                 <span className="font-medium">Fin:</span>
-                                <span className="ml-2">{new Date(tournament.end_date).toLocaleDateString('es-ES', { 
-                                    year: 'numeric', 
-                                    month: 'long', 
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                })}</span>
+                                <span className="ml-2">
+                                    {new Date(tournament.end_date).toLocaleDateString('es-ES', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
+                                </span>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border-2 border-warning/30 p-6">
-                    <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center">
-                        <Clock className="w-5 h-5 mr-2 text-warning" />
+                <div className="rounded-lg border-2 border-warning/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm">
+                    <h3 className="mb-4 flex items-center text-lg font-semibold text-text-primary">
+                        <Clock className="mr-2 h-5 w-5 text-warning" />
                         Inscripciones
                     </h3>
                     <div className="space-y-3 text-text-primary/70">
@@ -624,32 +632,29 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                         )}
                         <div>
                             <span className="font-medium">Total:</span>
-                            <span className="ml-2 text-text-primary font-bold">
+                            <span className="ml-2 font-bold text-text-primary">
                                 {registrations.length}
-                                {tournament.has_registration_limit 
-                                    ? ` / ${tournament.registration_limit} inscripciones`
-                                    : ' inscripciones'
-                                }
+                                {tournament.has_registration_limit ? ` / ${tournament.registration_limit} inscripciones` : ' inscripciones'}
                             </span>
                             {tournament.has_registration_limit && (
                                 <div className="mt-2">
-                                    <div className="flex items-center justify-between text-sm text-text-primary/70 mb-1">
+                                    <div className="mb-1 flex items-center justify-between text-sm text-text-primary/70">
                                         <span>Progreso de llenado</span>
                                         <span>{Math.round((registrations.length / tournament.registration_limit!) * 100)}%</span>
                                     </div>
-                                    <div className="w-full bg-secondary-light rounded-full h-2">
-                                        <div 
+                                    <div className="h-2 w-full rounded-full bg-secondary-light">
+                                        <div
                                             className={`h-2 rounded-full transition-all duration-300 ${
-                                                (registrations.length / tournament.registration_limit!) >= 0.9 
-                                                    ? 'bg-error' 
-                                                    : (registrations.length / tournament.registration_limit!) >= 0.7 
-                                                        ? 'bg-warning' 
-                                                        : 'bg-success'
+                                                registrations.length / tournament.registration_limit! >= 0.9
+                                                    ? 'bg-error'
+                                                    : registrations.length / tournament.registration_limit! >= 0.7
+                                                      ? 'bg-warning'
+                                                      : 'bg-success'
                                             }`}
                                             style={{ width: `${Math.min(100, (registrations.length / tournament.registration_limit!) * 100)}%` }}
                                         ></div>
                                     </div>
-                                    <div className="text-xs text-text-primary/60 mt-1">
+                                    <div className="mt-1 text-xs text-text-primary/60">
                                         {tournament.registration_limit! - registrations.length} plazas disponibles
                                     </div>
                                 </div>
@@ -658,46 +663,44 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                     </div>
                 </div>
 
-                <div className="bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border-2 border-success/30 p-6">
-                    <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center">
-                        <DollarSign className="w-5 h-5 mr-2 text-success" />
+                <div className="rounded-lg border-2 border-success/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm">
+                    <h3 className="mb-4 flex items-center text-lg font-semibold text-text-primary">
+                        <DollarSign className="mr-2 h-5 w-5 text-success" />
                         Información Adicional
                     </h3>
                     <div className="space-y-3 text-text-primary/70">
                         <div>
                             <span className="font-medium">Cuota de entrada:</span>
-                            <span className="ml-2 text-text-primary font-bold">
-                                {tournament.entry_fee ? `€${tournament.entry_fee}` : 'Gratis'}
-                            </span>
+                            <span className="ml-2 font-bold text-text-primary">{tournament.entry_fee ? `€${tournament.entry_fee}` : 'Gratis'}</span>
                         </div>
                         <div>
                             <span className="font-medium">Confirmadas:</span>
-                            <span className="ml-2 text-success font-bold">{totalConfirmedRegistrations.length}</span>
+                            <span className="ml-2 font-bold text-success">{totalConfirmedRegistrations.length}</span>
                         </div>
                         <div>
                             <span className="font-medium">Pendientes:</span>
-                            <span className="ml-2 text-warning font-bold">{totalPendingRegistrations.length}</span>
+                            <span className="ml-2 font-bold text-warning">{totalPendingRegistrations.length}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Lista de inscripciones */}
-            <div className="bg-secondary/95 backdrop-blur-sm rounded-lg shadow-lg border-2 border-primary/30 p-6">
-                <div className="flex items-center justify-between mb-6">
+            <div className="rounded-lg border-2 border-primary/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm">
+                <div className="mb-6 flex items-center justify-between">
                     <div className="flex items-center">
-                        <Users className="w-8 h-8 text-primary mr-3" />
+                        <Users className="mr-3 h-8 w-8 text-primary" />
                         <h2 className="text-2xl font-bold text-text-primary">Inscripciones</h2>
                     </div>
-                    <button 
+                    <button
                         onClick={openCreateModal}
-                        className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                        className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary-dark hover:shadow-xl"
                     >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus className="mr-2 h-4 w-4" />
                         Nueva Inscripción
                     </button>
                 </div>
-                
+
                 {/* Campo de búsqueda */}
                 <div className="mb-6">
                     <div className="relative">
@@ -706,41 +709,46 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                             placeholder="Buscar por nombre o email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full px-4 py-3 pl-10 bg-secondary-light border border-primary/30 rounded-lg text-text-primary placeholder-text-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
+                            className="w-full rounded-lg border border-primary/30 bg-secondary-light px-4 py-3 pl-10 text-text-primary placeholder-text-primary/50 transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                         />
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary/70" />
+                        <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-primary/70" />
                         {searchTerm && (
                             <button
                                 onClick={() => setSearchTerm('')}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-primary/50 hover:text-text-primary transition-colors"
+                                className="absolute top-1/2 right-3 -translate-y-1/2 transform text-text-primary/50 transition-colors hover:text-text-primary"
                             >
-                                <XCircle className="w-5 h-5" />
+                                <XCircle className="h-5 w-5" />
                             </button>
                         )}
                     </div>
                     {searchTerm && (
-                        <p className="text-sm text-text-primary/60 mt-2">
+                        <p className="mt-2 text-sm text-text-primary/60">
                             Mostrando {filteredRegistrations.length} de {registrations.length} inscripciones
                         </p>
                     )}
                 </div>
-                
+
                 {filteredRegistrations.length > 0 ? (
                     <div className="space-y-4">
                         {filteredRegistrations.map((registration) => (
-                            <div key={registration.id} className="bg-secondary-dark/80 backdrop-blur-sm rounded-lg p-4 border border-primary/30 hover:border-primary hover:shadow-lg transition-all duration-200">
-                                <div className="flex items-center justify-between mb-3">
+                            <div
+                                key={registration.id}
+                                className="rounded-lg border border-primary/30 bg-secondary-dark/80 p-4 backdrop-blur-sm transition-all duration-200 hover:border-primary hover:shadow-lg"
+                            >
+                                <div className="mb-3 flex items-center justify-between">
                                     <div>
                                         <h3 className="text-lg font-semibold text-text-primary">{registration.user.name}</h3>
-                                        <p className="text-text-primary/70 text-sm">{registration.user.email}</p>
+                                        <p className="text-sm text-text-primary/70">{registration.user.email}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`px-3 py-1 rounded-full text-sm font-medium shadow-lg ${getPaymentStatusColor(registration.payment_status)}`}>
+                                        <span
+                                            className={`rounded-full px-3 py-1 text-sm font-medium shadow-lg ${getPaymentStatusColor(registration.payment_status)}`}
+                                        >
                                             {getPaymentStatusText(registration.payment_status)}
                                         </span>
                                     </div>
                                 </div>
-                                
+
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-1 text-sm text-text-primary/70">
                                         <div>
@@ -749,13 +757,15 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                                         </div>
                                         <div>
                                             <span className="font-medium">Inscrito el:</span>
-                                            <span className="ml-2">{new Date(registration.created_at).toLocaleDateString('es-ES', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}</span>
+                                            <span className="ml-2">
+                                                {new Date(registration.created_at).toLocaleDateString('es-ES', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
+                                            </span>
                                         </div>
                                         {registration.payment_notes && (
                                             <div>
@@ -764,55 +774,55 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                     {/* Botones de acción */}
                                     <div className="flex items-center gap-2">
                                         {registration.payment_status === 'pending' && (
                                             <button
                                                 onClick={() => quickConfirmPayment(registration)}
-                                                className="flex items-center px-3 py-2 bg-success hover:bg-success-dark text-text-primary rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 text-sm font-medium"
+                                                className="hover:bg-success-dark flex items-center rounded-lg bg-success px-3 py-2 text-sm font-medium text-text-primary shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                                                 title="Confirmar pago"
                                             >
-                                                <CheckCircle className="w-4 h-4 mr-1" />
+                                                <CheckCircle className="mr-1 h-4 w-4" />
                                                 Confirmar Pago
                                             </button>
                                         )}
-                                        
+
                                         {registration.payment_status === 'confirmed' && (
                                             <button
                                                 onClick={() => quickCancelPayment(registration)}
-                                                className="flex items-center px-3 py-2 bg-warning hover:bg-warning-dark text-secondary rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 text-sm font-medium"
+                                                className="hover:bg-warning-dark flex items-center rounded-lg bg-warning px-3 py-2 text-sm font-medium text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                                                 title="Marcar como pendiente"
                                             >
-                                                <Clock className="w-4 h-4 mr-1" />
+                                                <Clock className="mr-1 h-4 w-4" />
                                                 Pendiente
                                             </button>
                                         )}
-                                        
+
                                         <button
                                             onClick={() => openEditModal(registration)}
-                                            className="flex items-center px-3 py-2 bg-info hover:bg-info-dark text-text-primary rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 text-sm font-medium"
+                                            className="hover:bg-info-dark flex items-center rounded-lg bg-info px-3 py-2 text-sm font-medium text-text-primary shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                                             title="Editar inscripción"
                                         >
-                                            <Edit className="w-4 h-4 mr-1" />
+                                            <Edit className="mr-1 h-4 w-4" />
                                             Editar
                                         </button>
-                                        
+
                                         <button
                                             onClick={() => quickCancelRegistration(registration)}
-                                            className="flex items-center px-3 py-2 bg-error hover:bg-error-dark text-text-primary rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 text-sm font-medium"
+                                            className="bg-error hover:bg-error-dark flex items-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                                             title="Cancelar inscripción"
                                         >
-                                            <XCircle className="w-4 h-4 mr-1" />
+                                            <XCircle className="mr-1 h-4 w-4" />
                                             Cancelar
                                         </button>
-                                        
+
                                         <button
                                             onClick={() => confirmDeleteRegistration(registration)}
-                                            className="flex items-center px-3 py-2 bg-error hover:bg-error-dark text-text-primary rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 text-sm font-medium"
+                                            className="bg-error hover:bg-error-dark flex items-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                                             title="Eliminar inscripción"
                                         >
-                                            <Trash2 className="w-4 h-4 mr-1" />
+                                            <Trash2 className="mr-1 h-4 w-4" />
                                             Eliminar
                                         </button>
                                     </div>
@@ -821,47 +831,41 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-12">
-                        <Users className="w-16 h-16 text-primary/50 mx-auto mb-4" />
+                    <div className="py-12 text-center">
+                        <Users className="mx-auto mb-4 h-16 w-16 text-primary/50" />
                         {searchTerm ? (
                             <>
-                                <h3 className="text-lg font-semibold text-text-primary mb-2">No se encontraron inscripciones</h3>
-                                <p className="text-text-primary/70 mb-6">
-                                    No hay inscripciones que coincidan con "{searchTerm}".
-                                </p>
-                                <button 
+                                <h3 className="mb-2 text-lg font-semibold text-text-primary">No se encontraron inscripciones</h3>
+                                <p className="mb-6 text-text-primary/70">No hay inscripciones que coincidan con "{searchTerm}".</p>
+                                <button
                                     onClick={() => setSearchTerm('')}
-                                    className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                                    className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-secondary shadow-lg transition-all duration-200 hover:bg-primary-dark hover:shadow-xl"
                                 >
-                                    <XCircle className="w-4 h-4 mr-2" />
+                                    <XCircle className="mr-2 h-4 w-4" />
                                     Limpiar búsqueda
                                 </button>
                             </>
                         ) : registrations.length === 0 ? (
                             <>
-                                <h3 className="text-lg font-semibold text-text-primary mb-2">No hay inscripciones</h3>
-                                <p className="text-text-primary/70 mb-6">
-                                    Las inscripciones aparecerán aquí cuando los usuarios se registren.
-                                </p>
-                                <button 
+                                <h3 className="mb-2 text-lg font-semibold text-text-primary">No hay inscripciones</h3>
+                                <p className="mb-6 text-text-primary/70">Las inscripciones aparecerán aquí cuando los usuarios se registren.</p>
+                                <button
                                     onClick={openCreateModal}
-                                    className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                                    className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-secondary shadow-lg transition-all duration-200 hover:bg-primary-dark hover:shadow-xl"
                                 >
-                                    <Plus className="w-4 h-4 mr-2" />
+                                    <Plus className="mr-2 h-4 w-4" />
                                     Primera Inscripción
                                 </button>
                             </>
                         ) : (
                             <>
-                                <h3 className="text-lg font-semibold text-text-primary mb-2">No se encontraron resultados</h3>
-                                <p className="text-text-primary/70 mb-6">
-                                    Intenta con otros términos de búsqueda.
-                                </p>
-                                <button 
+                                <h3 className="mb-2 text-lg font-semibold text-text-primary">No se encontraron resultados</h3>
+                                <p className="mb-6 text-text-primary/70">Intenta con otros términos de búsqueda.</p>
+                                <button
                                     onClick={() => setSearchTerm('')}
-                                    className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-secondary font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                                    className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-secondary shadow-lg transition-all duration-200 hover:bg-primary-dark hover:shadow-xl"
                                 >
-                                    <XCircle className="w-4 h-4 mr-2" />
+                                    <XCircle className="mr-2 h-4 w-4" />
                                     Ver todas las inscripciones
                                 </button>
                             </>
@@ -871,40 +875,40 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             </div>
 
             {/* Estadísticas rápidas */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-secondary/95 backdrop-blur-sm p-4 rounded-lg shadow-lg border-2 border-primary/30 hover:border-primary hover:shadow-xl transition-all duration-200">
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-4">
+                <div className="rounded-lg border-2 border-primary/30 bg-secondary/95 p-4 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-primary hover:shadow-xl">
                     <div className="flex items-center">
-                        <Users className="w-8 h-8 text-primary mr-3" />
+                        <Users className="mr-3 h-8 w-8 text-primary" />
                         <div>
                             <h3 className="text-sm font-medium text-text-primary/70">Total Inscripciones</h3>
                             <p className="text-2xl font-bold text-text-primary">{registrations.length}</p>
                         </div>
                     </div>
                 </div>
-                
-                <div className="bg-secondary/95 backdrop-blur-sm p-4 rounded-lg shadow-lg border-2 border-success/30 hover:border-success hover:shadow-xl transition-all duration-200">
+
+                <div className="rounded-lg border-2 border-success/30 bg-secondary/95 p-4 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-success hover:shadow-xl">
                     <div className="flex items-center">
-                        <Trophy className="w-8 h-8 text-success mr-3" />
+                        <Trophy className="mr-3 h-8 w-8 text-success" />
                         <div>
                             <h3 className="text-sm font-medium text-text-primary/70">Confirmadas</h3>
                             <p className="text-2xl font-bold text-text-primary">{totalConfirmedRegistrations.length}</p>
                         </div>
                     </div>
                 </div>
-                
-                <div className="bg-secondary/95 backdrop-blur-sm p-4 rounded-lg shadow-lg border-2 border-warning/30 hover:border-warning hover:shadow-xl transition-all duration-200">
+
+                <div className="rounded-lg border-2 border-warning/30 bg-secondary/95 p-4 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-warning hover:shadow-xl">
                     <div className="flex items-center">
-                        <Clock className="w-8 h-8 text-warning mr-3" />
+                        <Clock className="mr-3 h-8 w-8 text-warning" />
                         <div>
                             <h3 className="text-sm font-medium text-text-primary/70">Pendientes</h3>
                             <p className="text-2xl font-bold text-text-primary">{totalPendingRegistrations.length}</p>
                         </div>
                     </div>
                 </div>
-                
-                <div className="bg-secondary/95 backdrop-blur-sm p-4 rounded-lg shadow-lg border-2 border-info/30 hover:border-info hover:shadow-xl transition-all duration-200">
+
+                <div className="rounded-lg border-2 border-info/30 bg-secondary/95 p-4 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-info hover:shadow-xl">
                     <div className="flex items-center">
-                        <DollarSign className="w-8 h-8 text-info mr-3" />
+                        <DollarSign className="mr-3 h-8 w-8 text-info" />
                         <div>
                             <h3 className="text-sm font-medium text-text-primary/70">Ingresos</h3>
                             <p className="text-2xl font-bold text-text-primary">
@@ -918,21 +922,20 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
             {/* Modal de confirmación de eliminación */}
             <Modal show={showDeleteModal} onClose={closeDeleteModal}>
                 <div className="p-6">
-                    <h2 className="text-lg font-semibold text-text-primary mb-4">Confirmar Eliminación</h2>
-                    <p className="text-text-primary/70 mb-6">
-                        ¿Estás seguro de que deseas eliminar la inscripción de "{registrationToDelete?.user.name}"? 
-                        Esta acción no se puede deshacer.
+                    <h2 className="mb-4 text-lg font-semibold text-text-primary">Confirmar Eliminación</h2>
+                    <p className="mb-6 text-text-primary/70">
+                        ¿Estás seguro de que deseas eliminar la inscripción de "{registrationToDelete?.user.name}"? Esta acción no se puede deshacer.
                     </p>
                     <div className="flex justify-end space-x-4">
-                        <button 
+                        <button
                             onClick={closeDeleteModal}
-                            className="px-4 py-2 text-text-primary border border-primary/30 rounded-lg hover:bg-primary/20 transition-colors duration-200"
+                            className="rounded-lg border border-primary/30 px-4 py-2 text-text-primary transition-colors duration-200 hover:bg-primary/20"
                         >
                             Cancelar
                         </button>
-                        <button 
+                        <button
                             onClick={deleteRegistration}
-                            className="px-4 py-2 bg-error text-text-primary rounded-lg hover:bg-error-dark transition-colors duration-200"
+                            className="bg-error hover:bg-error-dark rounded-lg px-4 py-2 text-text-primary transition-colors duration-200"
                         >
                             Eliminar
                         </button>
@@ -942,13 +945,13 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
             {/* Modal de crear inscripción */}
             <Modal show={showCreateModal} onClose={closeCreateModal} maxWidth="lg">
-                <div className="p-6 bg-secondary/95 backdrop-blur-sm border-2 border-primary rounded-lg">
-                    <h2 className="text-xl font-semibold text-text-primary mb-4">Nueva Inscripción para {tournament.name}</h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-lg border-2 border-primary bg-secondary/95 p-6 backdrop-blur-sm">
+                    <h2 className="mb-4 text-xl font-semibold text-text-primary">Nueva Inscripción para {tournament.name}</h2>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {/* Tipo de usuario */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Tipo de usuario</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Tipo de usuario</label>
                             <div className="flex gap-4">
                                 <label className="flex items-center">
                                     <input
@@ -976,16 +979,20 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                         {userSelectionType === 'existing' ? (
                             /* Usuario existente */
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-text-primary mb-2">Usuario</label>
+                                <label className="mb-2 block text-sm font-medium text-text-primary">Usuario</label>
                                 <select
                                     value={selectedUserId}
                                     onChange={(e) => setSelectedUserId(e.target.value ? Number(e.target.value) : '')}
-                                    className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                    className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                 >
                                     <option value="">Selecciona un usuario</option>
-                                    {users && users.length > 0 ? users.map((user) => (
-                                        <option key={user.id} value={user.id}>{user.name} ({user.email})</option>
-                                    )) : (
+                                    {users && users.length > 0 ? (
+                                        users.map((user) => (
+                                            <option key={user.id} value={user.id}>
+                                                {user.name} ({user.email})
+                                            </option>
+                                        ))
+                                    ) : (
                                         <option disabled>No hay usuarios disponibles</option>
                                     )}
                                 </select>
@@ -994,22 +1001,22 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                             /* Nuevo usuario */
                             <>
                                 <div>
-                                    <label className="block text-sm font-medium text-text-primary mb-2">Nombre *</label>
+                                    <label className="mb-2 block text-sm font-medium text-text-primary">Nombre *</label>
                                     <input
                                         type="text"
                                         value={newUserName}
                                         onChange={(e) => setNewUserName(e.target.value)}
-                                        className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                         placeholder="Nombre del usuario"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-text-primary mb-2">Email</label>
+                                    <label className="mb-2 block text-sm font-medium text-text-primary">Email</label>
                                     <input
                                         type="email"
                                         value={newUserEmail}
                                         onChange={(e) => setNewUserEmail(e.target.value)}
-                                        className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                         placeholder="email@ejemplo.com"
                                     />
                                 </div>
@@ -1018,11 +1025,11 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
                         {/* Método de pago */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Método de pago</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Método de pago</label>
                             <select
                                 value={paymentMethod}
                                 onChange={(e) => setPaymentMethod(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             >
                                 <option value="cash">Efectivo</option>
                                 <option value="transfer">Transferencia</option>
@@ -1032,11 +1039,11 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
                         {/* Estado de pago */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Estado de pago</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Estado de pago</label>
                             <select
                                 value={paymentStatus}
                                 onChange={(e) => setPaymentStatus(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             >
                                 <option value="pending">Pendiente</option>
                                 <option value="confirmed">Confirmado</option>
@@ -1046,26 +1053,26 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
                         {/* Notas de pago */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Notas de pago</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Notas de pago</label>
                             <textarea
                                 value={paymentNotes}
                                 onChange={(e) => setPaymentNotes(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary h-20 resize-none"
+                                className="h-20 w-full resize-none rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                 placeholder="Notas adicionales sobre el pago (opcional)"
                             />
                         </div>
                     </div>
-                    
-                    <div className="flex justify-end space-x-3 mt-6">
-                        <button 
-                            onClick={closeCreateModal} 
-                            className="px-4 py-2 rounded-lg text-text-primary bg-secondary-light hover:bg-secondary-lighter transition-colors border border-primary/30"
+
+                    <div className="mt-6 flex justify-end space-x-3">
+                        <button
+                            onClick={closeCreateModal}
+                            className="rounded-lg border border-primary/30 bg-secondary-light px-4 py-2 text-text-primary transition-colors hover:bg-secondary-lighter"
                         >
                             Cancelar
                         </button>
-                        <button 
-                            onClick={saveCreateRegistration} 
-                            className="px-4 py-2 rounded-lg text-secondary bg-primary hover:bg-primary-dark transition-colors font-medium shadow-lg"
+                        <button
+                            onClick={saveCreateRegistration}
+                            className="rounded-lg bg-primary px-4 py-2 font-medium text-secondary shadow-lg transition-colors hover:bg-primary-dark"
                         >
                             Crear Inscripción
                         </button>
@@ -1075,28 +1082,28 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
             {/* Modal de editar inscripción */}
             <Modal show={showEditModal} onClose={closeEditModal} maxWidth="lg">
-                <div className="p-6 bg-secondary/95 backdrop-blur-sm border-2 border-primary rounded-lg">
-                    <h2 className="text-xl font-semibold text-text-primary mb-4">Editar Inscripción</h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-lg border-2 border-primary bg-secondary/95 p-6 backdrop-blur-sm">
+                    <h2 className="mb-4 text-xl font-semibold text-text-primary">Editar Inscripción</h2>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {/* Usuario (solo lectura) */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Usuario</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Usuario</label>
                             <input
                                 type="text"
                                 value={registrationToEdit ? `${registrationToEdit.user.name} (${registrationToEdit.user.email})` : ''}
-                                className="w-full px-3 py-2 bg-secondary-lighter border border-primary/30 rounded-lg text-text-primary cursor-not-allowed"
+                                className="w-full cursor-not-allowed rounded-lg border border-primary/30 bg-secondary-lighter px-3 py-2 text-text-primary"
                                 disabled
                             />
                         </div>
 
                         {/* Método de pago */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Método de pago</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Método de pago</label>
                             <select
                                 value={editPaymentMethod}
                                 onChange={(e) => setEditPaymentMethod(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             >
                                 <option value="cash">Efectivo</option>
                                 <option value="transfer">Transferencia</option>
@@ -1106,11 +1113,11 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
                         {/* Estado de pago */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Estado de pago</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Estado de pago</label>
                             <select
                                 value={editPaymentStatus}
                                 onChange={(e) => setEditPaymentStatus(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             >
                                 <option value="pending">Pendiente</option>
                                 <option value="confirmed">Confirmado</option>
@@ -1120,26 +1127,26 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
                         {/* Notas de pago */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Notas de pago</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Notas de pago</label>
                             <textarea
                                 value={editPaymentNotes}
                                 onChange={(e) => setEditPaymentNotes(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary h-20 resize-none"
+                                className="h-20 w-full resize-none rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                 placeholder="Notas adicionales sobre el pago"
                             />
                         </div>
                     </div>
-                    
-                    <div className="flex justify-end space-x-3 mt-6">
-                        <button 
-                            onClick={closeEditModal} 
-                            className="px-4 py-2 rounded-lg text-text-primary bg-secondary-light hover:bg-secondary-lighter transition-colors border border-primary/30"
+
+                    <div className="mt-6 flex justify-end space-x-3">
+                        <button
+                            onClick={closeEditModal}
+                            className="rounded-lg border border-primary/30 bg-secondary-light px-4 py-2 text-text-primary transition-colors hover:bg-secondary-lighter"
                         >
                             Cancelar
                         </button>
-                        <button 
-                            onClick={saveEditRegistration} 
-                            className="px-4 py-2 rounded-lg text-secondary bg-primary hover:bg-primary-dark transition-colors font-medium shadow-lg"
+                        <button
+                            onClick={saveEditRegistration}
+                            className="rounded-lg bg-primary px-4 py-2 font-medium text-secondary shadow-lg transition-colors hover:bg-primary-dark"
                         >
                             Guardar Cambios
                         </button>
@@ -1149,57 +1156,61 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
             {/* Modal de editar torneo */}
             <Modal show={showEditTournamentModal} onClose={closeEditTournamentModal} maxWidth="lg">
-                <div className="p-6 bg-secondary/95 backdrop-blur-sm border-2 border-primary rounded-lg">
-                    <h2 className="text-xl font-semibold text-text-primary mb-4">Editar Torneo</h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-lg border-2 border-primary bg-secondary/95 p-6 backdrop-blur-sm">
+                    <h2 className="mb-4 text-xl font-semibold text-text-primary">Editar Torneo</h2>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {/* Nombre */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Nombre *</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Nombre *</label>
                             <input
                                 type="text"
                                 value={editName}
                                 onChange={(e) => setEditName(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                 placeholder="Nombre del torneo"
                             />
                         </div>
-                        
+
                         {/* Descripción */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Descripción</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Descripción</label>
                             <textarea
                                 value={editDescription}
                                 onChange={(e) => setEditDescription(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary h-20 resize-none"
+                                className="h-20 w-full resize-none rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                 placeholder="Descripción del torneo (opcional)"
                             />
                         </div>
-                        
+
                         {/* Juego */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Juego *</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Juego *</label>
                             <select
                                 value={editGameId}
                                 onChange={(e) => setEditGameId(e.target.value ? Number(e.target.value) : '')}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             >
                                 <option value="">Selecciona un juego</option>
-                                {games && games.length > 0 ? games.map((game) => (
-                                    <option key={game.id} value={game.id}>{game.name}</option>
-                                )) : (
+                                {games && games.length > 0 ? (
+                                    games.map((game) => (
+                                        <option key={game.id} value={game.id}>
+                                            {game.name}
+                                        </option>
+                                    ))
+                                ) : (
                                     <option disabled>No hay juegos disponibles</option>
                                 )}
                             </select>
                         </div>
-                        
+
                         {/* Estado */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Estado</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Estado</label>
                             <select
                                 value={editStatus}
                                 onChange={(e) => setEditStatus(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             >
                                 <option value="draft">Borrador</option>
                                 <option value="published">Publicado</option>
@@ -1210,66 +1221,66 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                                 <option value="cancelled">Cancelado</option>
                             </select>
                         </div>
-                        
+
                         {/* Fecha de inicio */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Fecha de inicio *</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Fecha de inicio *</label>
                             <input
                                 type="date"
                                 value={editStartDate}
                                 onChange={(e) => setEditStartDate(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             />
                         </div>
-                        
+
                         {/* Fecha de fin */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Fecha de fin</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Fecha de fin</label>
                             <input
                                 type="date"
                                 value={editEndDate}
                                 onChange={(e) => setEditEndDate(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             />
                         </div>
-                        
+
                         {/* Inicio de inscripciones */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Inicio inscripciones</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Inicio inscripciones</label>
                             <input
                                 type="date"
                                 value={editRegistrationStart}
                                 onChange={(e) => setEditRegistrationStart(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                             />
-                            <p className="text-xs text-text-primary/60 mt-1">
+                            <p className="mt-1 text-xs text-text-primary/60">
                                 Las inscripciones se cerrarán automáticamente cuando comience el torneo
                             </p>
                         </div>
-                        
+
                         {/* Cuota de entrada */}
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Cuota (€)</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Cuota (€)</label>
                             <input
                                 type="number"
                                 min="0"
                                 step="0.01"
                                 value={editEntryFee}
                                 onChange={(e) => setEditEntryFee(e.target.value)}
-                                className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                 placeholder="0.00"
                             />
                         </div>
-                        
+
                         {/* Límite de inscripciones */}
                         <div className="md:col-span-2">
-                            <div className="flex items-center mb-3">
+                            <div className="mb-3 flex items-center">
                                 <input
                                     type="checkbox"
                                     id="editHasLimit"
                                     checked={editHasRegistrationLimit}
                                     onChange={(e) => setEditHasRegistrationLimit(e.target.checked)}
-                                    className="w-4 h-4 text-primary bg-secondary-light border-primary/30 rounded focus:ring-primary focus:ring-2"
+                                    className="h-4 w-4 rounded border-primary/30 bg-secondary-light text-primary focus:ring-2 focus:ring-primary"
                                 />
                                 <label htmlFor="editHasLimit" className="ml-2 text-sm font-medium text-text-primary">
                                     El torneo tiene límite de inscripciones
@@ -1277,37 +1288,37 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                             </div>
                             {editHasRegistrationLimit && (
                                 <div>
-                                    <label className="block text-sm font-medium text-text-primary mb-2">Número máximo de inscripciones</label>
+                                    <label className="mb-2 block text-sm font-medium text-text-primary">Número máximo de inscripciones</label>
                                     <input
                                         type="number"
                                         min="1"
                                         value={editRegistrationLimit}
                                         onChange={(e) => setEditRegistrationLimit(e.target.value)}
-                                        className="w-full px-3 py-2 bg-secondary-light border border-primary/30 rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
                                         placeholder="Ej: 32"
                                     />
-                                    <p className="text-xs text-text-primary/60 mt-1">
+                                    <p className="mt-1 text-xs text-text-primary/60">
                                         Las inscripciones se cerrarán automáticamente al alcanzar este límite
                                     </p>
                                 </div>
                             )}
                         </div>
-                        
+
                         {/* Imagen previa */}
                         {editPreviewImage && (
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-text-primary mb-2">Imagen actual</label>
-                                <img 
-                                    src={editPreviewImage} 
-                                    alt="Vista previa" 
-                                    className="w-32 h-32 object-cover rounded-lg border-2 border-primary/30"
+                                <label className="mb-2 block text-sm font-medium text-text-primary">Imagen actual</label>
+                                <img
+                                    src={editPreviewImage}
+                                    alt="Vista previa"
+                                    className="h-32 w-32 rounded-lg border-2 border-primary/30 object-cover"
                                 />
                             </div>
                         )}
-                        
+
                         {/* Nueva imagen */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-text-primary mb-2">Nueva imagen</label>
+                            <label className="mb-2 block text-sm font-medium text-text-primary">Nueva imagen</label>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -1322,21 +1333,21 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                                         reader.readAsDataURL(file);
                                     }
                                 }}
-                                className="w-full text-sm text-text-primary/70 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-secondary hover:file:bg-primary-dark file:cursor-pointer file:shadow-lg"
+                                className="w-full text-sm text-text-primary/70 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-secondary file:shadow-lg hover:file:bg-primary-dark"
                             />
                         </div>
                     </div>
-                    
-                    <div className="flex justify-end space-x-3 mt-6">
-                        <button 
-                            onClick={closeEditTournamentModal} 
-                            className="px-4 py-2 rounded-lg text-text-primary bg-secondary-light hover:bg-secondary-lighter transition-colors border border-primary/30"
+
+                    <div className="mt-6 flex justify-end space-x-3">
+                        <button
+                            onClick={closeEditTournamentModal}
+                            className="rounded-lg border border-primary/30 bg-secondary-light px-4 py-2 text-text-primary transition-colors hover:bg-secondary-lighter"
                         >
                             Cancelar
                         </button>
-                        <button 
-                            onClick={saveEditTournament} 
-                            className="px-4 py-2 rounded-lg text-secondary bg-primary hover:bg-primary-dark transition-colors font-medium shadow-lg"
+                        <button
+                            onClick={saveEditTournament}
+                            className="rounded-lg bg-primary px-4 py-2 font-medium text-secondary shadow-lg transition-colors hover:bg-primary-dark"
                         >
                             Guardar Cambios
                         </button>

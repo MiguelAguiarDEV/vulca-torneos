@@ -1,4 +1,4 @@
-import Modal from '@/components/Modal';
+import Modal from '@/components/UI/Modal';
 import AdminLayout from '@/layouts/AdminLayout';
 import { router } from '@inertiajs/react';
 import { Gamepad, Pencil, Plus, Trash2 } from 'lucide-react';
