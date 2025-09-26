@@ -94,7 +94,7 @@
 
     <!-- Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <a href="{{ route('admin.games.create') }}" 
+        <a href="{{ route('admin.games.create') }}"
            class="bg-[#212121] border-2 border-[#FDC900] rounded-xl p-6 smooth-hover glow-on-hover group">
             <div class="text-center">
                 <div class="bg-[#FDC900] p-4 rounded-full inline-block mb-4">
@@ -107,7 +107,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.tournaments.create') }}" 
+        <a href="{{ route('admin.tournaments.create') }}"
            class="bg-[#212121] border-2 border-[#FDC900] rounded-xl p-6 smooth-hover glow-on-hover group">
             <div class="text-center">
                 <div class="bg-[#FDC900] p-4 rounded-full inline-block mb-4">
@@ -120,7 +120,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.registrations.index') }}" 
+        <a href="{{ route('admin.registrations.index') }}"
            class="bg-[#212121] border-2 border-[#FDC900] rounded-xl p-6 smooth-hover glow-on-hover group">
             <div class="text-center">
                 <div class="bg-[#FDC900] p-4 rounded-full inline-block mb-4">
@@ -144,7 +144,7 @@
                 </svg>
                 Actividad Reciente
             </h3>
-            
+
             @if($recentActivity->isEmpty())
                 <p class="text-[#F5F5F5] text-center py-8">No hay actividad reciente</p>
             @else
@@ -175,7 +175,7 @@
                 </svg>
                 Próximos Torneos
             </h3>
-            
+
             @if($upcomingTournaments->isEmpty())
                 <p class="text-[#F5F5F5] text-center py-8">No hay torneos próximos</p>
             @else
