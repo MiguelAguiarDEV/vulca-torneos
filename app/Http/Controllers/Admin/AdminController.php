@@ -21,7 +21,7 @@ class AdminController extends Controller
         }
 
         try {
-            return Inertia::render('Dashboard');
+            return Inertia::render('Admin/index');
         } catch (\Exception $e) {
             \Log::error('Admin dashboard error: ' . $e->getMessage());
             return response()->view('errors.500', [], 500);

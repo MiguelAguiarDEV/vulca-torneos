@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import React, { Fragment } from 'react';
 
 interface ModalProps {
     children: React.ReactNode;
@@ -9,13 +9,7 @@ interface ModalProps {
     onClose: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({
-    children,
-    show = false,
-    maxWidth = '2xl',
-    closeable = true,
-    onClose = () => {},
-}) => {
+const Modal: React.FC<ModalProps> = ({ children, show = false, maxWidth = '2xl', closeable = true, onClose = () => {} }) => {
     const close = () => {
         if (closeable) {
             onClose();
@@ -35,7 +29,7 @@ const Modal: React.FC<ModalProps> = ({
             <Dialog
                 as="div"
                 id="modal"
-                className="fixed inset-0 flex overflow-y-auto px-4 py-6 sm:px-0 items-center justify-center z-50"
+                className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-4 py-6 sm:px-0"
                 onClose={close}
             >
                 <Transition.Child
@@ -60,7 +54,7 @@ const Modal: React.FC<ModalProps> = ({
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <Dialog.Panel
-                        className={`relative mb-6 bg-secondary-dark rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full ${maxWidthClass}`}
+                        className={`relative mb-6 transform overflow-hidden rounded-lg bg-secondary-dark shadow-xl transition-all sm:w-full ${maxWidthClass}`}
                     >
                         {children}
                     </Dialog.Panel>

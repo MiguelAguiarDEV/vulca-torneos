@@ -3,7 +3,7 @@ import { Gamepad2, Home, Trophy, Users } from 'lucide-react';
 
 const navigationItems = [
     {
-        name: 'Dashboard',
+        name: 'Inicio',
         href: '/admin',
         icon: Home,
     },
