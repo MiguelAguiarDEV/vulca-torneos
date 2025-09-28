@@ -28,14 +28,19 @@ export default function Navigation() {
                         <li key={item.name}>
                             <Link
                                 href={item.href}
-                                className={`flex items-center rounded-md px-4 py-2 text-sm ${
+                                className={`flex items-center gap-4 rounded-md px-4 py-2 text-sm ${
                                     isActive
-                                        ? 'bg-gradient-to-r from-primary to-accent font-medium text-secondary'
-                                        : 'text-text-primary transition-colors duration-200 ease-in-out hover:bg-primary/10 hover:text-primary'
+                                        ? 'bg-secondary-lighter font-medium text-white'
+                                        : 'text-white/50 transition-colors duration-200 ease-in-out hover:bg-primary/10 hover:text-primary'
                                 }`}
                             >
-                                <Icon className="mr-3 h-4 w-4" />
+                                <Icon className="h-4 w-4" />
                                 {item.name}
+                                {isActive && (
+                                    <span className="relative ml-auto h-2 w-2 rounded-full bg-accent">
+                                        <span className="absolute inset-0 rounded-full bg-accent opacity-90 blur-sm" />
+                                    </span>
+                                )}
                             </Link>
                         </li>
                     );

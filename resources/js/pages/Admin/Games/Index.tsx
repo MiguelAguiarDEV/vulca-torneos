@@ -269,7 +269,7 @@ const Index: React.FC<IndexProps> = ({ games }) => {
                                             e.stopPropagation();
                                             confirmDelete(game);
                                         }}
-                                        className="rounded-md p-2 text-text-primary transition-colors duration-200 hover:bg-danger/10 hover:text-danger"
+                                        className="rounded-md p-2 text-primary transition-colors duration-200 hover:bg-danger/10 hover:text-danger"
                                         title="Eliminar juego"
                                     >
                                         <Trash2 className="h-4 w-4" />
