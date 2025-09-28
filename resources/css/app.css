@@ -11,11 +11,22 @@
 
 /* Colores semánticos para Vulca Torneos */
 @theme {
-    --color-primary: #f4cf00;
+    /* --color-primary: #f4cf00;
     --color-primary-dark: #d4b000;
     --color-primary-light: #f6d92f;
     --color-primary-alpha-10: #f4cf001a;
-    --color-primary-alpha-20: #f4cf0033;
+    --color-primary-alpha-20: #f4cf0033; */
+
+    --color-primary: #f6b032;
+    --color-primary-dark: #cc7a00; /* Más oscuro para mejor contraste */
+    --color-primary-light: #ffcc66; /* Más claro y saturado */
+    --color-primary-alpha-10: #f6b0321a;
+    --color-primary-alpha-20: #f6b03233;
+
+    /* Variaciones adicionales recomendadas */
+    --color-primary-darker: #b8700d;
+    --color-primary-lighter: #fad485;
+    --color-accent: #ff9500; /* Naranja más vibrante para acentos */
 
     --color-secondary: #212121;
     --color-secondary-light: #2a2a2a;
@@ -40,6 +51,6 @@ button:hover {
 /* También para elementos con clases de botón comunes */
 .btn:hover,
 .button:hover,
-[role="button"]:hover {
+[role='button']:hover {
     cursor: pointer;
 }

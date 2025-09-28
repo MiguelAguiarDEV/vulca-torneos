@@ -24,8 +24,8 @@ export default function AdminLayout({ children, title, pageTitle }: AdminLayoutP
                 {/* Sidebar */}
                 <aside
                     className={`${
-                        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                    } fixed inset-y-0 left-0 z-50 w-64 border-r-2 border-primary bg-secondary/95 shadow-lg backdrop-blur-sm transition-transform duration-300 ease-in-out lg:static lg:translate-x-0`}
+                        sidebarOpen ? 'translate-x-0 pl-2' : '-translate-x-full pl-0'
+                    } fixed inset-y-0 left-0 z-50 w-64 py-2 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 lg:pl-2`}
                     aria-label="Sidebar"
                 >
                     <Sidebar toggleSidebar={toggleSidebar} />
@@ -37,7 +37,7 @@ export default function AdminLayout({ children, title, pageTitle }: AdminLayoutP
                     <MobileHeader onToggleSidebar={toggleSidebar} pageTitle={pageTitle} />
 
                     {/* Main Content Area */}
-                    <main className="flex-1 overflow-y-auto bg-transparent p-6">
+                    <main className="flex-1 overflow-y-auto bg-transparent px-6 pt-2">
                         <div className="mx-auto max-w-7xl">
                             <FlashMessages flash={flash} />
                             {children}

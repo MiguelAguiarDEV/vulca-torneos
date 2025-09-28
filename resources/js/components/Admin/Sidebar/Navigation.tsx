@@ -18,7 +18,7 @@ export default function Navigation() {
     const { url: currentPath } = usePage();
 
     return (
-        <nav className="mt-6 px-6">
+        <nav className="px-4">
             <ul className="space-y-2">
                 {navigationItems.map((item) => {
                     const Icon = item.icon;
@@ -28,13 +28,13 @@ export default function Navigation() {
                         <li key={item.name}>
                             <Link
                                 href={item.href}
-                                className={`flex items-center rounded-lg px-4 py-3 font-medium transition-all duration-200 ${
+                                className={`flex items-center rounded-md px-4 py-2 text-sm ${
                                     isActive
-                                        ? 'scale-105 bg-primary text-secondary shadow-lg'
-                                        : 'text-text-primary hover:bg-primary-alpha-20 hover:text-primary'
+                                        ? 'bg-gradient-to-r from-primary to-accent font-medium text-secondary'
+                                        : 'text-text-primary transition-colors duration-200 ease-in-out hover:bg-primary/10 hover:text-primary'
                                 }`}
                             >
-                                <Icon className="mr-3 h-5 w-5" />
+                                <Icon className="mr-3 h-4 w-4" />
                                 {item.name}
                             </Link>
                         </li>
