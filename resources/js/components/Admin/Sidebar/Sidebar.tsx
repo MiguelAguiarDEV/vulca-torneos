@@ -12,8 +12,8 @@ export default function Sidebar({ toggleSidebar }: SidebarProps) {
             <div className="flex-1 overflow-y-auto">
                 <Navigation />
             </div>
-            <Settings />
-            <Logout />
+            <Settings textIsActive />
+            <Logout textIsActive />
             <UserCard />
         </div>
     );

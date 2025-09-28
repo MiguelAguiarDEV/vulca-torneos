@@ -1,5 +1,9 @@
 import { router } from "@inertiajs/react";
-import { LogIn, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
+
+interface LogoutProps {
+    textIsActive?: boolean;
+}
 
 
 const handleLogout = () => {
@@ -16,17 +20,27 @@ const handleLogout = () => {
     );
 };
 
-export default function Logout() {
+export default function Logout({ textIsActive }: LogoutProps) {
     return (
         <button
             onClick={handleLogout}
-            className="text-text-primary transition-colors  duration-200 hover:bg-danger/10 hover:text-danger rounded-md px-4 py-2 text-sm mx-4 flex items-center group overflow-hidden gap-4"
+            className={`mx-4 flex items-center overflow-hidden rounded-md py-2 text-sm text-text-primary transition-colors duration-200 hover:bg-danger/10 hover:text-danger group
+                ${textIsActive ? "gap-4 px-4" : "w-fit px-2"}`}
             title="Cerrar Sesión"
             type="button"
         >
-            <LogOut className="h-4 w-4 group-hover:-translate-x-10 transform transition-transform duration-200" />
-            <p className="group-hover:-translate-x-8 transform transition-transform duration-200">Cerrar sesión</p>
-            <LogOut className="h-4 w-4 group-hover:translate-x-8 translate-x-30  transform transition-transform duration-200" />
+        {textIsActive ? (
+            <>
+            <LogOut className="h-4 w-4 transform transition-transform duration-200 group-hover:-translate-x-30" />
+            <p className="transform transition-transform duration-200 group-hover:-translate-x-8">
+                Cerrar sesión
+            </p>
+            <LogOut className="h-4 w-4 transform transition-transform duration-200 group-hover:translate-x-8 translate-x-30" />
+            </>
+        ) : (
+            <LogOut className="h-4 w-4 transform transition-transform duration-200" />
+        )}
         </button>
+
     )
 }
