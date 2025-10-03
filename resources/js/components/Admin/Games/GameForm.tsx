@@ -12,7 +12,7 @@ interface GameFormValues {
 interface GameFormProps {
     values: GameFormValues;
     errors: Partial<Record<keyof GameFormValues, string>>;
-    onChange: <K extends keyof GameFormValues>(key: K, value: GameFormValues[K]) => void;
+    onChange: <Field extends keyof GameFormValues>(key: Field, value: GameFormValues[Field]) => void;
     image: {
         file: File | null;
         preview: string;
