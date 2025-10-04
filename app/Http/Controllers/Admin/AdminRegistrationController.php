@@ -52,8 +52,16 @@ class AdminRegistrationController extends Controller
 
     public function show(string $id)
     {
+        $registration = Registration::with(['user', 'tournament.game'])->findOrFail($id);
+
+        // Necesarios para el modal de editar
+        $tournaments = Tournament::with('game')->get();
+        $users = User::select('id', 'name', 'email')->get();
+
         return Inertia::render('Admin/Registrations/Show', [
-            'registration' => Registration::with(['user', 'tournament.game'])->findOrFail($id),
+            'registration' => $registration,
+            'tournaments' => $tournaments,
+            'users' => $users,
         ]);
     }
 

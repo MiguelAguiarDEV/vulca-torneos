@@ -39,7 +39,10 @@ export type TournamentStatus = 'draft' | 'published' | 'registration_open' | 're
 
 export interface Registration {
     id: number;
+    user_id: number;
+    tournament_id: number;
     user: User;
+    tournament: Tournament;
     status: string;
     payment_method: string;
     payment_status: string;

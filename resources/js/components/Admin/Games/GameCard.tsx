@@ -1,6 +1,6 @@
-// components/Admin/Games/GameCard.tsx
+// components/Admin/Games/GameCard.tsx - MEJORADO VISUALMENTE
 import { ActionButton } from '@/components/Admin/Shared/ActionButton';
-import { Gamepad2, Pencil, Trash2 } from 'lucide-react';
+import { Gamepad2, Pencil, Sparkles, Trash2 } from 'lucide-react';
 
 interface Game {
     id: number;
@@ -19,67 +19,110 @@ interface GameCardProps {
 export function GameCard({ game, onEdit, onDelete, onClick }: GameCardProps) {
     return (
         <div
-            className="flex h-full cursor-pointer flex-col rounded-lg border-2 border-primary/30 bg-secondary/95 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:border-primary hover:shadow-xl"
+            className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border-2 border-primary/30 bg-gradient-to-br from-secondary/95 to-secondary-dark/95 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-primary hover:shadow-2xl"
             onClick={onClick}
         >
+            {/* Efecto de brillo al hover */}
+            <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-primary/20 blur-3xl" />
+                <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+            </div>
+
             {/* Imagen del juego */}
-            <div className="relative h-48 overflow-hidden rounded-t-lg bg-secondary-dark">
+            <div className="relative h-56 overflow-hidden bg-gradient-to-br from-secondary-dark to-secondary">
                 {game.image ? (
-                    <img
-                        src={game.image}
-                        alt={game.name}
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                        }}
-                    />
+                    <>
+                        <img
+                            src={game.image}
+                            alt={game.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                        />
+                        {/* Overlay gradiente */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-secondary-dark/80 via-transparent to-transparent" />
+                    </>
                 ) : null}
 
+                {/* Placeholder cuando no hay imagen */}
                 <div className={`absolute inset-0 flex items-center justify-center ${game.image ? 'hidden' : ''}`}>
                     <div className="text-center">
-                        <Gamepad2 className="mx-auto mb-2 h-12 w-12 text-text-primary/50" />
-                        <span className="text-sm text-text-primary/50">Sin imagen</span>
+                        <div className="relative">
+                            <Gamepad2 className="mx-auto mb-3 h-16 w-16 text-primary/50 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
+                            <Sparkles className="absolute -top-1 -right-1 h-5 w-5 animate-pulse text-primary/30" />
+                        </div>
+                        <span className="text-sm font-medium text-text-primary/50">Sin imagen</span>
                     </div>
                 </div>
 
+                {/* Badge de estado */}
                 <div className="absolute top-3 right-3">
-                    <div className="rounded-md bg-success px-2 py-1 text-xs font-medium text-text-primary shadow-lg">Activo</div>
+                    <div className="flex items-center gap-1 rounded-full bg-success/90 px-3 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-white" />
+                        Activo
+                    </div>
+                </div>
+
+                {/* Nombre del juego superpuesto */}
+                <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-secondary-dark/95 to-transparent p-4">
+                    <h3 className="line-clamp-2 text-xl font-bold text-white drop-shadow-lg transition-all duration-300 group-hover:text-primary">
+                        {game.name}
+                    </h3>
                 </div>
             </div>
 
             {/* Contenido */}
-            <div className="flex flex-grow flex-col p-4">
-                <div className="mb-4">
-                    <h3 className="mb-2 line-clamp-1 text-lg font-semibold text-text-primary">{game.name}</h3>
-                    {game.description && <p className="line-clamp-2 text-sm leading-relaxed text-text-primary/70">{game.description}</p>}
-                </div>
-                <div className="flex-grow"></div>
+            <div className="relative flex flex-grow flex-col p-5">
+                {game.description ? (
+                    <div className="mb-4 flex-grow">
+                        <p className="line-clamp-3 text-sm leading-relaxed text-text-primary/70">{game.description}</p>
+                    </div>
+                ) : (
+                    <div className="mb-4 flex-grow">
+                        <p className="text-sm text-text-primary/40 italic">Sin descripción</p>
+                    </div>
+                )}
+
+                {/* Separador decorativo */}
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             </div>
 
-            {/* Actions */}
-            <div className="border-t-2 border-primary bg-secondary-dark/80 px-4 py-3">
-                <div className="flex items-center justify-end space-x-2">
-                    <ActionButton
-                        icon={Pencil}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit();
-                        }}
-                        title="Editar juego"
-                        variant="primary"
-                    />
-                    <ActionButton
-                        icon={Trash2}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete();
-                        }}
-                        title="Eliminar juego"
-                        variant="danger"
-                    />
+            {/* Actions - Mejoradas */}
+            <div className="relative border-t-2 border-primary/20 bg-secondary-dark/80 px-5 py-3 backdrop-blur-sm">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="rounded-full bg-primary/10 px-3 py-1">
+                            <span className="text-xs font-medium text-primary">ID: {game.id}</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <ActionButton
+                            icon={Pencil}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit();
+                            }}
+                            title="Editar juego"
+                            variant="primary"
+                        />
+                        <ActionButton
+                            icon={Trash2}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete();
+                            }}
+                            title="Eliminar juego"
+                            variant="danger"
+                        />
+                    </div>
                 </div>
             </div>
+
+            {/* Indicador de click */}
+            <div className="pointer-events-none absolute inset-0 rounded-xl ring-4 ring-primary/0 transition-all duration-300 group-hover:ring-primary/20" />
         </div>
     );
 }
