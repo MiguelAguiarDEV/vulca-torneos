@@ -92,7 +92,7 @@ const Index: React.FC<IndexProps> = ({ games }) => {
     return (
         <AdminLayout title="Juegos" pageTitle="Gestión de Juegos">
             {/* Header with stats and create button */}
-            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row">
                 <StatsCard
                     icon={Gamepad}
                     title="Total de Juegos"
@@ -111,7 +111,7 @@ const Index: React.FC<IndexProps> = ({ games }) => {
 
             {/* Games grid or empty state */}
             {games.length > 0 ? (
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                     {games.map((game) => (
                         <GameCard
                             key={game.id}

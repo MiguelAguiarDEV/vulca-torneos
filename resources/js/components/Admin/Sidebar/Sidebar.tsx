@@ -7,7 +7,7 @@ interface SidebarProps {
 
 export default function Sidebar({ toggleSidebar }: SidebarProps) {
     return (
-        <div className="flex h-full w-64 flex-col rounded-md border-2 border-secondary-lighter bg-gradient-to-br from-secondary-dark via-secondary to-secondary-light text-text-primary">
+        <div className="border-secondary-lighter from-secondary-dark via-secondary to-secondary-light flex h-full w-64 flex-col rounded-md border-2 bg-gradient-to-br text-text-primary">
             <Header toggleSidebar={toggleSidebar} />
             <div className="flex-1 overflow-y-auto">
                 <Navigation />

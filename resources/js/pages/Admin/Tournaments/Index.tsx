@@ -198,7 +198,7 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
     return (
         <AdminLayout title="Torneos" pageTitle="Gestión de Torneos">
             {/* Header with stats and create button */}
-            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row">
                 <StatsCard
                     icon={Trophy}
                     title="Total de Torneos"
@@ -219,7 +219,7 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
 
             {/* Tournaments grid or empty state */}
             {tournaments.length > 0 ? (
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                     {tournaments.map((tournament) => (
                         <TournamentCard
                             key={tournament.id}

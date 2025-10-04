@@ -38,7 +38,7 @@ export default function AdminLayout({ children, title, pageTitle }: AdminLayoutP
 
                     {/* Main Content Area */}
                     <main className="flex-1 overflow-y-auto bg-transparent px-6 py-2">
-                        <div className="mx-auto max-w-7xl">
+                        <div className="max-w-8xl mx-auto">
                             <FlashMessages flash={flash} />
                             {children}
                         </div>

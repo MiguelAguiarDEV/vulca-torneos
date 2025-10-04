@@ -201,7 +201,7 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
     return (
         <AdminLayout title="Inscripciones" pageTitle="Gestión de Inscripciones">
             {/* Header con stats y botón crear */}
-            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <StatsCard
                         icon={UserPlus}
@@ -240,7 +240,7 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
 
             {/* Grid de inscripciones */}
             {filteredRegistrations.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {filteredRegistrations.map((registration) => (
                         <RegistrationCard
                             key={registration.id}

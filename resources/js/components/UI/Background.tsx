@@ -1,7 +1,7 @@
 export default function Background() {
   return (
     <div className="fixed inset-0 z-0 h-full w-full
-                    bg-gradient-to-br from-orange-50 to-accent
+                    bg-gradient-to-bl from-white via-orange-50 to-primary
                     bg-cover bg-center overflow-hidden">
       {/* SVG de ruido superpuesto */}
       <svg

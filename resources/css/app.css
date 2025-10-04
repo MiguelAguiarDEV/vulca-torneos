@@ -18,36 +18,33 @@ body {
 
 /* Colores semánticos para Vulca Torneos */
 @theme {
-    /* --color-primary: #f4cf00;
-    --color-primary-dark: #d4b000;
-    --color-primary-light: #f6d92f;
-    --color-primary-alpha-10: #f4cf001a;
-    --color-primary-alpha-20: #f4cf0033; */
+    /* Primary - Naranja más refinado */
+    --color-primary: #f97316; /* Naranja más limpio */
+    --color-primary-dark: #ea580c; /* Mejor contraste */
+    --color-primary-light: #fed7aa; /* Más suave y elegante */
+    --color-primary-alpha-10: #f973161a;
+    --color-primary-alpha-20: #f9731633;
 
-    --color-primary: #f6b032;
-    --color-primary-dark: #cc7a00; /* Más oscuro para mejor contraste */
-    --color-primary-light: #ffcc66; /* Más claro y saturado */
-    --color-primary-alpha-10: #f6b0321a;
-    --color-primary-alpha-20: #f6b03233;
+    --color-primary-darker: #c2410c; /* Más oscuro pero vibrante */
+    --color-primary-lighter: #ffedd5; /* Muy suave */
+    --color-accent: #fb923c; /* Naranja medio vibrante */
 
-    /* Variaciones adicionales recomendadas */
-    --color-primary-darker: #b8700d;
-    --color-primary-lighter: #fad485;
-    --color-accent: #ff9500; /* Naranja más vibrante para acentos */
+    /* Secondary - Tonos oscuros más refinados */
+    --color-secondary: #27272a; /* Zinc-800 más neutral */
+    --color-secondary-light: #3f3f46; /* Zinc-700 */
+    --color-secondary-lighter: #52525b; /* Zinc-600 */
+    --color-secondary-dark: #18181b; /* Zinc-900 */
 
-    --color-secondary: #212121;
-    --color-secondary-light: #2a2a2a;
-    --color-secondary-lighter: #3a3a3a;
-    --color-secondary-dark: #1a1a1a;
+    /* Estados - Más saturados y modernos */
+    --color-success: #10b981; /* Emerald-500 */
+    --color-danger: #f43f5e; /* Rose-500 más vibrante */
+    --color-warning: #f59e0b; /* Mantener */
+    --color-info: #06b6d4; /* Cyan-500 más brillante */
 
-    --color-success: #22c55e;
-    --color-danger: #ef4444;
-    --color-warning: #f59e0b;
-    --color-info: #3b82f6;
-
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #f5f5f5;
-    --color-text-muted: #9ca3af;
+    /* Texto - Mejor jerarquía */
+    --color-text-primary: #fafafa; /* Zinc-50 */
+    --color-text-secondary: #e4e4e7; /* Zinc-200 */
+    --color-text-muted: #a1a1aa; /* Zinc-400 */
 }
 
 /* Estilo global para botones */
