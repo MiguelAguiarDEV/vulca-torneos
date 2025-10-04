@@ -1,4 +1,4 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
 import React, { Fragment } from 'react';
 
 interface ModalProps {
@@ -32,19 +32,9 @@ const Modal: React.FC<ModalProps> = ({ children, show = false, maxWidth = '2xl',
                 className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-4 py-6 sm:px-0"
                 onClose={close}
             >
-                <Transition.Child
-                    as={Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="absolute inset-0 bg-black/70" />
-                </Transition.Child>
 
-                <Transition.Child
+
+                <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -53,12 +43,12 @@ const Modal: React.FC<ModalProps> = ({ children, show = false, maxWidth = '2xl',
                     leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-                    <Dialog.Panel
+                    <DialogPanel
                         className={`relative mb-6 transform overflow-hidden rounded-lg bg-secondary-dark shadow-xl transition-all sm:w-full ${maxWidthClass}`}
                     >
                         {children}
-                    </Dialog.Panel>
-                </Transition.Child>
+                    </DialogPanel>
+                </TransitionChild>
             </Dialog>
         </Transition>
     );

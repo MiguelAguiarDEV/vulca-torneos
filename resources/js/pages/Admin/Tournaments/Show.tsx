@@ -11,13 +11,14 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
-import type { Registration, Tournament, User } from '@/types';
+import type { Game, Registration, Tournament, User } from '@/types';
 import { useState } from 'react';
 
 interface ShowProps {
     tournament: Tournament;
     registrations: Registration[];
     users: User[];
+    games: Game[];
 }
 
 // Tipos para formularios
@@ -50,9 +51,7 @@ interface TournamentFormValues {
     registration_limit: string;
 }
 
-const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [] }) => {
-    console.log('Users recibidos:', users);
-    console.log('Users length:', users.length);
+const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [], games = [] }) => {
     // CRUD operations
     const { update } = useCRUD({
         resourceName: 'inscripción',
@@ -268,7 +267,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [] 
     return (
         <AdminLayout title={`Detalles - ${tournament.name}`} pageTitle="Detalles del Torneo">
             {/* Header */}
-            <TournamentHeader tournament={tournament} onEdit={handleEditTournament} />
+            <TournamentHeader tournament={tournament} onEdit={handleEditTournament} games={games} />
 
             {/* Información del torneo */}
             <TournamentInfo tournament={tournament} registrations={registrations} />
