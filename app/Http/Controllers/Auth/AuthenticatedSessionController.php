@@ -8,41 +8,38 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Show the login page.
-     */
     public function create(Request $request)
     {
-        return view('auth.login', [
+        return Inertia::render('Auth/Login/index', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
         ]);
     }
 
-
-
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        $user = $request->user();
+        $isAdmin = $user && (
+            (method_exists($user, 'isAdmin') && $user->isAdmin()) ||
+            (($user->role ?? null) === (defined(User::class.'::ROLE_ADMIN') ? User::ROLE_ADMIN : 'admin'))
+        );
+
+        $target = $isAdmin ? route('admin.dashboard') : route('welcome');
+
+        return redirect()->intended($target);
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

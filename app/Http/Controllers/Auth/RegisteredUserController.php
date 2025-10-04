@@ -7,45 +7,38 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Show the registration page.
-     */
     public function create()
     {
-        return view('auth.register');
+        return Inertia::render('Auth/Register/index', [
+            'canLogin' => Route::has('login'),
+        ]);
     }
-    
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        $validated = $request->validate([
+            'name' => ['required','string','max:255'],
+            'email' => ['required','string','lowercase','email','max:255','unique:'.User::class],
+            'password' => ['required','confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => User::ROLE_USER,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => defined(User::class.'::ROLE_USER') ? User::ROLE_USER : 'user',
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect()->intended(route('dashboard'));
+        // No auto-login -> evita 403 si vuelve a admin
+        return redirect()->route('login')->with('status', 'Cuenta creada con éxito. Inicia sesión para continuar.');
     }
 }

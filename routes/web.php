@@ -1,7 +1,11 @@
 <?php
 
-use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\Admin\AdminController;
@@ -9,60 +13,80 @@ use App\Http\Controllers\Admin\AdminGamesController;
 use App\Http\Controllers\Admin\AdminTournamentController;
 use App\Http\Controllers\Admin\AdminRegistrationController;
 
-/**
- * =====================================================
- * RUTAS PÚBLICAS (No requieren autenticación)
- * =====================================================
- * Estas rutas pueden ser accedidas por cualquier visitante
- * sin necesidad de iniciar sesión
- */
+/*
+|--------------------------------------------------------------------------
+| PÚBLICO
+|--------------------------------------------------------------------------
+*/
 
-// Página de inicio - Muestra juegos destacados y permite navegación
-Route::get('/', [WelcomeController::class, 'index'])
-    ->name('index.welcome');
+// Landing pública (Inertia -> resources/js/pages/Welcome/index.tsx)
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
-// Rutas públicas para torneos
+// Torneos públicos
 Route::get('/tournaments', [TournamentController::class, 'publicIndex'])->name('tournaments.index');
 Route::get('/tournaments/{tournament}', [TournamentController::class, 'publicShow'])->name('tournaments.show');
 
+// Tournaments por juego
 Route::get('/game/{game}', [GameController::class, 'gameTournaments'])->name('games.tournaments');
 
-/**
- * =====================================================
- * RUTAS PROTEGIDAS POR AUTENTICACIÓN
- * =====================================================
- * Estas rutas requieren que el usuario esté autenticado
- */
 
-// Rutas para registro y cancelación en torneos (requieren autenticación)
-Route::middleware(['auth'])->group(function () {
+/*
+|--------------------------------------------------------------------------
+| AUTENTICACIÓN (INVITADOS)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('guest')->group(function () {
+    // Login
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+
+    // Registro
+    Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('/register', [RegisteredUserController::class, 'store']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTENTICADO
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    // Logout
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // Inscribirse / darse de baja en un torneo
     Route::post('/tournaments/{tournament}/register', [TournamentController::class, 'register'])->name('tournaments.register');
     Route::delete('/tournaments/{tournament}/unregister', [TournamentController::class, 'unregister'])->name('tournaments.unregister');
 });
 
 
-// Dashboard route - protected by auth middleware
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        if (auth()->user()->isAdmin()) {
-            return redirect()->route('dashboard.index');
-        }
-        return redirect()->route('index.welcome');
-    })->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| ADMIN (auth + admin)
+|--------------------------------------------------------------------------
+| Dashboard admin -> resources/js/pages/Admin/index.tsx
+*/
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // /admin -> redirige a /admin/dashboard
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    })->name('root');
+
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    Route::resource('games', AdminGamesController::class);
+    Route::resource('tournaments', AdminTournamentController::class);
+    Route::resource('registrations', AdminRegistrationController::class);
 });
 
-// Admin routes - protected by admin middleware
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('dashboard.index');
-    Route::resource('games', AdminGamesController::class)->names('admin.games');
-    Route::resource('tournaments', AdminTournamentController::class)->names('admin.tournaments');
-    Route::resource('registrations', AdminRegistrationController::class)->names('admin.registrations');
-});
-
-
-
-// Rutas de configuración de perfil de usuario
-require __DIR__.'/settings.php';
-
-// Rutas de autenticación (login, register, password reset, etc.)
-require __DIR__.'/auth.php';
+/*
+|--------------------------------------------------------------------------
+| IMPORTANTE
+|--------------------------------------------------------------------------
+| No incluyas aquí require 'auth.php' si define /login o /register con blades,
+| porque chocará con las rutas Inertia de arriba (y te dará 500).
+| Si necesitas reset de contraseña/verificación, limpia ese archivo.
+*/
+// require __DIR__.'/settings.php';
+// require __DIR__.'/auth.php';

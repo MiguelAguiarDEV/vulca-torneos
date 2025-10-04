@@ -8,7 +8,7 @@ interface NavigationItem {
 }
 
 const navigationItems: NavigationItem[] = [
-    { name: 'Inicio', href: '/admin', icon: Home },
+    { name: 'Inicio', href: '/admin/dashboard', icon: Home },
     { name: 'Juegos', href: '/admin/games', icon: Gamepad2 },
     { name: 'Torneos', href: '/admin/tournaments', icon: Trophy },
     { name: 'Inscripciones', href: '/admin/registrations', icon: Users },
