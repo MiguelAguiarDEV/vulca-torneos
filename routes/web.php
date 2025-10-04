@@ -2,10 +2,7 @@
 
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\TournamentController;
-use App\Http\Controllers\RegistrationController;
-
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminGamesController;
@@ -42,10 +39,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tournaments/{tournament}/register', [TournamentController::class, 'register'])->name('tournaments.register');
     Route::delete('/tournaments/{tournament}/unregister', [TournamentController::class, 'unregister'])->name('tournaments.unregister');
 });
-
-
-
-
 
 
 // Dashboard route - protected by auth middleware

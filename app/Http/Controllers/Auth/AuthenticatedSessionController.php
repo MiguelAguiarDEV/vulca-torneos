@@ -21,8 +21,8 @@ class AuthenticatedSessionController extends Controller
             'status' => session('status'),
         ]);
     }
-    
-    
+
+
 
     /**
      * Handle an incoming authentication request.
@@ -46,6 +46,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

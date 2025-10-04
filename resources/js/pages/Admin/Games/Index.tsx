@@ -10,15 +10,9 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
+import { Game } from '@/types';
 import { Gamepad, Plus } from 'lucide-react';
 import React from 'react';
-
-interface Game {
-    id: number;
-    name: string;
-    description: string | null;
-    image: string;
-}
 
 interface IndexProps {
     games: Game[];

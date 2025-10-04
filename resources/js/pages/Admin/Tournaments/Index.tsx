@@ -10,34 +10,9 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
+import { Game, Tournament } from '@/types';
 import { Plus, Trophy } from 'lucide-react';
 import React from 'react';
-
-interface Game {
-    id: number;
-    name: string;
-    image: string | null;
-}
-
-interface Tournament {
-    id: number;
-    name: string;
-    description: string | null;
-    image: string | null;
-    game_id: number;
-    game: Game;
-    start_date: string;
-    end_date: string | null;
-    registration_start: string | null;
-    registration_end: string | null;
-    entry_fee: number | null;
-    has_registration_limit: boolean;
-    registration_limit: number | null;
-    status: string;
-    registrations_count: number;
-    available_spots?: number | null;
-    registration_progress?: number | null;
-}
 
 interface IndexProps {
     tournaments: Tournament[];
@@ -295,7 +270,13 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
 
             {/* Edit modal */}
             <FormModal show={editModal.isOpen} title="Editar Torneo" onClose={editModal.close} onSubmit={editModal.handleSubmit} submitText="Guardar">
-                <TournamentForm values={editModal.values} errors={editModal.errors} onChange={editModal.setValue} image={editImage} games={games} />
+                <TournamentForm
+                    values={editModal.values}
+                    errors={editModal.errors}
+                    onChange={editModal.setValue as <K extends keyof TournamentFormValues>(key: K, value: TournamentFormValues[K]) => void}
+                    image={editImage}
+                    games={games}
+                />
             </FormModal>
         </AdminLayout>
     );

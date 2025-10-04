@@ -7,113 +7,96 @@ use App\Http\Requests\Admin\StoreTournamentRequest;
 use App\Http\Requests\Admin\UpdateTournamentRequest;
 use App\Models\Tournament;
 use App\Models\Game;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Inertia\Inertia;
 
 class AdminTournamentController extends Controller
 {
-    /**
-     * =====================================================
-     * MÉTODOS DE RECURSO PARA ADMIN (Protegidos por middleware)
-     * =====================================================
-     */
-
-    /**
-     * Muestra la lista de torneos en el panel de administración.
-     */
     public function index()
     {
         $tournaments = Tournament::with(['game', 'registrations'])
             ->withCount('registrations')
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         $games = Game::select('id', 'name', 'image')->get();
-            
+
         return Inertia::render('Admin/Tournaments/Index', [
             'tournaments' => $tournaments,
             'games' => $games,
         ]);
     }
 
-    /**
-     * Almacena un nuevo torneo creado desde el panel de administración.
-     */
     public function store(StoreTournamentRequest $request)
     {
-        $validatedData = $request->validated();
+        $data = $request->validated();
 
-        // Set registration_limit to null if has_registration_limit is false
-        if (!$validatedData['has_registration_limit']) {
-            $validatedData['registration_limit'] = null;
+        if (!$data['has_registration_limit']) {
+            $data['registration_limit'] = null;
         }
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/tournaments'), $imageName);
-            $validatedData['image'] = '/uploads/tournaments/' . $imageName;
+            $data['image'] = $this->uploadImage($request->file('image'), 'tournaments');
         }
 
-        Tournament::create($validatedData);
+        Tournament::create($data);
 
-        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo creado exitosamente.');
+        return redirect()->route('admin.tournaments.index')
+            ->with('success', 'Torneo creado exitosamente.');
     }
 
-    /**
-     * Muestra los detalles de un torneo en el panel de administración.
-     */
     public function show(string $id)
     {
-        $tournament = Tournament::findOrFail($id);
-        $tournament->load([
+        $tournament = Tournament::with([
             'game',
-            'registrations.user' => function ($query) {
-                $query->select('id', 'name', 'email');
-            }
-        ]);
+            'registrations.user' => fn($q) => $q->select('id', 'name', 'email')
+        ])->findOrFail($id);
+
+        // IMPORTANTE: Pasar users y games para los modales
+        $users = User::select('id', 'name', 'email')->orderBy('name')->get();
+        $games = Game::select('id', 'name', 'image')->orderBy('name')->get();
 
         return Inertia::render('Admin/Tournaments/Show', [
             'tournament' => $tournament,
             'registrations' => $tournament->registrations,
+            'users' => $users,
+            'games' => $games,
         ]);
     }
 
-    /**
-     * Actualiza un torneo existente desde el panel de administración.
-     */
     public function update(UpdateTournamentRequest $request, string $id)
     {
         $tournament = Tournament::findOrFail($id);
+        $data = $request->validated();
 
-        $validatedData = $request->validated();
-
-        // Set registration_limit to null if has_registration_limit is false
-        if (!$validatedData['has_registration_limit']) {
-            $validatedData['registration_limit'] = null;
+        if (!$data['has_registration_limit']) {
+            $data['registration_limit'] = null;
         }
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/tournaments'), $imageName);
-            $validatedData['image'] = '/uploads/tournaments/' . $imageName;
+            $data['image'] = $this->uploadImage($request->file('image'), 'tournaments');
         } else {
-            unset($validatedData['image']);
+            unset($data['image']);
         }
 
-        $tournament->update($validatedData);
+        $tournament->update($data);
 
-        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo actualizado exitosamente.');
+        return redirect()->route('admin.tournaments.index')
+            ->with('success', 'Torneo actualizado exitosamente.');
     }
 
-    /**
-     * Elimina un torneo desde el panel de administración.
-     */
     public function destroy(string $id)
     {
-        $tournament = Tournament::findOrFail($id);
-        $tournament->delete();
-        return redirect()->route('admin.tournaments.index')->with('success', 'Torneo eliminado exitosamente.');
+        Tournament::findOrFail($id)->delete();
+
+        return redirect()->route('admin.tournaments.index')
+            ->with('success', 'Torneo eliminado exitosamente.');
+    }
+
+    private function uploadImage($file, string $folder): string
+    {
+        $name = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path("uploads/{$folder}"), $name);
+        return "/uploads/{$folder}/{$name}";
     }
 }
