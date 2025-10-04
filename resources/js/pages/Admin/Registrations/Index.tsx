@@ -168,7 +168,7 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
         }
         data.append('payment_notes', notes);
 
-        update(registration.id, data, () => {}, false);
+        update(registration.id, data, () => {});
     };
 
     const clearFilters = () => {

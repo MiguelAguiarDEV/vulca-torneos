@@ -3,9 +3,11 @@ import type { LucideIcon } from 'lucide-react';
 
 interface StatsCardProps {
     icon: LucideIcon;
+    iconColor?: string;
+    borderColor?: string;
     title: string;
     value: number | string;
-    subtitle: string;
+    subtitle?: string;
     variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
 }
 

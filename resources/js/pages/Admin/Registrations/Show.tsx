@@ -88,7 +88,7 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
         }
         data.append('payment_notes', notes);
 
-        update(registration.id, data, () => {}, false);
+        update(registration.id, data, () => {});
     };
 
     const getPaymentStatusColor = (status: string) => {
