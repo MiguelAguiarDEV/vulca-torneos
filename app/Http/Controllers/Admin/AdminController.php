@@ -4,28 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class AdminController extends Controller
 {
     /**
      * Show admin dashboard
+     *
+     * Optimized: Removed redundant authentication and authorization checks.
+     * These are now handled by middleware (auth and admin) in routes.
+     * This follows Single Responsibility Principle and reduces execution time.
+     *
+     * @return Response
      */
-    public function index()
+    public function index(): Response
     {
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('message', 'Please log in to access the admin dashboard.');
-        }
-
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Access denied. Admins only.');
-        }
-
-        try {
-            return Inertia::render('Admin/index');
-        } catch (\Exception $e) {
-            \Log::error('Admin dashboard error: ' . $e->getMessage());
-            return response()->view('errors.500', [], 500);
-        }
+        return Inertia::render('Admin/index');
     }
-
 }
