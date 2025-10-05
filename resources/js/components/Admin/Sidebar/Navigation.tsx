@@ -18,8 +18,8 @@ export default function Navigation() {
     const { url: currentPath } = usePage();
 
     return (
-        <nav className="px-4">
-            <ul className="space-y-2">
+        <nav className="px-4 py-4">
+            <ul className="space-y-3">
                 {navigationItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = item.href === '/admin' ? currentPath === item.href : currentPath.startsWith(item.href);
@@ -28,17 +28,18 @@ export default function Navigation() {
                         <li key={item.name}>
                             <Link
                                 href={item.href}
-                                className={`flex items-center gap-4 rounded-md px-4 py-2 text-sm ${
+                                className={`group relative flex items-center gap-3 rounded-xl border-[3px] border-ink px-4 py-3 text-sm font-black tracking-tight uppercase transition-all duration-200 ${
                                     isActive
-                                        ? 'bg-secondary-lighter font-medium text-white'
-                                        : 'text-white/50 transition-colors duration-200 ease-in-out hover:bg-primary/10 hover:text-primary'
-                                }`}
+                                        ? 'bg-diagonal-lines text-panel shadow-[inset_2px_2px_0_rgba(255,255,255,0.4),inset_-2px_-2px_0_rgba(10,10,10,0.15),3px_3px_0_var(--color-ink)]'
+                                        : 'bg-soft text-panel shadow-[2px_2px_0_var(--color-ink)] hover:translate-y-[1px] hover:bg-brand hover:text-ink hover:shadow-[inset_2px_2px_0_rgba(255,255,255,0.2),2px_2px_0_var(--color-ink)]'
+                                } `}
                             >
-                                <Icon className="h-4 w-4" />
+                                <Icon className="h-5 w-5" />
                                 {item.name}
                                 {isActive && (
-                                    <span className="relative ml-auto h-2 w-2 rounded-full bg-accent">
-                                        <span className="absolute inset-0 rounded-full bg-accent opacity-90 blur-sm" />
+                                    <span className="relative ml-auto flex h-3 w-3">
+                                        <span className="absolute inline-flex h-full w-full rounded-full bg-ink opacity-75" />
+                                        <span className="relative inline-flex h-3 w-3 rounded-full border-2 border-ink bg-brand" />
                                     </span>
                                 )}
                             </Link>

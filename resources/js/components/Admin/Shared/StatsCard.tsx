@@ -14,7 +14,7 @@ export function StatsCard({ icon: Icon, title, value, subtitle }: StatsCardProps
             {/* <div className="absolute top-0 right-0 left-0 h-2 bg-brand shadow-[inset_0_2px_0_rgba(255,255,255,0.3),inset_0_-2px_0_rgba(0,0,0,0.3)]" /> */}
 
             {/* Icon badge */}
-            <Icon className="absolute -bottom-8 -left-6 -z-10 h-24 w-24 rotate-20 text-panel opacity-8" />
+            {/* <Icon className="absolute -bottom-8 -left-6 -z-10 h-24 w-24 rotate-20 text-panel opacity-8" /> */}
 
             {/* Title */}
             <div className="capitalize">
