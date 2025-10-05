@@ -18,16 +18,12 @@ body {
 
 /* Colores semánticos para Vulca Torneos */
 @theme {
-    /* Primary - Naranja más refinado */
-    --color-primary: #f97316; /* Naranja más limpio */
-    --color-primary-dark: #ea580c; /* Mejor contraste */
-    --color-primary-light: #fed7aa; /* Más suave y elegante */
-    --color-primary-alpha-10: #f973161a;
-    --color-primary-alpha-20: #f9731633;
-
-    --color-primary-darker: #c2410c; /* Más oscuro pero vibrante */
-    --color-primary-lighter: #ffedd5; /* Muy suave */
-    --color-accent: #fb923c; /* Naranja medio vibrante */
+    --color-brand: #f4a52e; /* naranja vulca */
+    --color-brand-dark: #d4820d;
+    --color-ink: #0a0a0a; /* negro profundo para bordes/headers */
+    --color-panel: #111113; /* negro cálido para cards */
+    --color-panel-2: #1b1b1f; /* leve variación para capas */
+    --color-paper: #fff6e6; /* crema muy suave para detalles */
 
     /* Secondary - Tonos oscuros más refinados */
     --color-secondary: #27272a; /* Zinc-800 más neutral */
@@ -45,6 +41,123 @@ body {
     --color-text-primary: #fafafa; /* Zinc-50 */
     --color-text-secondary: #e4e4e7; /* Zinc-200 */
     --color-text-muted: #a1a1aa; /* Zinc-400 */
+
+    /* === Fondo (blancos/grises cálidos, tipo stone) === */
+    --color-paper: #fffdf7; /* blanco cálido "papel" (ideal para el body) */
+    --color-canvas: #fafaf9; /* stone-50: base muy suave */
+    --color-soft: #f5f5f4; /* stone-100: secciones, contenedores amplios */
+    --color-muted: #e7e5e4; /* stone-200: barras, list headers, split panes */
+    --color-subtle: #d6d3d1; /* stone-300: líneas gruesas, chips neutros */
+
+    /* Elevaciones y overlays */
+    --color-bg-elevated: #ffffff; /* tarjetas limpias sobre canvas */
+    --color-bg-overlay: rgba(12, 12, 12, 0.06); /* velo/hover muy sutil */
+    --color-bg-vignette: rgba(0, 0, 0, 0.08); /* viñeteado suave en bordes/gradientes */
+
+    /* Bordes/rings sobre fondo claro (coherentes con estilo brutalist) */
+    --color-border-soft: #d4d4d4; /* borde fino en superficies claras */
+    --color-border-strong: #0a0a0a; /* borde negro para tarjetas “cómic” */
+    --color-ring-accent: rgba(250, 204, 21, 0.35); /* ring amarillo sutil (primary) */
+}
+
+@layer utilities {
+    /* ========== HALFTONE PATTERNS ========== */
+
+    /* Halftone clásico - círculos naranjas rotados */
+    .bg-halftone {
+        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.3" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23f4a52e"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
+        background-size: 15px;
+        background-color: var(--color-paper);
+    }
+
+    /* Halftone sutil */
+    .bg-halftone-subtle {
+        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(20)" opacity="0.2" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23f4a52e"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
+        background-size: 18px;
+        background-color: var(--color-paper);
+    }
+
+    /* Halftone intenso */
+    .bg-halftone-intense {
+        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(30)" opacity="0.5" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23d4820d"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
+        background-size: 12px;
+        background-color: var(--color-paper);
+    }
+
+    /* ========== LÍNEAS DIAGONALES ========== */
+
+    /* Patrón de líneas diagonales cruzadas - estilo ítem 2 del ejemplo */
+    .bg-diagonal-cross {
+        background:
+            linear-gradient(-60deg, #777, #000), repeating-linear-gradient(30deg, #000, #999, #000 5px),
+            repeating-linear-gradient(-60deg, #000, #999, #000 5px);
+        background-blend-mode: screen, difference;
+        filter: contrast(20) blur(0.5px);
+    }
+
+    /* Líneas diagonales simples */
+    .bg-diagonal-lines {
+        background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(244, 165, 46, 0.15) 8px, rgba(244, 165, 46, 0.15) 10px);
+        background-color: var(--color-paper);
+    }
+
+    /* Líneas diagonales inversas */
+    .bg-diagonal-lines-inverse {
+        background: repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(212, 130, 13, 0.15) 8px, rgba(212, 130, 13, 0.15) 10px);
+        background-color: var(--color-paper);
+    }
+
+    /* ========== PATRONES RADIALES/CÓNICOS ========== */
+
+    /* Patrón radial de explosión - estilo ítem 1 del ejemplo */
+    .bg-burst-red {
+        background:
+            radial-gradient(circle at 60% 50%, #ff4a4a 0 40px, transparent 100px 100%),
+            repeating-conic-gradient(from 0deg at 60% 50%, #ff4a4a 0 6deg, #ed3535 0 12deg);
+    }
+
+    /* Patrón radial naranja */
+    .bg-burst-orange {
+        background:
+            radial-gradient(circle at 90% 90%, var(--color-brand) 0 0, transparent 50px 100%),
+            repeating-conic-gradient(from 0deg at 90% 90%, var(--color-brand) 0 6deg, var(--color-white) 0 12deg);
+    }
+
+    /* ========== PATRONES DE CUADRÍCULA ========== */
+
+    /* Grid simple de puntos */
+    .bg-dot-grid {
+        background-image: radial-gradient(circle, var(--color-brand) 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: var(--color-paper);
+    }
+
+    /* ========== COMBINACIONES ========== */
+
+    /* Halftone + fondo de color */
+    .bg-halftone-brand {
+        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
+        background-size: 15px;
+        background-color: var(--color-brand);
+    }
+
+    .bg-halftone-danger {
+        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
+        background-size: 15px;
+        background-color: var(--color-danger);
+    }
+
+    .bg-halftone-success {
+        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
+        background-size: 15px;
+        background-color: var(--color-success);
+    }
+
+    .bg-halftone-info {
+        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
+        background-size: 15px;
+        background-color: var(--color-info);
+    }
 }
 
 /* Estilo global para botones */

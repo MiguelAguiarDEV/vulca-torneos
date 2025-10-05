@@ -201,16 +201,14 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
             <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row">
                 <StatsCard
                     icon={Trophy}
-                    title="Total de Torneos"
+                    title="Torneos"
                     value={tournaments.length}
-                    subtitle={
-                        tournaments.length === 0 ? 'Ningún torneo creado' : tournaments.length === 1 ? 'Torneo disponible' : 'Torneos disponibles'
-                    }
+                    subtitle={tournaments.length === 0 ? 'Ningún torneo creado' : tournaments.length === 1 ? 'Torneo disponible' : 'disponibles'}
                 />
 
                 <button
                     onClick={() => createModal.open()}
-                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 font-semibold text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary-dark hover:shadow-xl"
+                    className="bg-primary hover:bg-primary-dark inline-flex items-center justify-center rounded-lg px-6 py-3 font-semibold text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                 >
                     <Plus className="mr-2 h-5 w-5" />
                     Crear Nuevo Torneo

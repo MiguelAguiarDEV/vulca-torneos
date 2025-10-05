@@ -11,7 +11,7 @@ import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
 import { Game } from '@/types';
-import { Gamepad, Plus } from 'lucide-react';
+import { Gamepad, Gamepad2, Plus } from 'lucide-react';
 import React from 'react';
 
 interface IndexProps {
@@ -94,18 +94,19 @@ const Index: React.FC<IndexProps> = ({ games }) => {
             {/* Header with stats and create button */}
             <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row">
                 <StatsCard
-                    icon={Gamepad}
-                    title="Total de Juegos"
+                    icon={Gamepad2}
+                    title="Juegos"
                     value={games.length}
-                    subtitle={games.length === 0 ? 'Ningún juego creado' : games.length === 1 ? 'Juego disponible' : 'Juegos disponibles'}
+                    subtitle={games.length === 0 ? 'Ningún juego creado' : games.length === 1 ? 'Juego disponible' : 'disponibles'}
                 />
-
                 <button
                     onClick={() => createModal.open()}
-                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 font-semibold text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary-dark hover:shadow-xl"
+                    className="from-primary to-primary-dark focus:ring-primary/50 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-b px-6 py-3 font-semibold text-secondary shadow-[0_2px_6px_rgba(249,115,22,0.25)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_4px_12px_rgba(249,115,22,0.35)] focus:ring-2 focus:outline-none active:scale-95"
                 >
-                    <Plus className="mr-2 h-5 w-5" />
-                    Crear Nuevo Juego
+                    <span className="relative z-10 flex items-center gap-2 text-[15px] leading-none font-medium">
+                        <Plus className="h-4 w-4 opacity-90" />
+                        <span>Crear Nuevo Juego</span>
+                    </span>
                 </button>
             </div>
 
