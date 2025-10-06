@@ -1,14 +1,4 @@
 import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { XCircle } from 'lucide-react';
 
 interface Tournament {
   id: number;
@@ -39,59 +29,70 @@ export default function PaymentCancelled({
     <>
       <Head title="Pago cancelado" />
 
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-          <Card>
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100">
-                <XCircle className="h-10 w-10 text-yellow-600" />
-              </div>
-              <CardTitle className="text-2xl">Pago cancelado</CardTitle>
-              <CardDescription>
-                El proceso de pago ha sido cancelado
-              </CardDescription>
-            </CardHeader>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '3rem 1rem' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
+            <div style={{ width: '64px', height: '64px', backgroundColor: '#fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <svg style={{ width: '40px', height: '40px', color: '#d97706' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </div>
 
-            <CardContent className="space-y-4">
-              <div className="rounded-lg bg-yellow-50 p-4">
-                <p className="text-sm text-yellow-800">
-                  No se ha procesado ningún cargo. Tu inscripción al torneo{' '}
-                  <span className="font-semibold">{tournament.name}</span> está pendiente
-                  de pago.
-                </p>
-              </div>
+            <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '0.5rem' }}>Pago cancelado</h1>
+            <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
+              El proceso de pago ha sido cancelado
+            </p>
 
-              <div className="border-t border-gray-200 pt-4">
-                <p className="text-sm text-gray-600">
-                  Puedes intentar realizar el pago nuevamente cuando estés listo. Tu
-                  reserva de inscripción se mantendrá activa.
-                </p>
-              </div>
+            <div style={{ padding: '1rem', backgroundColor: '#fef3c7', borderRadius: '6px', marginBottom: '1.5rem' }}>
+              <p style={{ fontSize: '14px', color: '#92400e' }}>
+                No se ha procesado ningún cargo. Tu inscripción al torneo{' '}
+                <span style={{ fontWeight: '600' }}>{tournament.name}</span> está pendiente de pago.
+              </p>
+            </div>
 
-              <div className="rounded-lg bg-blue-50 p-4">
-                <p className="text-sm text-blue-800">
-                  Si tienes algún problema con el pago, no dudes en contactarnos para
-                  obtener ayuda.
-                </p>
-              </div>
-            </CardContent>
+            <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem', marginBottom: '1.5rem' }}>
+              <p style={{ fontSize: '14px', color: '#6b7280' }}>
+                Puedes intentar realizar el pago nuevamente cuando estés listo. Tu reserva de inscripción se mantendrá activa.
+              </p>
+            </div>
 
-            <CardFooter className="flex gap-4">
-              <Button asChild variant="outline" className="flex-1">
-                <Link href={route('tournaments.show', tournament.slug)}>
-                  Volver al torneo
-                </Link>
-              </Button>
-              <Button
-                asChild
-                className="flex-1"
+            <div style={{ padding: '1rem', backgroundColor: '#dbeafe', borderRadius: '6px', marginBottom: '2rem' }}>
+              <p style={{ fontSize: '14px', color: '#1e40af' }}>
+                Si tienes algún problema con el pago, no dudes en contactarnos para obtener ayuda.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+              <Link
+                href={`/registrations/${registration.id}/checkout`}
+                style={{
+                  display: 'block',
+                  padding: '12px 24px',
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '6px',
+                  fontWeight: '500'
+                }}
               >
-                <Link href={route('registration.payment.checkout', registration.id)}>
-                  Intentar de nuevo
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
+                Intentar de nuevo
+              </Link>
+              <Link
+                href={`/tournaments/${tournament.slug}`}
+                style={{
+                  display: 'block',
+                  padding: '12px 24px',
+                  backgroundColor: 'white',
+                  color: '#374151',
+                  textDecoration: 'none',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px'
+                }}
+              >
+                Volver al torneo
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </>

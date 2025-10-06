@@ -57,15 +57,15 @@ class TournamentController extends Controller
     /**
      * Muestra la página de detalles de un torneo público.
      */
-    public function publicShow(string $id)
+    public function publicShow(Tournament $tournament)
     {
-        $tournament = Tournament::findOrFail($id);
         $tournament->load([
             'game',
             'registrations.user' => function ($query) {
                 $query->select('id', 'name', 'email');
             }
         ]);
+        $tournament->loadCount('registrations');
 
         $userRegistration = null;
         if (auth()->check()) {
@@ -77,7 +77,10 @@ class TournamentController extends Controller
         return Inertia::render('Tournaments/Show', [
             'tournament' => $tournament,
             'userRegistration' => $userRegistration,
-            'canRegister' => $this->canUserRegister($tournament)
+            'canRegister' => $this->canUserRegister($tournament),
+            'auth' => [
+                'user' => auth()->user()
+            ]
         ]);
     }
 
@@ -112,21 +115,31 @@ class TournamentController extends Controller
             // Crear la inscripción
             $registration = $tournament->registrations()->create([
                 'user_id' => $user->id,
-                'registration_date' => now(),
-                'payment_status' => $tournament->entry_fee > 0 ? 'pending' : 'completed',
-                'amount_paid' => $tournament->entry_fee ?? 0,
+                'registered_at' => now(),
+                'status' => 'pending',
+                'payment_status' => $tournament->entry_fee > 0 ? 'pending' : 'confirmed',
+                'payment_method' => $tournament->entry_fee > 0 ? 'stripe' : 'free',
+                'amount' => $tournament->entry_fee ?? 0,
             ]);
 
-            return response()->json([
-                'message' => 'Te has registrado exitosamente en el torneo.',
-                'registration' => $registration->load('user'),
-                'tournament' => $tournament->fresh(['registrations.user'])->withCount('registrations')
-            ]);
+            // Si el torneo tiene costo, redirigir a checkout
+            if ($tournament->entry_fee > 0) {
+                return redirect()->route('registration.payment.checkout', $registration->id)
+                    ->with('success', 'Inscripción iniciada. Por favor completa el pago.');
+            }
+
+            // Si es gratis, confirmar directamente
+            $registration->confirm();
+
+            return redirect()->route('tournaments.show', $tournament->slug)
+                ->with('success', 'Te has registrado exitosamente en el torneo.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error al registrarte en el torneo. Inténtalo de nuevo.'
-            ], 500);
+            // Log del error para debugging
+            \Log::error('Error en inscripción: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Error al registrarte: ' . $e->getMessage());
         }
     }
 
