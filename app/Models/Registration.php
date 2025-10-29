@@ -30,6 +30,7 @@ class Registration extends Model
     const PAYMENT_CASH = 'cash';
     const PAYMENT_TRANSFER = 'transfer';
     const PAYMENT_CARD = 'card';
+    const PAYMENT_STRIPE = 'stripe';
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +48,9 @@ class Registration extends Model
         'payment_notes',
         'payment_confirmed_at',
         'payment_confirmed_by',
+        'stripe_payment_intent_id',
+        'stripe_checkout_session_id',
+        'stripe_payment_status',
     ];
 
     /**
@@ -120,6 +124,7 @@ class Registration extends Model
             self::PAYMENT_CASH,
             self::PAYMENT_TRANSFER,
             self::PAYMENT_CARD,
+            self::PAYMENT_STRIPE,
         ];
     }
 
@@ -262,5 +267,37 @@ class Registration extends Model
             'payment_confirmed_by' => $confirmedBy ?: auth()->id(),
             'status' => self::STATUS_CONFIRMED,
         ]);
+    }
+
+    /**
+     * Check if payment is via Stripe.
+     */
+    public function isStripePayment()
+    {
+        return $this->payment_method === self::PAYMENT_STRIPE;
+    }
+
+    /**
+     * Mark payment as failed.
+     */
+    public function failPayment()
+    {
+        $this->update([
+            'payment_status' => self::PAYMENT_FAILED,
+        ]);
+    }
+
+    /**
+     * Update Stripe payment status.
+     */
+    public function updateStripePaymentStatus($status, $paymentIntentId = null)
+    {
+        $data = ['stripe_payment_status' => $status];
+
+        if ($paymentIntentId) {
+            $data['stripe_payment_intent_id'] = $paymentIntentId;
+        }
+
+        $this->update($data);
     }
 }

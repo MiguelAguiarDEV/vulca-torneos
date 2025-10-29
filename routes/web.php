@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminGamesController;
 use App\Http\Controllers\Admin\AdminTournamentController;
 use App\Http\Controllers\Admin\AdminRegistrationController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,9 @@ Route::get('/tournaments/{tournament}', [TournamentController::class, 'publicSho
 
 // Tournaments por juego
 Route::get('/game/{game}', [GameController::class, 'gameTournaments'])->name('games.tournaments');
+
+// Webhook de Stripe (sin autenticación)
+Route::post('/webhook/stripe', [PaymentController::class, 'webhook'])->name('stripe.webhook');
 
 
 /*
@@ -58,6 +62,14 @@ Route::middleware('auth')->group(function () {
     // Inscribirse / darse de baja en un torneo
     Route::post('/tournaments/{tournament}/register', [TournamentController::class, 'register'])->name('tournaments.register');
     Route::delete('/tournaments/{tournament}/unregister', [TournamentController::class, 'unregister'])->name('tournaments.unregister');
+
+    // Pagos con Stripe
+    Route::prefix('registrations/{registration}')->as('registration.')->group(function () {
+        Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+        Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('payment.create-session');
+        Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+        Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+    });
 });
 
 
