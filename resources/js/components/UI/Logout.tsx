@@ -31,7 +31,7 @@ export default function Logout({ textIsActive }: LogoutProps) {
                 <>
                     <LogOut className="h-4 w-4 transform transition-transform duration-200 group-hover:-translate-x-30" />
                     <p className="transform transition-transform duration-200 group-hover:-translate-x-8">Cerrar sesión</p>
-                    <LogOut className="h-4 w-4 translate-x-30 transform transition-transform duration-200 group-hover:translate-x-12" />
+                    <LogOut className="h-4 w-4 translate-x-30 transform transition-transform duration-200 group-hover:translate-x-18" />
                 </>
             ) : (
                 <LogOut className="h-4 w-4 transform transition-transform duration-200 group-hover:translate-x-4" />

@@ -55,27 +55,27 @@ export default function ThemeToggle({ textIsActive }: ThemeToggleProps) {
                 <>
                     {isLight ? (
                         <>
-                            <Sun className="h-4 w-4 transform transition-transform duration-200 group-hover:-translate-x-3" />
-                            <p className="transform transition-transform duration-200 group-hover:-translate-x-2">Modo claro</p>
-                            <Moon className="h-4 w-4 transform transition-transform duration-200 group-hover:translate-x-3" />
+                            <Sun className="h-4 w-4 transform transition-transform duration-200 group-hover:-translate-x-30" />
+                            <p className="transform transition-transform duration-200 group-hover:-translate-x-8">Modo claro</p>
+                            <Moon className="h-4 w-4 translate-x-30 transform transition-transform duration-200 group-hover:translate-x-20" />
                         </>
                     ) : (
                         <>
-                            <Moon className="h-4 w-4 transform transition-transform duration-200 group-hover:-translate-x-3" />
-                            <p className="transform transition-transform duration-200 group-hover:-translate-x-2">Modo oscuro</p>
-                            <Sun className="h-4 w-4 transform transition-transform duration-200 group-hover:translate-x-3" />
+                            <Moon className="h-4 w-4 transform transition-transform duration-200 group-hover:-translate-x-30" />
+                            <p className="transform transition-transform duration-200 group-hover:-translate-x-8">Modo oscuro</p>
+                            <Sun className="h-4 w-4 translate-x-30 transform transition-transform duration-200 group-hover:translate-x-18" />
                         </>
                     )}
                 </>
             ) : (
                 <div className="relative h-4 w-4">
                     <Sun
-                        className={`absolute inset-0 h-4 w-4 transition-all duration-300 ease-in-out group-hover:scale-110 ${
+                        className={`absolute inset-0 h-4 w-4 transform transition-transform duration-200 group-hover:scale-110 ${
                             isLight ? 'scale-100 rotate-0 opacity-100' : 'scale-0 rotate-180 opacity-0'
                         }`}
                     />
                     <Moon
-                        className={`absolute inset-0 h-4 w-4 transition-all duration-300 ease-in-out group-hover:scale-110 ${
+                        className={`absolute inset-0 h-4 w-4 transform transition-transform duration-200 group-hover:scale-110 ${
                             isLight ? 'scale-0 -rotate-180 opacity-0' : 'scale-100 rotate-0 opacity-100'
                         }`}
                     />
