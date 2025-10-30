@@ -34,7 +34,7 @@ export default function ThemeToggle({ textIsActive }: ThemeToggleProps) {
         };
 
         if ('startViewTransition' in document) {
-            document.startViewTransition(() => applyTheme());
+            (document as any).startViewTransition(() => applyTheme());
         } else {
             applyTheme();
         }

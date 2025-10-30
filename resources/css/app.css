@@ -184,13 +184,15 @@
         letter-spacing: 0.03em;
     }
 
+    /* Ajusta el esquema de color del navegador según la preferencia del sistema */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            color-scheme: dark;
+        }
+    }
     @media (prefers-color-scheme: light) {
-        body {
-            background-color: var(--color-primary);
-            color: var(--color-t-primary);
-            transition:
-                background-color 0.6s cubic-bezier(0.05, 0.7, 0.1, 1),
-                color 0.6s cubic-bezier(0.05, 0.7, 0.1, 1);
+        :root {
+            color-scheme: light;
         }
     }
 
