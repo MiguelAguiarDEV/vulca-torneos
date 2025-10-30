@@ -27,6 +27,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => AdminMiddleware::class,
         ]);
+
+        // Excluir webhook de Stripe de la verificación CSRF
+        $middleware->validateCsrfTokens(except: [
+            'webhook/stripe',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
