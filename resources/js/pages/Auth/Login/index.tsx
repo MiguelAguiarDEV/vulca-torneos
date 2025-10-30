@@ -32,11 +32,11 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
             <Head title="Iniciar Sesión" />
 
             {/* Contenedor a viewport completo sin desbordes */}
-            <div className="relative min-h-dvh overflow-hidden bg-gradient-to-br from-secondary-dark via-secondary to-secondary-dark">
+            <div className="from-secondary-dark via-secondary to-secondary-dark relative min-h-dvh overflow-hidden bg-gradient-to-br">
                 {/* Brillos decorativos SIN overflow */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-                    <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+                    <div className="bg-primary/10 absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl" />
+                    <div className="bg-primary/10 absolute -right-24 -bottom-24 h-72 w-72 rounded-full blur-3xl" />
                 </div>
 
                 {/* Grid para centrar perfecto y limitar ancho general */}
@@ -50,14 +50,14 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
                             <div className="flex items-center gap-2 text-sm">
                                 <Link
                                     href={route('login')}
-                                    className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-text-primary transition-all hover:border-primary hover:bg-primary/20"
+                                    className="border-primary/30 bg-primary/10 text-text-primary hover:border-primary hover:bg-primary/20 rounded-lg border px-3 py-1.5 transition-all"
                                 >
                                     Iniciar Sesión
                                 </Link>
                                 {canRegister && (
                                     <Link
                                         href={route('register')}
-                                        className="rounded-lg bg-primary px-3 py-1.5 font-semibold text-secondary shadow hover:bg-primary-dark"
+                                        className="bg-primary text-secondary hover:bg-primary-dark rounded-lg px-3 py-1.5 font-semibold shadow"
                                     >
                                         Registrarse
                                     </Link>
@@ -66,15 +66,15 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
                         </div>
 
                         {/* Card: limitada en altura para pantallas pequeñas, sin romper layout */}
-                        <div className="rounded-xl border-2 border-primary/30 bg-secondary/95 p-6 shadow-xl backdrop-blur">
+                        <div className="border-primary/30 bg-secondary/95 rounded-xl border-2 p-6 shadow-xl backdrop-blur">
                             <div className="mx-auto mb-6 text-center">
                                 <h2 className="text-3xl font-extrabold text-white drop-shadow">Iniciar Sesión</h2>
-                                <p className="mt-1 text-sm text-text-primary/70">Accede con tu cuenta para gestionar torneos</p>
+                                <p className="text-text-primary/70 mt-1 text-sm">Accede con tu cuenta para gestionar torneos</p>
                             </div>
 
                             {/* Si hay mensaje de estado, que no rompa el alto */}
                             {status && (
-                                <div className="mb-4 rounded-lg border border-info/30 bg-info/10 px-4 py-2 text-sm text-text-primary">{status}</div>
+                                <div className="border-info/30 bg-info/10 text-text-primary mb-4 rounded-lg border px-4 py-2 text-sm">{status}</div>
                             )}
 
                             {/* En pantallas muy pequeñas, permite scroll solo dentro de la card */}
@@ -105,7 +105,7 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword((v) => !v)}
-                                                className="absolute inset-y-0 right-2 my-1 inline-flex items-center rounded-md px-2 text-xs text-text-primary/80 hover:bg-secondary/60"
+                                                className="text-text-primary/80 hover:bg-secondary/60 absolute inset-y-0 right-2 my-1 inline-flex items-center rounded-md px-2 text-xs"
                                                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                                             >
                                                 {showPassword ? 'Ocultar' : 'Mostrar'}
@@ -114,10 +114,10 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
                                     </FormField>
 
                                     <div className="flex items-center justify-between">
-                                        <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-text-primary">
+                                        <label className="text-text-primary inline-flex cursor-pointer items-center gap-2 text-sm">
                                             <input
                                                 type="checkbox"
-                                                className="h-4 w-4 rounded border-primary/30 text-primary focus:ring-primary"
+                                                className="border-primary/30 text-primary focus:ring-primary h-4 w-4 rounded"
                                                 checked={data.remember}
                                                 onChange={(e) => setData('remember', e.target.checked)}
                                             />
@@ -125,7 +125,7 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
                                         </label>
 
                                         {canResetPassword && (
-                                            <Link href={route('password.request')} className="text-sm font-medium text-primary hover:text-primary/80">
+                                            <Link href={route('password.request')} className="text-primary hover:text-primary/80 text-sm font-medium">
                                                 ¿Olvidaste tu contraseña?
                                             </Link>
                                         )}
@@ -134,16 +134,16 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
                                     <button
                                         type="submit"
                                         disabled={processing}
-                                        className="mt-2 w-full rounded-lg bg-primary px-6 py-3 font-semibold text-secondary shadow-lg transition-all hover:scale-[1.01] hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-75"
+                                        className="bg-primary text-secondary hover:bg-primary-dark mt-2 w-full rounded-lg px-6 py-3 font-semibold shadow-lg transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-75"
                                     >
                                         {processing ? 'Entrando...' : 'Iniciar Sesión'}
                                     </button>
                                 </form>
 
                                 {canRegister && (
-                                    <p className="mt-6 text-center text-sm text-text-primary/80">
+                                    <p className="text-text-primary/80 mt-6 text-center text-sm">
                                         ¿No tienes cuenta?{' '}
-                                        <Link href={route('register')} className="font-semibold text-primary hover:text-primary/80">
+                                        <Link href={route('register')} className="text-primary hover:text-primary/80 font-semibold">
                                             Regístrate aquí
                                         </Link>
                                     </p>
@@ -152,7 +152,7 @@ const Login: React.FC<LoginProps> = ({ status, canResetPassword = true, canRegis
                         </div>
 
                         {/* Footer mini (opcional) */}
-                        <p className="mt-4 text-center text-xs text-text-primary/60">
+                        <p className="text-text-primary/60 mt-4 text-center text-xs">
                             © {new Date().getFullYear()} Vulca Torneos — Todos los derechos reservados
                         </p>
                     </div>

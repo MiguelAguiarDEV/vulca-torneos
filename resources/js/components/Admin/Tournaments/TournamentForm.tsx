@@ -143,9 +143,9 @@ export function TournamentForm({ values, errors, onChange, image, games }: Tourn
                         id="has_registration_limit"
                         checked={values.has_registration_limit}
                         onChange={(e) => onChange('has_registration_limit', e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        className="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
                     />
-                    <label htmlFor="has_registration_limit" className="ml-2 text-sm font-medium text-text-primary">
+                    <label htmlFor="has_registration_limit" className="text-text-primary ml-2 text-sm font-medium">
                         Establecer límite de inscripciones
                     </label>
                 </div>

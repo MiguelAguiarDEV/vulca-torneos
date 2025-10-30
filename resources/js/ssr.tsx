@@ -26,5 +26,5 @@ createServer((page) =>
 
             return <App {...props} />;
         },
-    }),
+    })
 );

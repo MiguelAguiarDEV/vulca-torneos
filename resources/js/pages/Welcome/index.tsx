@@ -13,10 +13,10 @@ const Welcome: React.FC = () => {
         <>
             <Head title="Bienvenido - Vulca Comics" />
 
-            <div className="relative min-h-dvh overflow-hidden bg-gradient-to-br from-secondary-dark via-secondary to-secondary-dark">
+            <div className="from-secondary-dark via-secondary to-secondary-dark relative min-h-dvh overflow-hidden bg-gradient-to-br">
                 <div className="pointer-events-none absolute inset-0">
-                    <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-                    <div className="absolute -right-32 -bottom-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+                    <div className="bg-primary/10 absolute -top-32 -left-32 h-96 w-96 rounded-full blur-3xl" />
+                    <div className="bg-primary/10 absolute -right-32 -bottom-32 h-96 w-96 rounded-full blur-3xl" />
                 </div>
 
                 <div className="relative z-10 flex min-h-dvh flex-col items-center justify-between px-6 py-8 text-center">
@@ -28,13 +28,13 @@ const Welcome: React.FC = () => {
                             <div className="flex gap-3">
                                 <Link
                                     href={route('login')}
-                                    className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-text-primary transition-all hover:border-primary hover:bg-primary/20"
+                                    className="border-primary/30 bg-primary/10 text-text-primary hover:border-primary hover:bg-primary/20 rounded-lg border px-4 py-2 text-sm font-medium transition-all"
                                 >
                                     Iniciar Sesión
                                 </Link>
                                 <Link
                                     href={route('register')}
-                                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-secondary shadow-lg hover:bg-primary-dark"
+                                    className="bg-primary text-secondary hover:bg-primary-dark rounded-lg px-4 py-2 text-sm font-semibold shadow-lg"
                                 >
                                     Registrarse
                                 </Link>
@@ -43,14 +43,14 @@ const Welcome: React.FC = () => {
                             <div className="flex items-center gap-3">
                                 <Link
                                     href={route(isAdmin ? 'admin.dashboard' : 'welcome')}
-                                    className="rounded-lg border border-primary/40 px-4 py-2 text-sm font-semibold text-text-primary transition-all hover:border-primary hover:bg-primary/20"
+                                    className="border-primary/40 text-text-primary hover:border-primary hover:bg-primary/20 rounded-lg border px-4 py-2 text-sm font-semibold transition-all"
                                 >
                                     {isAdmin ? 'Ir al panel' : 'Inicio'}
                                 </Link>
                                 <button
                                     onClick={() => post(route('logout'))}
                                     disabled={processing}
-                                    className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-secondary shadow-lg hover:bg-primary-dark disabled:opacity-70"
+                                    className="bg-primary text-secondary hover:bg-primary-dark rounded-lg px-4 py-2 text-sm font-semibold shadow-lg disabled:opacity-70"
                                 >
                                     Cerrar sesión
                                 </button>
@@ -63,7 +63,7 @@ const Welcome: React.FC = () => {
                         <h2 className="mb-4 text-5xl font-extrabold text-white drop-shadow-lg">
                             ¡Bienvenido a <span className="text-primary">Vulca Comics</span>!
                         </h2>
-                        <p className="max-w-2xl text-lg text-text-primary/80">
+                        <p className="text-text-primary/80 max-w-2xl text-lg">
                             Descubre un mundo lleno de torneos, cartas y héroes. Crea tu cuenta, participa en eventos y compite junto a otros fans.
                         </p>
 
@@ -72,13 +72,13 @@ const Welcome: React.FC = () => {
                                 <>
                                     <Link
                                         href={route('register')}
-                                        className="rounded-lg bg-primary px-6 py-3 text-lg font-semibold text-secondary shadow-lg transition-all hover:scale-[1.02] hover:bg-primary-dark"
+                                        className="bg-primary text-secondary hover:bg-primary-dark rounded-lg px-6 py-3 text-lg font-semibold shadow-lg transition-all hover:scale-[1.02]"
                                     >
                                         Crear Cuenta
                                     </Link>
                                     <Link
                                         href={route('login')}
-                                        className="rounded-lg border border-primary/40 px-6 py-3 text-lg font-semibold text-text-primary transition-all hover:border-primary hover:bg-primary/20"
+                                        className="border-primary/40 text-text-primary hover:border-primary hover:bg-primary/20 rounded-lg border px-6 py-3 text-lg font-semibold transition-all"
                                     >
                                         Ya tengo cuenta
                                     </Link>
@@ -87,14 +87,14 @@ const Welcome: React.FC = () => {
                                 <>
                                     <Link
                                         href={route(isAdmin ? 'admin.dashboard' : 'welcome')}
-                                        className="rounded-lg bg-primary px-6 py-3 text-lg font-semibold text-secondary shadow-lg transition-all hover:scale-[1.02] hover:bg-primary-dark"
+                                        className="bg-primary text-secondary hover:bg-primary-dark rounded-lg px-6 py-3 text-lg font-semibold shadow-lg transition-all hover:scale-[1.02]"
                                     >
                                         {isAdmin ? 'Ir al panel' : 'Seguir navegando'}
                                     </Link>
                                     <button
                                         onClick={() => post(route('logout'))}
                                         disabled={processing}
-                                        className="rounded-lg border border-primary/40 px-6 py-3 text-lg font-semibold text-text-primary transition-all hover:border-primary hover:bg-primary/20 disabled:opacity-70"
+                                        className="border-primary/40 text-text-primary hover:border-primary hover:bg-primary/20 rounded-lg border px-6 py-3 text-lg font-semibold transition-all disabled:opacity-70"
                                     >
                                         Cerrar sesión
                                     </button>
@@ -103,7 +103,7 @@ const Welcome: React.FC = () => {
                         </div>
                     </div>
 
-                    <footer className="mt-10 text-sm text-text-primary/60">
+                    <footer className="text-text-primary/60 mt-10 text-sm">
                         © {new Date().getFullYear()} Vulca Comics — Todos los derechos reservados
                     </footer>
                 </div>

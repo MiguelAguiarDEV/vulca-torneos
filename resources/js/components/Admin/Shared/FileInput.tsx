@@ -17,14 +17,14 @@ export function FileInput({ onChange, accept = 'image/*', preview }: FileInputPr
         <div>
             {preview && (
                 <div className="mb-4">
-                    <img src={preview} alt="Preview" className="h-24 w-24 rounded-lg border-2 border-primary/30 object-cover" />
+                    <img src={preview} alt="Preview" className="border-primary/30 h-24 w-24 rounded-lg border-2 object-cover" />
                 </div>
             )}
             <input
                 type="file"
                 accept={accept}
                 onChange={handleChange}
-                className="w-full text-sm text-text-primary/70 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-secondary file:shadow-lg hover:file:bg-primary-dark"
+                className="text-text-primary/70 file:bg-primary file:text-secondary hover:file:bg-primary-dark w-full text-sm file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:px-4 file:py-2 file:text-sm file:font-medium file:shadow-lg"
             />
         </div>
     );

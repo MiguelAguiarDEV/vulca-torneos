@@ -70,7 +70,7 @@ export function RegistrationForm({ values, errors, onChange, users, isEditing }:
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Tipo de usuario */}
             <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-medium text-text-primary">Tipo de usuario</label>
+                <label className="text-text-primary mb-2 block text-sm font-medium">Tipo de usuario</label>
                 <div className="flex gap-4">
                     <label className="flex items-center">
                         <input

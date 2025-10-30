@@ -256,7 +256,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
 
     // Filtrar inscripciones
     const filteredRegistrations = registrations.filter(
-        (reg) => reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) || reg.user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+        (reg) => reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) || reg.user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Estadísticas

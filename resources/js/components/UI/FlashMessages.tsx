@@ -10,8 +10,8 @@ export default function FlashMessages({ flash }: FlashMessagesProps) {
 
     return (
         <>
-            {flash.success && <div className="mb-6 rounded border-l-4 border-success bg-success/10 px-4 py-3 text-success">{flash.success}</div>}
-            {flash.error && <div className="mb-6 rounded border-l-4 border-danger bg-danger/10 px-4 py-3 text-danger">{flash.error}</div>}
+            {flash.success && <div className="border-success bg-success/10 text-success mb-6 rounded border-l-4 px-4 py-3">{flash.success}</div>}
+            {flash.error && <div className="border-danger bg-danger/10 text-danger mb-6 rounded border-l-4 px-4 py-3">{flash.error}</div>}
         </>
     );
 }

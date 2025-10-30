@@ -1,7 +1,6 @@
 // AdminLayout.tsx - FINAL Y LIMPIO
 import MobileHeader from '@/components/Admin/MobileHeader';
 import Sidebar from '@/components/Admin/Sidebar';
-import Background from '@/components/UI/Background';
 import FlashMessages from '@/components/UI/FlashMessages';
 import { useAdminLayout } from '@/hooks/useAdminLayout';
 import React from 'react';
@@ -18,7 +17,6 @@ export default function AdminLayout({ children, title, pageTitle }: AdminLayoutP
     return (
         <>
             <title>{title ? `${title} - ${pageTitle}` : pageTitle} - Vulca Torneos</title>
-            <Background />
 
             <div className="relative z-10 flex h-screen bg-transparent">
                 {/* Sidebar */}

@@ -32,8 +32,6 @@ const Modal: React.FC<ModalProps> = ({ children, show = false, maxWidth = '2xl',
                 className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-4 py-6 sm:px-0"
                 onClose={close}
             >
-
-
                 <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -44,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({ children, show = false, maxWidth = '2xl',
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <DialogPanel
-                        className={`relative mb-6 transform overflow-hidden rounded-lg bg-secondary-dark shadow-xl transition-all sm:w-full ${maxWidthClass}`}
+                        className={`bg-secondary-dark relative mb-6 transform overflow-hidden rounded-lg shadow-xl transition-all sm:w-full ${maxWidthClass}`}
                     >
                         {children}
                     </DialogPanel>

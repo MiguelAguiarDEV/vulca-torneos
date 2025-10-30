@@ -215,7 +215,7 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
 
                 <button
                     onClick={() => createModal.open()}
-                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 font-semibold text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary-dark hover:shadow-xl"
+                    className="bg-primary text-secondary hover:bg-primary-dark inline-flex items-center justify-center rounded-lg px-6 py-3 font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                 >
                     <Plus className="mr-2 h-5 w-5" />
                     Nueva Inscripción

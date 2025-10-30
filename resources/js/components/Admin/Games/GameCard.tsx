@@ -19,17 +19,17 @@ interface GameCardProps {
 export function GameCard({ game, onEdit, onDelete, onClick }: GameCardProps) {
     return (
         <div
-            className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border-2 border-primary/30 bg-gradient-to-br from-secondary/95 to-secondary-dark/95 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-primary hover:shadow-2xl"
+            className="group to-secondary-dark/95 border-primary/30 from-secondary/95 hover:border-primary relative flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border-2 bg-gradient-to-br shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
             onClick={onClick}
         >
             {/* Efecto de brillo al hover */}
             <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-primary/20 blur-3xl" />
-                <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+                <div className="bg-primary/20 absolute -top-20 -right-20 h-40 w-40 rounded-full blur-3xl" />
+                <div className="bg-primary/10 absolute -bottom-20 -left-20 h-40 w-40 rounded-full blur-3xl" />
             </div>
 
             {/* Imagen del juego */}
-            <div className="relative h-56 overflow-hidden bg-gradient-to-br from-secondary-dark to-secondary">
+            <div className="from-secondary-dark to-secondary relative h-56 overflow-hidden bg-gradient-to-br">
                 {game.image ? (
                     <>
                         <img
@@ -42,7 +42,7 @@ export function GameCard({ game, onEdit, onDelete, onClick }: GameCardProps) {
                             }}
                         />
                         {/* Overlay gradiente */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-secondary-dark/80 via-transparent to-transparent" />
+                        <div className="from-secondary-dark/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
                     </>
                 ) : null}
 
@@ -50,24 +50,24 @@ export function GameCard({ game, onEdit, onDelete, onClick }: GameCardProps) {
                 <div className={`absolute inset-0 flex items-center justify-center ${game.image ? 'hidden' : ''}`}>
                     <div className="text-center">
                         <div className="relative">
-                            <Gamepad2 className="mx-auto mb-3 h-16 w-16 text-primary/50 transition-all duration-300 group-hover:scale-110 group-hover:text-primary" />
-                            <Sparkles className="absolute -top-1 -right-1 h-5 w-5 animate-pulse text-primary/30" />
+                            <Gamepad2 className="text-primary/50 group-hover:text-primary mx-auto mb-3 h-16 w-16 transition-all duration-300 group-hover:scale-110" />
+                            <Sparkles className="text-primary/30 absolute -top-1 -right-1 h-5 w-5 animate-pulse" />
                         </div>
-                        <span className="text-sm font-medium text-text-primary/50">Sin imagen</span>
+                        <span className="text-text-primary/50 text-sm font-medium">Sin imagen</span>
                     </div>
                 </div>
 
                 {/* Badge de estado */}
                 <div className="absolute top-3 right-3">
-                    <div className="flex items-center gap-1 rounded-full bg-success/90 px-3 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
+                    <div className="bg-success/90 flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
                         <div className="h-2 w-2 animate-pulse rounded-full bg-white" />
                         Activo
                     </div>
                 </div>
 
                 {/* Nombre del juego superpuesto */}
-                <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-secondary-dark/95 to-transparent p-4">
-                    <h3 className="line-clamp-2 text-xl font-bold text-white drop-shadow-lg transition-all duration-300 group-hover:text-primary">
+                <div className="from-secondary-dark/95 absolute right-0 bottom-0 left-0 bg-gradient-to-t to-transparent p-4">
+                    <h3 className="group-hover:text-primary line-clamp-2 text-xl font-bold text-white drop-shadow-lg transition-all duration-300">
                         {game.name}
                     </h3>
                 </div>
@@ -77,24 +77,24 @@ export function GameCard({ game, onEdit, onDelete, onClick }: GameCardProps) {
             <div className="relative flex flex-grow flex-col p-5">
                 {game.description ? (
                     <div className="mb-4 flex-grow">
-                        <p className="line-clamp-3 text-sm leading-relaxed text-text-primary/70">{game.description}</p>
+                        <p className="text-text-primary/70 line-clamp-3 text-sm leading-relaxed">{game.description}</p>
                     </div>
                 ) : (
                     <div className="mb-4 flex-grow">
-                        <p className="text-sm text-text-primary/40 italic">Sin descripción</p>
+                        <p className="text-text-primary/40 text-sm italic">Sin descripción</p>
                     </div>
                 )}
 
                 {/* Separador decorativo */}
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+                <div className="via-primary/30 h-px w-full bg-gradient-to-r from-transparent to-transparent" />
             </div>
 
             {/* Actions - Mejoradas */}
-            <div className="relative border-t-2 border-primary/20 bg-secondary-dark/80 px-5 py-3 backdrop-blur-sm">
+            <div className="bg-secondary-dark/80 border-primary/20 relative border-t-2 px-5 py-3 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="rounded-full bg-primary/10 px-3 py-1">
-                            <span className="text-xs font-medium text-primary">ID: {game.id}</span>
+                        <div className="bg-primary/10 rounded-full px-3 py-1">
+                            <span className="text-primary text-xs font-medium">ID: {game.id}</span>
                         </div>
                     </div>
 
@@ -122,7 +122,7 @@ export function GameCard({ game, onEdit, onDelete, onClick }: GameCardProps) {
             </div>
 
             {/* Indicador de click */}
-            <div className="pointer-events-none absolute inset-0 rounded-xl ring-4 ring-primary/0 transition-all duration-300 group-hover:ring-primary/20" />
+            <div className="ring-primary/0 group-hover:ring-primary/20 pointer-events-none absolute inset-0 rounded-xl ring-4 transition-all duration-300" />
         </div>
     );
 }

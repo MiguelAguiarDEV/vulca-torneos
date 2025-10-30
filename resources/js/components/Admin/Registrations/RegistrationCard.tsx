@@ -41,17 +41,17 @@ export function RegistrationCard({ registration, onClick, onEdit, onDelete, onQu
     return (
         <div
             onClick={onClick}
-            className="group cursor-pointer rounded-lg border-2 border-primary/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:border-primary hover:shadow-xl"
+            className="group border-primary/30 bg-secondary/95 hover:border-primary cursor-pointer rounded-lg border-2 p-6 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
         >
             {/* Header con usuario y estado */}
             <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center space-x-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20">
-                        <User className="h-6 w-6 text-primary" />
+                    <div className="bg-primary/20 flex h-12 w-12 items-center justify-center rounded-full">
+                        <User className="text-primary h-6 w-6" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-text-primary">{registration.user.name}</h3>
-                        <p className="flex items-center text-sm text-text-primary/70">
+                        <h3 className="text-text-primary text-lg font-bold">{registration.user.name}</h3>
+                        <p className="text-text-primary/70 flex items-center text-sm">
                             <Mail className="mr-1 h-3 w-3" />
                             {registration.user.email}
                         </p>
@@ -63,37 +63,37 @@ export function RegistrationCard({ registration, onClick, onEdit, onDelete, onQu
             </div>
 
             {/* Info del torneo */}
-            <div className="mb-4 space-y-2 rounded-lg border border-primary/20 bg-secondary-dark/50 p-3">
-                <div className="flex items-center text-sm text-text-primary">
-                    <Trophy className="mr-2 h-4 w-4 text-primary" />
+            <div className="border-primary/20 bg-secondary-dark/50 mb-4 space-y-2 rounded-lg border p-3">
+                <div className="text-text-primary flex items-center text-sm">
+                    <Trophy className="text-primary mr-2 h-4 w-4" />
                     <span className="font-medium">{registration.tournament.name}</span>
                 </div>
-                <div className="flex items-center text-sm text-text-primary/70">
-                    <Gamepad2 className="mr-2 h-4 w-4 text-primary/70" />
+                <div className="text-text-primary/70 flex items-center text-sm">
+                    <Gamepad2 className="text-primary/70 mr-2 h-4 w-4" />
                     <span>{registration.tournament.game.name}</span>
                 </div>
             </div>
 
             {/* Detalles de pago */}
             <div className="mb-4 space-y-1 text-sm">
-                <div className="flex justify-between text-text-primary/70">
+                <div className="text-text-primary/70 flex justify-between">
                     <span>Método:</span>
-                    <span className="font-medium text-text-primary">{getPaymentMethodText(registration.payment_method)}</span>
+                    <span className="text-text-primary font-medium">{getPaymentMethodText(registration.payment_method)}</span>
                 </div>
                 {registration.amount && (
-                    <div className="flex justify-between text-text-primary/70">
+                    <div className="text-text-primary/70 flex justify-between">
                         <span>Importe:</span>
-                        <span className="font-bold text-primary">€{registration.amount}</span>
+                        <span className="text-primary font-bold">€{registration.amount}</span>
                     </div>
                 )}
-                <div className="flex justify-between text-text-primary/70">
+                <div className="text-text-primary/70 flex justify-between">
                     <span>Fecha:</span>
-                    <span className="font-medium text-text-primary">{new Date(registration.registered_at).toLocaleDateString('es-ES')}</span>
+                    <span className="text-text-primary font-medium">{new Date(registration.registered_at).toLocaleDateString('es-ES')}</span>
                 </div>
             </div>
 
             {registration.payment_notes && (
-                <div className="mb-4 rounded border border-primary/10 bg-secondary-light/30 p-2 text-xs text-text-primary/60">
+                <div className="border-primary/10 bg-secondary-light/30 text-text-primary/60 mb-4 rounded border p-2 text-xs">
                     <span className="font-medium">Notas:</span> {registration.payment_notes}
                 </div>
             )}
@@ -103,7 +103,7 @@ export function RegistrationCard({ registration, onClick, onEdit, onDelete, onQu
                 {registration.payment_status === 'pending' && (
                     <button
                         onClick={() => onQuickAction(registration, 'confirm')}
-                        className="flex flex-1 items-center justify-center rounded-lg bg-success px-3 py-2 text-sm font-medium text-text-primary transition-all hover:scale-105"
+                        className="bg-success text-text-primary flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
                         title="Confirmar pago"
                     >
                         <CheckCircle className="mr-1 h-4 w-4" />
@@ -113,7 +113,7 @@ export function RegistrationCard({ registration, onClick, onEdit, onDelete, onQu
                 {registration.payment_status === 'confirmed' && (
                     <button
                         onClick={() => onQuickAction(registration, 'pending')}
-                        className="flex flex-1 items-center justify-center rounded-lg bg-warning px-3 py-2 text-sm font-medium text-secondary transition-all hover:scale-105"
+                        className="bg-warning text-secondary flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
                         title="Marcar como pendiente"
                     >
                         <Clock className="mr-1 h-4 w-4" />
@@ -122,21 +122,21 @@ export function RegistrationCard({ registration, onClick, onEdit, onDelete, onQu
                 )}
                 <button
                     onClick={onEdit}
-                    className="flex items-center justify-center rounded-lg bg-info px-3 py-2 text-sm font-medium text-text-primary transition-all hover:scale-105"
+                    className="bg-info text-text-primary flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
                     title="Editar"
                 >
                     <Edit className="h-4 w-4" />
                 </button>
                 <button
                     onClick={() => onQuickAction(registration, 'cancel')}
-                    className="bg-error flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary transition-all hover:scale-105"
+                    className="bg-error text-text-primary flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
                     title="Cancelar"
                 >
                     <XCircle className="h-4 w-4" />
                 </button>
                 <button
                     onClick={onDelete}
-                    className="bg-error flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary transition-all hover:scale-105"
+                    className="bg-error text-text-primary flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
                     title="Eliminar"
                 >
                     <Trash2 className="h-4 w-4" />

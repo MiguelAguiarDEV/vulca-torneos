@@ -1,173 +1,260 @@
-@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
 
+@import 'tailwindcss';
 @plugin 'tailwindcss-animate';
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
-/* globals.css o index.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-}
-
-/* Colores semánticos para Vulca Torneos */
+/*--- Tema por defecto: Dark mode ---*/
 @theme {
-    --color-brand: #f4a52e; /* naranja vulca */
-    --color-brand-dark: #d4820d;
-    --color-ink: #0a0a0a; /* negro profundo para bordes/headers */
-    --color-panel: #111113; /* negro cálido para cards */
-    --color-panel-2: #1b1b1f; /* leve variación para capas */
-    --color-paper: #fff6e6; /* crema muy suave para detalles */
+    /* Backgrounds */
+    --color-primary: hsl(0, 0%, 6%);
+    --color-secondary: hsl(0, 0%, 9%);
+    --color-tertiary: hsl(0, 0%, 12%);
 
-    /* Secondary - Tonos oscuros más refinados */
-    --color-secondary: #27272a; /* Zinc-800 más neutral */
-    --color-secondary-light: #3f3f46; /* Zinc-700 */
-    --color-secondary-lighter: #52525b; /* Zinc-600 */
-    --color-secondary-dark: #18181b; /* Zinc-900 */
+    /* Accent */
+    --color-accent: hsl(215, 100%, 56%);
+    --color-accent-hover: hsl(215, 100%, 50%);
+    --color-accent-light: hsl(215, 100%, 65%);
+    --color-accent-dark: hsl(215, 100%, 40%);
+    --color-accent-subtle: hsl(215, 90%, 20%);
 
-    /* Estados - Más saturados y modernos */
-    --color-success: #10b981; /* Emerald-500 */
-    --color-danger: #f43f5e; /* Rose-500 más vibrante */
-    --color-warning: #f59e0b; /* Mantener */
-    --color-info: #06b6d4; /* Cyan-500 más brillante */
+    /* Highlights */
+    --color-highlight: hsl(0, 0%, 15%);
+    --color-highlight-hover: hsl(0, 0%, 18%);
 
-    /* Texto - Mejor jerarquía */
-    --color-text-primary: #fafafa; /* Zinc-50 */
-    --color-text-secondary: #e4e4e7; /* Zinc-200 */
-    --color-text-muted: #a1a1aa; /* Zinc-400 */
+    /* Texto */
+    --color-t-primary: hsl(0, 0%, 98%);
+    --color-t-secondary: hsl(0, 0%, 82%);
+    --color-t-muted: hsl(0, 0%, 60%);
+    --color-t-accent: var(--color-accent);
 
-    /* === Fondo (blancos/grises cálidos, tipo stone) === */
-    --color-paper: #fffdf7; /* blanco cálido "papel" (ideal para el body) */
-    --color-canvas: #fafaf9; /* stone-50: base muy suave */
-    --color-soft: #f5f5f4; /* stone-100: secciones, contenedores amplios */
-    --color-muted: #e7e5e4; /* stone-200: barras, list headers, split panes */
-    --color-subtle: #d6d3d1; /* stone-300: líneas gruesas, chips neutros */
+    /* Borders */
+    --color-border-primary: hsl(0, 0%, 20%);
+    --color-border-accent: var(--color-accent);
 
-    /* Elevaciones y overlays */
-    --color-bg-elevated: #ffffff; /* tarjetas limpias sobre canvas */
-    --color-bg-overlay: rgba(12, 12, 12, 0.06); /* velo/hover muy sutil */
-    --color-bg-vignette: rgba(0, 0, 0, 0.08); /* viñeteado suave en bordes/gradientes */
+    /* Estados */
+    --color-success: hsl(142, 76%, 36%);
+    --color-danger: hsl(0, 84%, 60%);
+    --color-warning: hsl(38, 92%, 50%);
+    --color-info: hsl(199, 89%, 48%);
 
-    /* Bordes/rings sobre fondo claro (coherentes con estilo brutalist) */
-    --color-border-soft: #d4d4d4; /* borde fino en superficies claras */
-    --color-border-strong: #0a0a0a; /* borde negro para tarjetas “cómic” */
-    --color-ring-accent: rgba(250, 204, 21, 0.35); /* ring amarillo sutil (primary) */
+    /* Gradients */
+    --gradient-primary: linear-gradient(180deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+    --gradient-accent-subtle: linear-gradient(135deg, var(--color-accent-subtle) 0%, var(--color-secondary) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(0, 0%, 0%, 0.4);
+    --shadow-md: 0 2px 4px 0 hsl(0, 0%, 0%, 0.45);
+    --shadow-lg: 0 4px 8px 0 hsl(0, 0%, 0%, 0.5);
+    --shadow-xl: 0 8px 16px 0 hsl(0, 0%, 0%, 0.55);
+    --shadow-accent: 0 4px 16px 0 hsl(215, 100%, 56%, 0.35);
+    --shadow-accent-lg: 0 8px 24px 0 hsl(215, 100%, 56%, 0.4);
+
+    /* Overlays */
+    --color-overlay: rgba(0, 0, 0, 0.7);
+    --color-overlay-accent: rgba(30, 144, 255, 0.1);
+}
+
+@layer base {
+    /*--- Light mode ---*/
+    [data-theme='light'] {
+        /* Backgrounds */
+        --color-primary: hsl(0, 0%, 98%);
+        --color-secondary: hsl(0, 0%, 96%);
+        --color-tertiary: hsl(0, 0%, 93%);
+
+        /* Accent */
+        --color-accent: hsl(215, 100%, 56%);
+        --color-accent-hover: hsl(215, 100%, 50%) --color-accent-light: hsl(215, 100%, 65%);
+        --color-accent-dark: hsl(215, 100%, 40%);
+        --color-accent-subtle: hsl(215, 90%, 20%);
+
+        /* Highlights */
+        --color-highlight: hsl(0, 0%, 94%);
+        --color-highlight-hover: hsl(0, 0%, 91%);
+
+        /* Texto */
+        --color-t-primary: hsl(0, 0%, 10%);
+        --color-t-secondary: hsl(0, 0%, 35%);
+        --color-t-muted: hsl(0, 0%, 52%);
+        --color-t-accent: var(--color-accent);
+
+        /* Borders */
+        --color-border-primary: hsl(0, 0%, 88%);
+        --color-border-accent: var(--color-accent);
+
+        /* Estados */
+        --color-success: hsl(142, 76%, 36%);
+        --color-danger: hsl(0, 84%, 60%);
+        --color-warning: hsl(38, 92%, 50%);
+        --color-info: hsl(199, 89%, 48%);
+
+        /* Gradients */
+        --gradient-primary: linear-gradient(180deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+        --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+        --gradient-accent-subtle: linear-gradient(135deg, var(--color-accent-subtle) 0%, var(--color-secondary) 100%);
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px 0 hsl(0, 0%, 0%, 0.08);
+        --shadow-md: 0 2px 4px 0 hsl(0, 0%, 0%, 0.1);
+        --shadow-lg: 0 4px 8px 0 hsl(0, 0%, 0%, 0.12);
+        --shadow-xl: 0 8px 16px 0 hsl(0, 0%, 0%, 0.14);
+        --shadow-accent: 0 2px 8px 0 hsl(215, 100%, 50%, 0.15);
+        --shadow-accent-lg: 0 4px 12px 0 hsl(215, 100%, 50%, 0.2);
+
+        /* Overlays */
+        --color-overlay: rgba(0, 0, 0, 0.15);
+        --color-overlay-accent: rgba(30, 144, 255, 0.08);
+    }
+
+    /*--- Dark mode explícito ---*/
+    [data-theme='dark'] {
+        --color-primary: hsl(0, 0%, 6%);
+        --color-secondary: hsl(0, 0%, 9%);
+        --color-tertiary: hsl(0, 0%, 12%);
+
+        --color-accent: hsl(215, 100%, 56%);
+        --color-accent-hover: hsl(215, 100%, 50%);
+        --color-accent-light: hsl(215, 100%, 65%);
+        --color-accent-dark: hsl(215, 100%, 40%);
+        --color-accent-subtle: hsl(215, 90%, 20%);
+
+        --color-highlight: hsl(0, 0%, 15%);
+        --color-highlight-hover: hsl(0, 0%, 18%);
+
+        --color-t-primary: hsl(0, 0%, 98%);
+        --color-t-secondary: hsl(0, 0%, 82%);
+        --color-t-muted: hsl(0, 0%, 60%);
+        --color-t-accent: var(--color-accent);
+
+        --color-border-primary: hsl(0, 0%, 20%);
+        --color-border-accent: var(--color-accent);
+
+        --color-success: hsl(142, 76%, 36%);
+        --color-danger: hsl(0, 84%, 60%);
+        --color-warning: hsl(38, 92%, 50%);
+        --color-info: hsl(199, 89%, 48%);
+
+        --gradient-primary: linear-gradient(180deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+        --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+        --gradient-accent-subtle: linear-gradient(135deg, var(--color-accent-subtle) 0%, var(--color-secondary) 100%);
+
+        --shadow-sm: 0 1px 2px 0 hsl(0, 0%, 0%, 0.4);
+        --shadow-md: 0 2px 4px 0 hsl(0, 0%, 0%, 0.45);
+        --shadow-lg: 0 4px 8px 0 hsl(0, 0%, 0%, 0.5);
+        --shadow-xl: 0 8px 16px 0 hsl(0, 0%, 0%, 0.55);
+        --shadow-accent: 0 4px 16px 0 hsl(215, 100%, 56%, 0.35);
+        --shadow-accent-lg: 0 8px 24px 0 hsl(215, 100%, 56%, 0.4);
+
+        --color-overlay: rgba(0, 0, 0, 0.7);
+        --color-overlay-accent: rgba(30, 144, 255, 0.1);
+    }
+
+    :root {
+        --theme-dur: 720ms;
+        --theme-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html,
+    body {
+        transition:
+            background-color var(--theme-dur) var(--theme-ease),
+            color var(--theme-dur) var(--theme-ease);
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Titillium Web', 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        letter-spacing: 0.03em;
+    }
+
+    @media (prefers-color-scheme: light) {
+        body {
+            background-color: var(--color-primary);
+            color: var(--color-t-primary);
+            transition:
+                background-color 0.6s cubic-bezier(0.05, 0.7, 0.1, 1),
+                color 0.6s cubic-bezier(0.05, 0.7, 0.1, 1);
+        }
+    }
+
+    /* Links por defecto con color azul eléctrico */
+    a {
+        color: var(--color-accent);
+        transition: color 0.2s ease;
+    }
+
+    a:hover {
+        color: var(--color-accent-hover);
+    }
 }
 
 @layer utilities {
-    /* ========== HALFTONE PATTERNS ========== */
-
-    /* Halftone clásico - círculos naranjas rotados */
-    .bg-halftone {
-        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.3" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23f4a52e"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
-        background-size: 15px;
-        background-color: var(--color-paper);
+    /* Utilidades de fondo */
+    .bg-primary {
+        background-color: var(--color-primary);
+    }
+    .bg-secondary {
+        background-color: var(--color-secondary);
+    }
+    .bg-tertiary {
+        background-color: var(--color-tertiary);
+    }
+    .bg-accent {
+        background-color: var(--color-accent);
+    }
+    .bg-accent-subtle {
+        background-color: var(--color-accent-subtle);
     }
 
-    /* Halftone sutil */
-    .bg-halftone-subtle {
-        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(20)" opacity="0.2" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23f4a52e"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
-        background-size: 18px;
-        background-color: var(--color-paper);
+    /* Utilidades de texto */
+    .text-accent {
+        color: var(--color-accent);
+    }
+    .text-accent-light {
+        color: var(--color-accent-light);
     }
 
-    /* Halftone intenso */
-    .bg-halftone-intense {
-        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(30)" opacity="0.5" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23d4820d"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
-        background-size: 12px;
-        background-color: var(--color-paper);
+    /* Utilidades de borde */
+    .border-primary {
+        border-color: var(--color-border-primary);
+    }
+    .border-accent {
+        border-color: var(--color-accent);
     }
 
-    /* ========== LÍNEAS DIAGONALES ========== */
-
-    /* Patrón de líneas diagonales cruzadas - estilo ítem 2 del ejemplo */
-    .bg-diagonal-cross {
-        background:
-            linear-gradient(-60deg, #777, #000), repeating-linear-gradient(30deg, #000, #999, #000 5px),
-            repeating-linear-gradient(-60deg, #000, #999, #000 5px);
-        background-blend-mode: screen, difference;
-        filter: contrast(20) blur(0.5px);
+    /* Utilidades de sombra naranja */
+    .shadow-accent {
+        box-shadow: var(--shadow-accent);
+    }
+    .shadow-accent-lg {
+        box-shadow: var(--shadow-accent-lg);
     }
 
-    /* Líneas diagonales simples */
-    .bg-diagonal-lines {
-        background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(244, 165, 46, 0.15) 8px, rgba(244, 165, 46, 0.15) 10px);
-        background-color: var(--color-paper);
+    /* Botón naranja por defecto */
+    .btn-accent {
+        background-color: var(--color-accent);
+        color: white;
+        transition: all 0.2s ease;
     }
-
-    /* Líneas diagonales inversas */
-    .bg-diagonal-lines-inverse {
-        background: repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(212, 130, 13, 0.15) 8px, rgba(212, 130, 13, 0.15) 10px);
-        background-color: var(--color-paper);
+    .btn-accent:hover {
+        background-color: var(--color-accent-hover);
+        box-shadow: var(--shadow-accent);
     }
-
-    /* ========== PATRONES RADIALES/CÓNICOS ========== */
-
-    /* Patrón radial de explosión - estilo ítem 1 del ejemplo */
-    .bg-burst-red {
-        background:
-            radial-gradient(circle at 60% 50%, #ff4a4a 0 40px, transparent 100px 100%),
-            repeating-conic-gradient(from 0deg at 60% 50%, #ff4a4a 0 6deg, #ed3535 0 12deg);
-    }
-
-    /* Patrón radial naranja */
-    .bg-burst-orange {
-        background:
-            radial-gradient(circle at 90% 90%, var(--color-brand) 0 0, transparent 50px 100%),
-            repeating-conic-gradient(from 0deg at 90% 90%, var(--color-brand) 0 6deg, var(--color-white) 0 12deg);
-    }
-
-    /* ========== PATRONES DE CUADRÍCULA ========== */
-
-    /* Grid simple de puntos */
-    .bg-dot-grid {
-        background-image: radial-gradient(circle, var(--color-brand) 1px, transparent 1px);
-        background-size: 20px 20px;
-        background-color: var(--color-paper);
-    }
-
-    /* ========== COMBINACIONES ========== */
-
-    /* Halftone + fondo de color */
-    .bg-halftone-brand {
-        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
-        background-size: 15px;
-        background-color: var(--color-brand);
-    }
-
-    .bg-halftone-danger {
-        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
-        background-size: 15px;
-        background-color: var(--color-danger);
-    }
-
-    .bg-halftone-success {
-        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
-        background-size: 15px;
-        background-color: var(--color-success);
-    }
-
-    .bg-halftone-info {
-        background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" transform="rotate(25)" opacity="0.4" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="%23ffffff"><circle cx="25" cy="25" r="12.5"/><circle cx="75" cy="75" r="12.5"/><circle cx="75" cy="25" r="12.5"/><circle cx="25" cy="75" r="12.5"/></g></svg>');
-        background-size: 15px;
-        background-color: var(--color-info);
-    }
-}
-
-/* Estilo global para botones */
-button:hover {
-    cursor: pointer;
-}
-
-/* También para elementos con clases de botón comunes */
-.btn:hover,
-.button:hover,
-[role='button']:hover {
-    cursor: pointer;
 }

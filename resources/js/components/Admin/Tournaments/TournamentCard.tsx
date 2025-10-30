@@ -65,7 +65,7 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
 
     return (
         <div
-            className="flex h-full cursor-pointer flex-col rounded-lg border-2 border-primary/30 bg-secondary/95 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:border-primary hover:shadow-xl"
+            className="border-primary/30 bg-secondary/95 hover:border-primary flex h-full cursor-pointer flex-col rounded-lg border-2 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:shadow-xl"
             onClick={() => onClick?.(tournament)}
             role="button"
             tabIndex={0}
@@ -74,7 +74,7 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
             }}
         >
             {/* Imagen */}
-            <div className="relative h-48 overflow-hidden rounded-t-lg bg-secondary-dark">
+            <div className="bg-secondary-dark relative h-48 overflow-hidden rounded-t-lg">
                 {tournament.image ? (
                     <img
                         src={tournament.image}
@@ -90,8 +90,8 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
                 {/* Fallback */}
                 <div className={`absolute inset-0 flex items-center justify-center ${tournament.image ? 'hidden' : ''}`}>
                     <div className="text-center">
-                        <Trophy className="mx-auto mb-2 h-12 w-12 text-text-primary/50" />
-                        <span className="text-sm text-text-primary/50">Sin imagen</span>
+                        <Trophy className="text-text-primary/50 mx-auto mb-2 h-12 w-12" />
+                        <span className="text-text-primary/50 text-sm">Sin imagen</span>
                     </div>
                 </div>
 
@@ -105,7 +105,7 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
                 {/* Juego */}
                 {tournament.game && (
                     <div className="absolute top-3 left-3">
-                        <div className="rounded-md bg-primary/90 px-2 py-1 text-xs font-medium text-secondary shadow-lg backdrop-blur-sm">
+                        <div className="bg-primary/90 text-secondary rounded-md px-2 py-1 text-xs font-medium shadow-lg backdrop-blur-sm">
                             {tournament.game.name}
                         </div>
                     </div>
@@ -115,13 +115,13 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
             {/* Contenido */}
             <div className="flex flex-grow flex-col p-4">
                 <div className="mb-4">
-                    <h3 className="mb-2 line-clamp-1 text-lg font-semibold text-text-primary transition-colors duration-200 hover:text-primary">
+                    <h3 className="text-text-primary hover:text-primary mb-2 line-clamp-1 text-lg font-semibold transition-colors duration-200">
                         {tournament.name}
                     </h3>
-                    {tournament.description && <p className="line-clamp-2 text-sm leading-relaxed text-text-primary/70">{tournament.description}</p>}
+                    {tournament.description && <p className="text-text-primary/70 line-clamp-2 text-sm leading-relaxed">{tournament.description}</p>}
                 </div>
 
-                <div className="mb-4 space-y-2 text-sm text-text-primary/70">
+                <div className="text-text-primary/70 mb-4 space-y-2 text-sm">
                     <div className="flex items-center">
                         <Calendar className="mr-2 h-4 w-4" />
                         <span>Inicio: {new Date(tournament.start_date).toLocaleDateString('es-ES')}</span>
@@ -161,7 +161,7 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
             </div>
 
             {/* Acciones */}
-            <div className="border-t-2 border-primary bg-secondary-dark/80 px-4 py-3">
+            <div className="border-primary bg-secondary-dark/80 border-t-2 px-4 py-3">
                 <div className="flex items-center justify-end space-x-2">
                     <button
                         type="button"
@@ -169,7 +169,7 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
                             e.stopPropagation();
                             onEdit?.(tournament);
                         }}
-                        className="rounded-md p-2 text-text-primary transition-colors duration-200 hover:bg-primary/20 hover:text-primary"
+                        className="text-text-primary hover:bg-primary/20 hover:text-primary rounded-md p-2 transition-colors duration-200"
                         title="Editar torneo"
                     >
                         <Pencil className="h-4 w-4" />
@@ -180,7 +180,7 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
                             e.stopPropagation();
                             onDelete?.(tournament);
                         }}
-                        className="hover:bg-error/10 hover:text-error rounded-md p-2 text-text-primary transition-colors duration-200"
+                        className="hover:bg-error/10 hover:text-error text-text-primary rounded-md p-2 transition-colors duration-200"
                         title="Eliminar torneo"
                     >
                         <Trash2 className="h-4 w-4" />

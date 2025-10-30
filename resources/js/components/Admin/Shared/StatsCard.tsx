@@ -9,7 +9,7 @@ interface StatsCardProps {
 
 export function StatsCard({ icon: Icon, title, value, subtitle }: StatsCardProps) {
     return (
-        <div className="bg-diagonal-lines relative z-10 flex h-16 w-64 cursor-pointer items-center justify-between overflow-hidden rounded-full border-4 border-ink bg-paper px-6 text-ink shadow-[4px_4px_0_0_var(--color-ink)] transition-all duration-200 active:translate-y-0 active:shadow-[4px_4px_0_0_var(--color-ink)]">
+        <div className="relative z-10 flex h-16 w-64 cursor-pointer items-center justify-between overflow-hidden rounded-full border-4 border-ink bg-paper px-6 text-ink shadow-[4px_4px_0_0_var(--color-ink)] transition-all duration-200 active:translate-y-0 active:shadow-[4px_4px_0_0_var(--color-ink)]">
             {/* Accent bar top */}
             {/* <div className="absolute top-0 right-0 left-0 h-2 bg-brand shadow-[inset_0_2px_0_rgba(255,255,255,0.3),inset_0_-2px_0_rgba(0,0,0,0.3)]" /> */}
 

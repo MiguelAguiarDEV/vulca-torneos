@@ -12,11 +12,11 @@ interface FormFieldProps {
 export function FormField({ label, required, error, children, fullWidth = false }: FormFieldProps) {
     return (
         <div className={fullWidth ? 'md:col-span-2' : ''}>
-            <label className="mb-2 block text-sm font-medium text-text-primary">
+            <label className="text-text-primary mb-2 block text-sm font-medium">
                 {label} {required && <span className="text-danger">*</span>}
             </label>
             {children}
-            {error && <p className="mt-1 text-sm text-danger">{error}</p>}
+            {error && <p className="text-danger mt-1 text-sm">{error}</p>}
         </div>
     );
 }

@@ -208,7 +208,7 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
 
                 <button
                     onClick={() => createModal.open()}
-                    className="bg-primary hover:bg-primary-dark inline-flex items-center justify-center rounded-lg px-6 py-3 font-semibold text-secondary shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
+                    className="bg-primary hover:bg-primary-dark text-secondary inline-flex items-center justify-center rounded-lg px-6 py-3 font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
                 >
                     <Plus className="mr-2 h-5 w-5" />
                     Crear Nuevo Torneo

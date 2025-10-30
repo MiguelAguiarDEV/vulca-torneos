@@ -113,12 +113,12 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
         <AdminLayout title={`Inscripción - ${registration.user.name}`} pageTitle="Detalles de la Inscripción">
             {/* Header */}
             <div className="mb-8">
-                <div className="rounded-lg border-2 border-primary/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm">
+                <div className="border-primary/30 bg-secondary/95 rounded-lg border-2 p-6 shadow-lg backdrop-blur-sm">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
                             <Link
                                 href={route('admin.registrations.index')}
-                                className="mr-6 rounded-lg border border-primary/30 p-3 text-text-primary transition-all duration-200 hover:scale-110 hover:border-primary hover:bg-primary/20"
+                                className="border-primary/30 text-text-primary hover:border-primary hover:bg-primary/20 mr-6 rounded-lg border p-3 transition-all duration-200 hover:scale-110"
                             >
                                 <ArrowLeft className="h-6 w-6" />
                             </Link>
@@ -131,7 +131,7 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
                                         {getPaymentStatusText(registration.payment_status)}
                                     </span>
                                 </div>
-                                <p className="text-lg text-text-primary/70">
+                                <p className="text-text-primary/70 text-lg">
                                     {registration.user.name} - {registration.tournament.name}
                                 </p>
                             </div>
@@ -142,7 +142,7 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
                             {registration.payment_status === 'pending' && (
                                 <button
                                     onClick={() => handleQuickAction('confirm')}
-                                    className="flex items-center rounded-lg bg-success px-4 py-2 font-semibold text-text-primary shadow-lg transition-all hover:scale-105"
+                                    className="bg-success text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
                                 >
                                     <CheckCircle className="mr-2 h-4 w-4" />
                                     Confirmar Pago
@@ -151,7 +151,7 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
                             {registration.payment_status === 'confirmed' && (
                                 <button
                                     onClick={() => handleQuickAction('pending')}
-                                    className="flex items-center rounded-lg bg-warning px-4 py-2 font-semibold text-secondary shadow-lg transition-all hover:scale-105"
+                                    className="bg-warning text-secondary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
                                 >
                                     <Clock className="mr-2 h-4 w-4" />
                                     Marcar Pendiente
@@ -159,21 +159,21 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
                             )}
                             <button
                                 onClick={handleEdit}
-                                className="flex items-center rounded-lg bg-info px-4 py-2 font-semibold text-text-primary shadow-lg transition-all hover:scale-105"
+                                className="bg-info text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
                             >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Editar
                             </button>
                             <button
                                 onClick={() => handleQuickAction('cancel')}
-                                className="bg-error flex items-center rounded-lg px-4 py-2 font-semibold text-text-primary shadow-lg transition-all hover:scale-105"
+                                className="bg-error text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
                             >
                                 <XCircle className="mr-2 h-4 w-4" />
                                 Cancelar
                             </button>
                             <button
                                 onClick={() => deleteModal.open(registration)}
-                                className="bg-error flex items-center rounded-lg px-4 py-2 font-semibold text-text-primary shadow-lg transition-all hover:scale-105"
+                                className="bg-error text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
                             >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Eliminar

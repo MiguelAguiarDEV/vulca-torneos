@@ -17,10 +17,10 @@ interface PendingRegistrationsListProps {
 
 export function PendingRegistrationsList({ registrations }: PendingRegistrationsListProps) {
     return (
-        <div className="rounded-lg border-2 border-warning/30 bg-secondary/95 p-6 shadow-lg backdrop-blur-sm">
+        <div className="border-warning/30 bg-secondary/95 rounded-lg border-2 p-6 shadow-lg backdrop-blur-sm">
             <div className="mb-6 flex items-center">
-                <Clock className="mr-3 h-8 w-8 text-warning" />
-                <h2 className="text-2xl font-bold text-text-primary">Inscripciones Pendientes</h2>
+                <Clock className="text-warning mr-3 h-8 w-8" />
+                <h2 className="text-text-primary text-2xl font-bold">Inscripciones Pendientes</h2>
             </div>
 
             {registrations.length > 0 ? (
@@ -28,13 +28,13 @@ export function PendingRegistrationsList({ registrations }: PendingRegistrations
                     {registrations.map((registration) => (
                         <div
                             key={registration.id}
-                            className="rounded-lg border border-warning/30 bg-secondary-dark/80 p-4 backdrop-blur-sm transition-all duration-200 hover:border-warning hover:shadow-lg"
+                            className="border-warning/30 bg-secondary-dark/80 hover:border-warning rounded-lg border p-4 backdrop-blur-sm transition-all duration-200 hover:shadow-lg"
                         >
                             <div className="mb-3 flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-text-primary">{registration.user_name}</h3>
-                                <span className="rounded-full bg-warning px-3 py-1 text-sm font-medium text-secondary shadow-lg">Pendiente</span>
+                                <h3 className="text-text-primary text-lg font-semibold">{registration.user_name}</h3>
+                                <span className="bg-warning text-secondary rounded-full px-3 py-1 text-sm font-medium shadow-lg">Pendiente</span>
                             </div>
-                            <div className="space-y-2 text-text-primary/70">
+                            <div className="text-text-primary/70 space-y-2">
                                 <div className="flex items-center">
                                     <Trophy className="mr-2 h-4 w-4" />
                                     <span>Torneo: {registration.tournament_name}</span>
@@ -47,7 +47,7 @@ export function PendingRegistrationsList({ registrations }: PendingRegistrations
                                     <CreditCard className="mr-2 h-4 w-4" />
                                     <span>Pago: {registration.payment_status}</span>
                                 </div>
-                                <div className="text-sm text-text-primary/50">Email: {registration.user_email}</div>
+                                <div className="text-text-primary/50 text-sm">Email: {registration.user_email}</div>
                             </div>
                         </div>
                     ))}

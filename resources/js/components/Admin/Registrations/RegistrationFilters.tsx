@@ -34,30 +34,30 @@ export function RegistrationFilters({
     const games = Array.from(new Map(tournaments.map((t) => [t.game.id, t.game])).values());
 
     return (
-        <div className="mb-6 rounded-lg border-2 border-primary/30 bg-secondary/95 p-4 shadow-lg backdrop-blur-sm">
+        <div className="border-primary/30 bg-secondary/95 mb-6 rounded-lg border-2 p-4 shadow-lg backdrop-blur-sm">
             {/* Búsqueda */}
             <div className="mb-4">
-                <label className="mb-2 block text-sm font-medium text-text-primary">Buscar inscripciones</label>
+                <label className="text-text-primary mb-2 block text-sm font-medium">Buscar inscripciones</label>
                 <div className="relative">
                     <input
                         type="text"
                         placeholder="Buscar por nombre, email o torneo..."
                         value={searchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-4 py-3 pl-10 text-text-primary placeholder-text-primary/50 focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
+                        className="border-primary/30 bg-secondary-light text-text-primary placeholder-text-primary/50 focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-3 pl-10 focus:ring-2 focus:outline-none"
                     />
-                    <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-primary/70" />
+                    <Search className="text-primary/70 absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
                     {searchTerm && (
                         <button
                             onClick={() => onSearchChange('')}
-                            className="absolute top-1/2 right-3 -translate-y-1/2 text-text-primary/50 hover:text-text-primary"
+                            className="text-text-primary/50 hover:text-text-primary absolute top-1/2 right-3 -translate-y-1/2"
                         >
                             <XCircle className="h-5 w-5" />
                         </button>
                     )}
                 </div>
                 {searchTerm && (
-                    <p className="mt-2 text-sm text-text-primary/60">
+                    <p className="text-text-primary/60 mt-2 text-sm">
                         Mostrando {filteredCount} de {totalCount} inscripciones
                     </p>
                 )}
@@ -66,11 +66,11 @@ export function RegistrationFilters({
             {/* Filtros */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                    <label className="mb-2 block text-sm font-medium text-text-primary">Estado de pago</label>
+                    <label className="text-text-primary mb-2 block text-sm font-medium">Estado de pago</label>
                     <select
                         value={paymentStatusFilter}
                         onChange={(e) => onPaymentStatusChange(e.target.value)}
-                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
+                        className="border-primary/30 bg-secondary-light text-text-primary focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
                     >
                         <option value="all">Todos</option>
                         <option value="pending">Pendientes</option>
@@ -80,11 +80,11 @@ export function RegistrationFilters({
                 </div>
 
                 <div>
-                    <label className="mb-2 block text-sm font-medium text-text-primary">Juego</label>
+                    <label className="text-text-primary mb-2 block text-sm font-medium">Juego</label>
                     <select
                         value={gameFilter}
                         onChange={(e) => onGameChange(e.target.value)}
-                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
+                        className="border-primary/30 bg-secondary-light text-text-primary focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
                     >
                         <option value="all">Todos</option>
                         {games.map((game) => (
@@ -96,11 +96,11 @@ export function RegistrationFilters({
                 </div>
 
                 <div>
-                    <label className="mb-2 block text-sm font-medium text-text-primary">Torneo</label>
+                    <label className="text-text-primary mb-2 block text-sm font-medium">Torneo</label>
                     <select
                         value={tournamentFilter}
                         onChange={(e) => onTournamentChange(e.target.value)}
-                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-3 py-2 text-text-primary focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
+                        className="border-primary/30 bg-secondary-light text-text-primary focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
                     >
                         <option value="all">Todos</option>
                         {tournaments
@@ -116,7 +116,7 @@ export function RegistrationFilters({
                 <div className="flex items-end">
                     <button
                         onClick={onClearFilters}
-                        className="w-full rounded-lg border border-primary/30 bg-secondary-light px-4 py-2 text-text-primary transition-colors hover:bg-secondary-lighter"
+                        className="border-primary/30 bg-secondary-light text-text-primary hover:bg-secondary-lighter w-full rounded-lg border px-4 py-2 transition-colors"
                     >
                         Limpiar todo
                     </button>
