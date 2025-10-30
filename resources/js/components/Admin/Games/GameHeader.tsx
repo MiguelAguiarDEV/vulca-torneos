@@ -1,6 +1,6 @@
 // components/Admin/Games/GameHeader.tsx
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, Gamepad } from 'lucide-react';
+import { ArrowLeft, Gamepad2 } from 'lucide-react';
 
 interface Game {
     id: number;
@@ -15,35 +15,27 @@ interface GameHeaderProps {
 
 export function GameHeader({ game }: GameHeaderProps) {
     return (
-        <div className="mb-8">
-            <div className="border-primary/30 bg-secondary/95 rounded-lg border-2 p-6 shadow-lg backdrop-blur-sm">
-                <div className="flex items-center">
+        <div className="mb-6">
+            <div className="border-border-primary bg-secondary rounded-xl border p-6 shadow-sm">
+                <div className="flex items-center gap-6">
                     <Link
                         href={route('admin.games.index')}
-                        className="border-primary/30 text-text-primary hover:border-primary hover:bg-primary/20 hover:text-primary mr-6 rounded-lg border p-3 transition-all duration-200 hover:scale-110"
+                        className="border-border-primary bg-tertiary text-t-secondary hover:bg-highlight hover:text-t-primary flex h-10 w-10 items-center justify-center rounded-lg border transition-all"
                     >
-                        <ArrowLeft className="h-6 w-6" />
+                        <ArrowLeft className="h-5 w-5" strokeWidth={2} />
                     </Link>
-                    <div className="flex flex-grow items-center">
-                        {game.image ? (
-                            <img
-                                src={game.image}
-                                alt={game.name}
-                                className="border-primary mr-8 h-24 w-24 rounded-lg border-2 object-cover shadow-xl transition-transform duration-200 hover:scale-105"
-                            />
-                        ) : (
-                            <div className="border-primary bg-secondary/80 mr-8 flex h-24 w-24 items-center justify-center rounded-lg border-2 shadow-xl transition-transform duration-200 hover:scale-105">
-                                <Gamepad className="text-primary h-12 w-12" />
-                            </div>
-                        )}
-                        <div className="flex-grow">
-                            <h1 className="mb-3 text-5xl font-bold text-white drop-shadow-lg">{game.name}</h1>
-                            {game.description && (
-                                <p className="border-primary/20 bg-secondary/50 rounded-lg border px-4 py-2 text-xl text-white backdrop-blur-sm">
-                                    {game.description}
-                                </p>
-                            )}
+
+                    {game.image ? (
+                        <img src={game.image} alt={game.name} className="border-border-primary h-20 w-20 rounded-lg border object-cover shadow-sm" />
+                    ) : (
+                        <div className="border-border-primary bg-tertiary flex h-20 w-20 items-center justify-center rounded-lg border shadow-sm">
+                            <Gamepad2 className="text-accent h-10 w-10" strokeWidth={2} />
                         </div>
+                    )}
+
+                    <div className="flex-grow">
+                        <h1 className="text-t-primary text-3xl font-bold">{game.name}</h1>
+                        {game.description && <p className="text-t-secondary mt-1 text-sm">{game.description}</p>}
                     </div>
                 </div>
             </div>

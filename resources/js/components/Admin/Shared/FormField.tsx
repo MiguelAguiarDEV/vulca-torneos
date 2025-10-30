@@ -11,8 +11,8 @@ interface FormFieldProps {
 
 export function FormField({ label, required, error, children, fullWidth = false }: FormFieldProps) {
     return (
-        <div className={fullWidth ? 'md:col-span-2' : ''}>
-            <label className="text-text-primary mb-2 block text-sm font-medium">
+        <div className={fullWidth ? 'col-span-full' : ''}>
+            <label className="text-t-primary mb-2 block text-sm font-medium">
                 {label} {required && <span className="text-danger">*</span>}
             </label>
             {children}

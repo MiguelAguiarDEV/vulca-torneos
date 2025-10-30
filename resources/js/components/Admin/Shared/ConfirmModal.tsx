@@ -25,19 +25,19 @@ export function ConfirmModal({
     return (
         <Modal show={show} onClose={onCancel}>
             <div className="p-6">
-                <h2 className="text-text-primary mb-4 text-lg font-semibold">{title}</h2>
-                <p className="text-text-primary/70 mb-6">{message}</p>
-                <div className="flex justify-end space-x-4">
+                <h2 className="text-t-primary mb-4 text-lg font-semibold">{title}</h2>
+                <p className="text-t-secondary mb-6 text-sm">{message}</p>
+                <div className="flex justify-end gap-3">
                     <button
                         onClick={onCancel}
-                        className="border-primary/30 text-text-primary hover:bg-primary/20 rounded-lg border px-4 py-2 transition-colors duration-200"
+                        className="border-border-primary bg-secondary text-t-secondary hover:bg-highlight hover:text-t-primary rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
                     >
                         {cancelText}
                     </button>
                     <button
                         onClick={onConfirm}
-                        className={`text-text-primary rounded-lg px-4 py-2 transition-colors duration-200 ${
-                            isDestructive ? 'bg-danger hover:bg-danger/90' : 'bg-primary hover:bg-primary-dark'
+                        className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors ${
+                            isDestructive ? 'bg-danger hover:bg-danger/90' : 'bg-accent hover:bg-accent-hover'
                         }`}
                     >
                         {confirmText}

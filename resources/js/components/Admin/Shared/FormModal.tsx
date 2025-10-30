@@ -25,21 +25,21 @@ export function FormModal({
 }: FormModalProps) {
     return (
         <Modal show={show} onClose={onClose} maxWidth={maxWidth}>
-            <div className="border-primary bg-secondary/95 rounded-lg border-2 p-6 backdrop-blur-sm">
-                <h2 className="text-text-primary mb-4 text-xl font-semibold">{title}</h2>
+            <div className="border-border-primary bg-secondary rounded-xl border p-6 shadow-lg">
+                <h2 className="text-t-primary mb-6 text-xl font-semibold">{title}</h2>
 
                 <div className="mb-6">{children}</div>
 
-                <div className="flex justify-end space-x-3">
+                <div className="flex justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="border-primary/30 bg-secondary-light text-text-primary hover:bg-secondary-lighter rounded-lg border px-4 py-2 transition-colors"
+                        className="border-border-primary bg-tertiary text-t-secondary hover:bg-highlight hover:text-t-primary rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
                     >
                         {cancelText}
                     </button>
                     <button
                         onClick={onSubmit}
-                        className="bg-primary text-secondary hover:bg-primary-dark rounded-lg px-4 py-2 font-medium shadow-lg transition-colors"
+                        className="bg-accent hover:bg-accent-hover rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:shadow-md"
                     >
                         {submitText}
                     </button>

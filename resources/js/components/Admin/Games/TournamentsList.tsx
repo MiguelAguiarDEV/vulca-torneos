@@ -17,45 +17,45 @@ interface TournamentsListProps {
 
 export function TournamentsList({ tournaments }: TournamentsListProps) {
     return (
-        <div className="border-primary/30 bg-secondary/95 rounded-lg border-2 p-6 shadow-lg backdrop-blur-sm">
-            <div className="mb-6 flex items-center">
-                <Trophy className="text-primary mr-3 h-8 w-8" />
-                <h2 className="text-text-primary text-2xl font-bold">Torneos Próximos/Activos</h2>
+        <div className="border-border-primary bg-secondary rounded-xl border p-6 shadow-sm">
+            <div className="mb-4 flex items-center gap-3">
+                <Trophy className="text-accent h-6 w-6" strokeWidth={2} />
+                <h2 className="text-t-primary text-lg font-semibold">Torneos Próximos/Activos</h2>
             </div>
 
             {tournaments.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {tournaments.map((tournament) => (
                         <div
                             key={tournament.id}
-                            className="border-primary/30 bg-secondary-dark/80 hover:border-primary rounded-lg border p-4 backdrop-blur-sm transition-all duration-200 hover:shadow-lg"
+                            className="border-border-primary bg-tertiary hover:border-accent rounded-lg border p-4 shadow-sm transition-all hover:shadow-md"
                         >
-                            <div className="mb-3 flex items-center justify-between">
-                                <h3 className="text-text-primary text-lg font-semibold">{tournament.name}</h3>
+                            <div className="mb-2 flex items-center justify-between">
+                                <h3 className="text-t-primary font-semibold">{tournament.name}</h3>
                                 <span
-                                    className={`rounded-full px-3 py-1 text-sm font-medium shadow-lg ${
-                                        tournament.status === 'active' ? 'bg-success text-text-primary' : 'bg-info text-text-primary'
+                                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                                        tournament.status === 'active' ? 'bg-success text-white' : 'bg-info text-white'
                                     }`}
                                 >
                                     {tournament.status === 'active' ? 'Activo' : 'Próximo'}
                                 </span>
                             </div>
-                            <div className="text-text-primary/70 flex items-center space-x-6">
-                                <div className="flex items-center">
-                                    <Calendar className="mr-2 h-5 w-5" />
+                            <div className="text-t-secondary flex items-center gap-4 text-sm">
+                                <div className="flex items-center gap-1.5">
+                                    <Calendar className="h-4 w-4" strokeWidth={2} />
                                     <span>{tournament.start_date}</span>
                                 </div>
-                                <div className="flex items-center">
-                                    <Users className="mr-2 h-5 w-5" />
+                                <div className="flex items-center gap-1.5">
+                                    <Users className="h-4 w-4" strokeWidth={2} />
                                     <span>{tournament.participants_count} participantes</span>
                                 </div>
                             </div>
-                            <div className="text-text-primary/70 mt-3 text-sm">Estado: {tournament.original_status}</div>
+                            <div className="text-t-muted mt-2 text-xs">Estado: {tournament.original_status}</div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="py-12">
+                <div className="py-8">
                     <EmptyState
                         icon={Calendar}
                         title="No hay torneos próximos o activos"

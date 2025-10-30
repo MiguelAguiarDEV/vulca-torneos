@@ -2,7 +2,7 @@
 import React from 'react';
 
 interface EmptyStateProps {
-    icon: React.ComponentType<{ className?: string }>;
+    icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
     title: string;
     description: string;
     actionText?: string;
@@ -11,20 +11,18 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon: Icon, title, description, actionText, onAction }: EmptyStateProps) {
     return (
-        <div className="py-20 text-center">
-            <div className="border-primary/30 bg-secondary/95 mx-auto max-w-md rounded-lg border-2 p-12 shadow-lg backdrop-blur-sm">
-                <Icon className="text-primary/50 mx-auto mb-6 h-16 w-16" />
-                <h3 className="text-text-primary mb-3 text-xl font-semibold">{title}</h3>
-                <p className="text-text-primary/70 mb-6">{description}</p>
-                {actionText && onAction && (
-                    <button
-                        onClick={onAction}
-                        className="bg-primary text-secondary hover:bg-primary-dark inline-flex items-center justify-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
-                    >
-                        {actionText}
-                    </button>
-                )}
-            </div>
+        <div className="text-center">
+            <Icon className="text-t-muted mx-auto mb-4 h-12 w-12" strokeWidth={1.5} />
+            <h3 className="text-t-primary mb-2 text-base font-semibold">{title}</h3>
+            <p className="text-t-muted mb-4 text-sm">{description}</p>
+            {actionText && onAction && (
+                <button
+                    onClick={onAction}
+                    className="border-border-primary bg-accent hover:bg-accent-hover rounded-lg border px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md"
+                >
+                    {actionText}
+                </button>
+            )}
         </div>
     );
 }

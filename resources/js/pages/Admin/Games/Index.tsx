@@ -1,17 +1,16 @@
-// pages/Admin/Games/Index.tsx - REFACTORIZADO
+// pages/Admin/Games/Index.tsx
 import { GameCard } from '@/components/Admin/Games/GameCard';
 import { GameForm } from '@/components/Admin/Games/GameForm';
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
 import { EmptyState } from '@/components/Admin/Shared/EmptyState';
 import { FormModal } from '@/components/Admin/Shared/FormModal';
-import { StatsCard } from '@/components/Admin/Shared/StatsCard';
 import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
 import { Game } from '@/types';
-import { Gamepad, Gamepad2, Plus } from 'lucide-react';
+import { Gamepad, Plus } from 'lucide-react';
 import React from 'react';
 
 interface IndexProps {
@@ -92,27 +91,30 @@ const Index: React.FC<IndexProps> = ({ games }) => {
     return (
         <AdminLayout title="Juegos" pageTitle="Gestión de Juegos">
             {/* Header with stats and create button */}
-            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row">
-                <StatsCard
-                    icon={Gamepad2}
-                    title="Juegos"
-                    value={games.length}
-                    subtitle={games.length === 0 ? 'Ningún juego creado' : games.length === 1 ? 'Juego disponible' : 'disponibles'}
-                />
+            <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <div>
+                    <h1 className="text-t-primary text-3xl font-bold">Juegos</h1>
+                    <p className="text-t-muted mt-1 text-sm">
+                        {games.length === 0
+                            ? 'Ningún juego creado'
+                            : games.length === 1
+                              ? '1 juego disponible'
+                              : `${games.length} juegos disponibles`}
+                    </p>
+                </div>
+
                 <button
                     onClick={() => createModal.open()}
-                    className="from-primary to-primary-dark focus:ring-primary/50 text-secondary inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-b px-6 py-3 font-semibold shadow-[0_2px_6px_rgba(249,115,22,0.25)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_4px_12px_rgba(249,115,22,0.35)] focus:ring-2 focus:outline-none active:scale-95"
+                    className="border-border-primary bg-accent hover:bg-accent-hover flex w-fit cursor-pointer items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md"
                 >
-                    <span className="relative z-10 flex items-center gap-2 text-[15px] leading-none font-medium">
-                        <Plus className="h-4 w-4 opacity-90" />
-                        <span>Crear Nuevo Juego</span>
-                    </span>
+                    <Plus className="h-4 w-4" strokeWidth={2} />
+                    Crear Juego
                 </button>
             </div>
 
             {/* Games grid or empty state */}
             {games.length > 0 ? (
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                     {games.map((game) => (
                         <GameCard
                             key={game.id}
@@ -124,13 +126,15 @@ const Index: React.FC<IndexProps> = ({ games }) => {
                     ))}
                 </div>
             ) : (
-                <EmptyState
-                    icon={Gamepad}
-                    title="No hay juegos todavía"
-                    description="Empieza creando tu primer juego para organizar torneos."
-                    actionText="Crear Mi Primer Juego"
-                    onAction={() => createModal.open()}
-                />
+                <div className="py-12">
+                    <EmptyState
+                        icon={Gamepad}
+                        title="No hay juegos todavía"
+                        description="Empieza creando tu primer juego para organizar torneos."
+                        actionText="Crear Mi Primer Juego"
+                        onAction={() => createModal.open()}
+                    />
+                </div>
             )}
 
             {/* Delete confirmation modal */}

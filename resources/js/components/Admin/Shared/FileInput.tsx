@@ -1,4 +1,5 @@
 // components/Admin/Shared/FileInput.tsx
+import { Upload } from 'lucide-react';
 import React from 'react';
 
 interface FileInputProps {
@@ -14,18 +15,20 @@ export function FileInput({ onChange, accept = 'image/*', preview }: FileInputPr
     };
 
     return (
-        <div>
+        <div className="space-y-3">
             {preview && (
-                <div className="mb-4">
-                    <img src={preview} alt="Preview" className="border-primary/30 h-24 w-24 rounded-lg border-2 object-cover" />
+                <div className="flex h-64 w-full">
+                    <img src={preview} alt="Preview" className="border-border-primary h-full w-full rounded-lg border object-cover shadow-sm" />
                 </div>
             )}
-            <input
-                type="file"
-                accept={accept}
-                onChange={handleChange}
-                className="text-text-primary/70 file:bg-primary file:text-secondary hover:file:bg-primary-dark w-full text-sm file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:px-4 file:py-2 file:text-sm file:font-medium file:shadow-lg"
-            />
+            <div className="group flex items-center justify-center">
+                <label className="border-border-primary bg-tertiary hover:border-accent flex w-full cursor-pointer flex-col items-center rounded-lg border border-dashed px-4 py-6 transition-colors">
+                    <Upload className="group-hover:text-accent text-t-muted mb-2 h-6 w-6 duration-200 group-hover:-translate-y-1" strokeWidth={2} />
+                    <span className="text-t-primary mb-1 text-sm font-medium">Haz clic para subir</span>
+                    <span className="text-t-muted text-xs">PNG, JPG hasta 10MB</span>
+                    <input type="file" accept={accept} onChange={handleChange} className="hidden" />
+                </label>
+            </div>
         </div>
     );
 }

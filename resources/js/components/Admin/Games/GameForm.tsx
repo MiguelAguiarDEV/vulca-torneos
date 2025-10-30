@@ -22,7 +22,7 @@ interface GameFormProps {
 
 export function GameForm({ values, errors, onChange, image }: GameFormProps) {
     return (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="space-y-4">
             <FormField label="Nombre" required error={errors.name} fullWidth>
                 <TextInput
                     type="text"

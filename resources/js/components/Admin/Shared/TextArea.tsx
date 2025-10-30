@@ -10,8 +10,8 @@ export function TextArea({ error, className = '', ...props }: TextAreaProps) {
         <textarea
             {...props}
             className={`w-full resize-none rounded-lg border ${
-                error ? 'border-danger' : 'border-primary/30'
-            } bg-secondary-light text-text-primary focus:border-primary focus:ring-primary px-3 py-2 focus:ring-2 focus:outline-none ${className}`}
+                error ? 'border-danger focus:ring-danger' : 'border-border-primary focus:ring-accent'
+            } bg-tertiary text-t-primary focus:ring-offset-primary px-3 py-2 text-sm shadow-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none ${className}`}
         />
     );
 }
