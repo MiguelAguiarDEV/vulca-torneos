@@ -24,7 +24,7 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
     return (
         <Modal show={show} onClose={onCancel}>
-            <div className="p-6">
+            <div className="bg-primary p-6">
                 <h2 className="text-t-primary mb-4 text-lg font-semibold">{title}</h2>
                 <p className="text-t-secondary mb-6 text-sm">{message}</p>
                 <div className="flex justify-end gap-3">

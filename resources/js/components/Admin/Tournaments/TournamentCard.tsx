@@ -35,13 +35,13 @@ interface TournamentCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-    draft: 'bg-secondary text-text-primary',
-    published: 'bg-info text-text-primary',
-    registration_open: 'bg-success text-text-primary',
-    registration_closed: 'bg-warning text-secondary',
-    ongoing: 'bg-primary text-secondary',
-    finished: 'bg-secondary text-text-primary',
-    cancelled: 'bg-error text-text-primary',
+    draft: 'bg-secondary text-t-secondary',
+    published: 'bg-info text-white',
+    registration_open: 'bg-success text-white',
+    registration_closed: 'bg-warning text-white',
+    ongoing: 'bg-accent text-white',
+    finished: 'bg-tertiary text-t-secondary',
+    cancelled: 'bg-danger text-white',
 };
 
 const STATUS_TEXTS: Record<string, string> = {
@@ -65,83 +65,77 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
 
     return (
         <div
-            className="border-primary/30 bg-secondary/95 hover:border-primary flex h-full cursor-pointer flex-col rounded-lg border-2 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:shadow-xl"
+            className="group border-border-primary bg-secondary relative flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md"
             onClick={() => onClick?.(tournament)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') onClick?.(tournament);
-            }}
         >
             {/* Imagen */}
-            <div className="bg-secondary-dark relative h-48 overflow-hidden rounded-t-lg">
+            <div className="bg-tertiary relative h-48 overflow-hidden">
                 {tournament.image ? (
-                    <img
-                        src={tournament.image}
-                        alt={tournament.name}
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                        }}
-                    />
+                    <>
+                        <img
+                            src={tournament.image}
+                            alt={tournament.name}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                        />
+                        <div className="from-secondary/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+                    </>
                 ) : null}
 
                 {/* Fallback */}
                 <div className={`absolute inset-0 flex items-center justify-center ${tournament.image ? 'hidden' : ''}`}>
-                    <div className="text-center">
-                        <Trophy className="text-text-primary/50 mx-auto mb-2 h-12 w-12" />
-                        <span className="text-text-primary/50 text-sm">Sin imagen</span>
-                    </div>
+                    <Trophy className="text-t-muted group-hover:text-accent h-16 w-16 transition-colors" strokeWidth={1.5} />
                 </div>
 
                 {/* Estado */}
                 <div className="absolute top-3 right-3">
-                    <div className={`rounded-md px-2 py-1 text-xs font-medium shadow-lg ${getStatusColor(tournament.status)}`}>
+                    <span className={`rounded-lg px-2.5 py-1 text-xs font-medium shadow-sm ${getStatusColor(tournament.status)}`}>
                         {getStatusText(tournament.status)}
-                    </div>
+                    </span>
                 </div>
 
                 {/* Juego */}
                 {tournament.game && (
                     <div className="absolute top-3 left-3">
-                        <div className="bg-primary/90 text-secondary rounded-md px-2 py-1 text-xs font-medium shadow-lg backdrop-blur-sm">
+                        <span className="border-border-primary bg-accent rounded-lg border px-2.5 py-1 text-xs font-medium text-white shadow-sm">
                             {tournament.game.name}
-                        </div>
+                        </span>
                     </div>
                 )}
+
+                {/* Nombre del torneo superpuesto */}
+                <div className="from-secondary absolute right-0 bottom-0 left-0 bg-gradient-to-t to-transparent p-4">
+                    <h3 className="text-t-primary group-hover:text-accent line-clamp-1 text-lg font-semibold transition-colors">{tournament.name}</h3>
+                </div>
             </div>
 
             {/* Contenido */}
             <div className="flex flex-grow flex-col p-4">
-                <div className="mb-4">
-                    <h3 className="text-text-primary hover:text-primary mb-2 line-clamp-1 text-lg font-semibold transition-colors duration-200">
-                        {tournament.name}
-                    </h3>
-                    {tournament.description && <p className="text-text-primary/70 line-clamp-2 text-sm leading-relaxed">{tournament.description}</p>}
-                </div>
+                {tournament.description && <p className="text-t-secondary line-clamp-2 flex-grow text-sm">{tournament.description}</p>}
 
-                <div className="text-text-primary/70 mb-4 space-y-2 text-sm">
-                    <div className="flex items-center">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span>Inicio: {new Date(tournament.start_date).toLocaleDateString('es-ES')}</span>
+                <div className="text-t-secondary mt-4 space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 shrink-0" strokeWidth={2} />
+                        <span className="truncate">{new Date(tournament.start_date).toLocaleDateString('es-ES')}</span>
                     </div>
-                    <div className="flex items-center">
-                        <Users className="mr-2 h-4 w-4" />
+
+                    <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 shrink-0" strokeWidth={2} />
                         <span>
                             {tournament.registrations_count}
-                            {tournament.has_registration_limit && tournament.registration_limit
-                                ? ` / ${tournament.registration_limit} inscripciones`
-                                : ' inscripciones'}
+                            {tournament.has_registration_limit && tournament.registration_limit ? ` / ${tournament.registration_limit}` : ''}
                         </span>
                         {progress !== null && (
                             <span
-                                className={`ml-2 rounded-full px-2 py-1 text-xs ${
+                                className={`ml-auto rounded-full px-2 py-0.5 text-xs font-medium ${
                                     progress >= 90
-                                        ? 'bg-error/20 text-error'
+                                        ? 'bg-danger/10 text-danger'
                                         : progress >= 70
-                                          ? 'bg-warning/20 text-warning'
-                                          : 'bg-success/20 text-success'
+                                          ? 'bg-warning/10 text-warning'
+                                          : 'bg-success/10 text-success'
                                 }`}
                             >
                                 {progress}%
@@ -150,29 +144,27 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
                     </div>
 
                     {tournament.entry_fee != null && (
-                        <div className="flex items-center">
-                            <DollarSign className="mr-2 h-4 w-4" />
+                        <div className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 shrink-0" strokeWidth={2} />
                             <span>€{tournament.entry_fee}</span>
                         </div>
                     )}
                 </div>
-
-                <div className="flex-grow" />
             </div>
 
-            {/* Acciones */}
-            <div className="border-primary bg-secondary-dark/80 border-t-2 px-4 py-3">
-                <div className="flex items-center justify-end space-x-2">
+            {/* Actions */}
+            <div className="border-border-primary bg-tertiary border-t px-4 py-3">
+                <div className="flex items-center justify-end gap-1">
                     <button
                         type="button"
                         onClick={(e) => {
                             e.stopPropagation();
                             onEdit?.(tournament);
                         }}
-                        className="text-text-primary hover:bg-primary/20 hover:text-primary rounded-md p-2 transition-colors duration-200"
+                        className="text-t-secondary hover:bg-accent/10 hover:text-accent rounded-lg p-2 transition-colors"
                         title="Editar torneo"
                     >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-4 w-4" strokeWidth={2} />
                     </button>
                     <button
                         type="button"
@@ -180,10 +172,10 @@ export function TournamentCard({ tournament, onClick, onEdit, onDelete }: Tourna
                             e.stopPropagation();
                             onDelete?.(tournament);
                         }}
-                        className="hover:bg-error/10 hover:text-error text-text-primary rounded-md p-2 transition-colors duration-200"
+                        className="text-t-secondary hover:bg-danger/10 hover:text-danger rounded-lg p-2 transition-colors"
                         title="Eliminar torneo"
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" strokeWidth={2} />
                     </button>
                 </div>
             </div>

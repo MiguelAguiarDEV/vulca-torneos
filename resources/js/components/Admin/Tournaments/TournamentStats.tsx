@@ -10,43 +10,51 @@ interface TournamentStatsProps {
 
 export function TournamentStats({ totalRegistrations, confirmedCount, pendingCount, totalRevenue }: TournamentStatsProps) {
     return (
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-            <div className="border-primary/30 bg-secondary/95 hover:border-primary rounded-lg border-2 p-4 shadow-lg backdrop-blur-sm transition-all hover:shadow-xl">
-                <div className="flex items-center">
-                    <Users className="text-primary mr-3 h-8 w-8" />
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="border-border-primary bg-secondary rounded-xl border p-5 shadow-sm transition-all hover:shadow-md">
+                <div className="flex items-center gap-3">
+                    <div className="bg-accent-subtle text-accent flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                        <Users className="h-6 w-6" strokeWidth={2} />
+                    </div>
                     <div>
-                        <h3 className="text-text-primary/70 text-sm font-medium">Total Inscripciones</h3>
-                        <p className="text-text-primary text-2xl font-bold">{totalRegistrations}</p>
+                        <h3 className="text-t-muted text-sm font-medium">Total Inscripciones</h3>
+                        <p className="text-t-primary text-2xl font-bold">{totalRegistrations}</p>
                     </div>
                 </div>
             </div>
 
-            <div className="border-success/30 bg-secondary/95 hover:border-success rounded-lg border-2 p-4 shadow-lg backdrop-blur-sm transition-all hover:shadow-xl">
-                <div className="flex items-center">
-                    <Trophy className="text-success mr-3 h-8 w-8" />
+            <div className="border-border-primary bg-secondary rounded-xl border p-5 shadow-sm transition-all hover:shadow-md">
+                <div className="flex items-center gap-3">
+                    <div className="bg-success/10 text-success flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                        <Trophy className="h-6 w-6" strokeWidth={2} />
+                    </div>
                     <div>
-                        <h3 className="text-text-primary/70 text-sm font-medium">Confirmadas</h3>
-                        <p className="text-text-primary text-2xl font-bold">{confirmedCount}</p>
+                        <h3 className="text-t-muted text-sm font-medium">Confirmadas</h3>
+                        <p className="text-t-primary text-2xl font-bold">{confirmedCount}</p>
                     </div>
                 </div>
             </div>
 
-            <div className="border-warning/30 bg-secondary/95 hover:border-warning rounded-lg border-2 p-4 shadow-lg backdrop-blur-sm transition-all hover:shadow-xl">
-                <div className="flex items-center">
-                    <Clock className="text-warning mr-3 h-8 w-8" />
+            <div className="border-border-primary bg-secondary rounded-xl border p-5 shadow-sm transition-all hover:shadow-md">
+                <div className="flex items-center gap-3">
+                    <div className="bg-warning/10 text-warning flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                        <Clock className="h-6 w-6" strokeWidth={2} />
+                    </div>
                     <div>
-                        <h3 className="text-text-primary/70 text-sm font-medium">Pendientes</h3>
-                        <p className="text-text-primary text-2xl font-bold">{pendingCount}</p>
+                        <h3 className="text-t-muted text-sm font-medium">Pendientes</h3>
+                        <p className="text-t-primary text-2xl font-bold">{pendingCount}</p>
                     </div>
                 </div>
             </div>
 
-            <div className="border-info/30 bg-secondary/95 hover:border-info rounded-lg border-2 p-4 shadow-lg backdrop-blur-sm transition-all hover:shadow-xl">
-                <div className="flex items-center">
-                    <DollarSign className="text-info mr-3 h-8 w-8" />
+            <div className="border-border-primary bg-secondary rounded-xl border p-5 shadow-sm transition-all hover:shadow-md">
+                <div className="flex items-center gap-3">
+                    <div className="bg-info/10 text-info flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                        <DollarSign className="h-6 w-6" strokeWidth={2} />
+                    </div>
                     <div>
-                        <h3 className="text-text-primary/70 text-sm font-medium">Ingresos</h3>
-                        <p className="text-text-primary text-2xl font-bold">€{totalRevenue.toFixed(2)}</p>
+                        <h3 className="text-t-muted text-sm font-medium">Ingresos</h3>
+                        <p className="text-t-primary text-2xl font-bold">€{totalRevenue.toFixed(2)}</p>
                     </div>
                 </div>
             </div>

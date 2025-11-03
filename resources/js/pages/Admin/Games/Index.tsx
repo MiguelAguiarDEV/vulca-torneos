@@ -4,13 +4,14 @@ import { GameForm } from '@/components/Admin/Games/GameForm';
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
 import { EmptyState } from '@/components/Admin/Shared/EmptyState';
 import { FormModal } from '@/components/Admin/Shared/FormModal';
+import { StatsCard } from '@/components/Admin/Shared/StatsCard';
 import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
 import { Game } from '@/types';
-import { Gamepad, Plus } from 'lucide-react';
+import { Gamepad, Gamepad2, Plus } from 'lucide-react';
 import React from 'react';
 
 interface IndexProps {
@@ -92,16 +93,12 @@ const Index: React.FC<IndexProps> = ({ games }) => {
         <AdminLayout title="Juegos" pageTitle="Gestión de Juegos">
             {/* Header with stats and create button */}
             <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                <div>
-                    <h1 className="text-t-primary text-3xl font-bold">Juegos</h1>
-                    <p className="text-t-muted mt-1 text-sm">
-                        {games.length === 0
-                            ? 'Ningún juego creado'
-                            : games.length === 1
-                              ? '1 juego disponible'
-                              : `${games.length} juegos disponibles`}
-                    </p>
-                </div>
+                <StatsCard
+                    icon={Gamepad2}
+                    title="Juegos"
+                    value={games.length}
+                    subtitle={games.length === 0 ? 'Ningún juego creado' : games.length === 1 ? 'Juego disponible' : 'disponibles'}
+                />
 
                 <button
                     onClick={() => createModal.open()}

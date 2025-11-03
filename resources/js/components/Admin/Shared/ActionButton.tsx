@@ -25,7 +25,7 @@ export function ActionButton({ icon: Icon, onClick, title, variant = 'primary', 
     return (
         <button
             onClick={onClick}
-            className={`rounded-lg transition-colors duration-200 ${variants[variant]} ${sizes[size]}`}
+            className={`cursor-pointer rounded-lg transition-colors duration-200 ${variants[variant]} ${sizes[size]}`}
             title={title}
             type="button"
         >
