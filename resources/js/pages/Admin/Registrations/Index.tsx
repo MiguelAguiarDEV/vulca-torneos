@@ -1,4 +1,4 @@
-// pages/Admin/Registrations/Index.tsx - REFACTORIZADO
+// pages/Admin/Registrations/Index.tsx
 import { RegistrationCard } from '@/components/Admin/Registrations/RegistrationCard';
 import { RegistrationFilters } from '@/components/Admin/Registrations/RegistrationFilters';
 import { RegistrationForm } from '@/components/Admin/Registrations/RegistrationForm';
@@ -11,7 +11,8 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import AdminLayout from '@/layouts/AdminLayout';
 import type { Registration, Tournament, User } from '@/types';
-import { Plus, UserPlus } from 'lucide-react';
+import { router } from '@inertiajs/react';
+import { CheckCircle, Clock, Plus, Users } from 'lucide-react';
 import { useState } from 'react';
 
 interface IndexProps {
@@ -38,22 +39,20 @@ interface EditRegistrationFormValues {
 }
 
 const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
-    // CRUD
     const { update, navigateTo } = useCRUD({
         resourceName: 'inscripción',
         routePrefix: 'admin.registrations',
     });
 
-    // Filtros y búsqueda
+    // Estado de filtros
     const [searchTerm, setSearchTerm] = useState('');
     const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
     const [tournamentFilter, setTournamentFilter] = useState('all');
     const [gameFilter, setGameFilter] = useState('all');
 
-    // Modal: Eliminar
+    // Modales
     const deleteModal = useConfirmModal<Registration>();
 
-    // Modal: Crear
     const createModal = useFormModal<RegistrationFormValues>({
         initialValues: {
             user_selection_type: 'existing',
@@ -67,15 +66,15 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
         },
         onSubmit: (values) => {
             if (values.user_selection_type === 'existing' && !values.user_id) {
-                alert('Debes seleccionar un usuario');
+                alert('Debes seleccionar un usuario.');
                 return;
             }
             if (values.user_selection_type === 'new' && !values.new_user_name.trim()) {
-                alert('El nombre del nuevo usuario es requerido');
+                alert('El nombre del nuevo usuario es obligatorio.');
                 return;
             }
             if (!values.tournament_id) {
-                alert('Debes seleccionar un torneo');
+                alert('Debes seleccionar un torneo.');
                 return;
             }
 
@@ -99,17 +98,14 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
                 data.append('payment_notes', values.payment_notes.trim());
             }
 
-            import('@inertiajs/react').then(({ router }) => {
-                router.post(route('admin.registrations.store'), data, {
-                    preserveState: true,
-                    preserveScroll: true,
-                    onSuccess: () => createModal.close(),
-                });
+            router.post(route('admin.registrations.store'), data, {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => createModal.close(),
             });
         },
     });
 
-    // Modal: Editar
     const editModal = useFormModal<EditRegistrationFormValues & { id: number }>({
         initialValues: {
             id: 0,
@@ -124,7 +120,6 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
             if (values.payment_notes.trim()) {
                 data.append('payment_notes', values.payment_notes.trim());
             }
-
             update(values.id, data, () => editModal.close());
         },
     });
@@ -132,12 +127,10 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
     // Handlers
     const handleDelete = () => {
         if (deleteModal.item) {
-            import('@inertiajs/react').then(({ router }) => {
-                router.delete(route('admin.registrations.destroy', deleteModal.item!.id), {
-                    preserveState: true,
-                    preserveScroll: true,
-                    onSuccess: () => deleteModal.close(),
-                });
+            router.delete(route('admin.registrations.destroy', deleteModal.item.id), {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => deleteModal.close(),
             });
         }
     };
@@ -181,7 +174,7 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
     // Filtrado
     const filteredRegistrations = registrations.filter((reg) => {
         const searchMatch =
-            searchTerm === '' ||
+            !searchTerm ||
             reg.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             reg.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             reg.tournament.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -196,28 +189,23 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
     // Estadísticas
     const confirmedCount = registrations.filter((r) => r.payment_status === 'confirmed').length;
     const pendingCount = registrations.filter((r) => r.payment_status === 'pending').length;
-    const totalRevenue = registrations.filter((r) => r.payment_status === 'confirmed' && r.amount).reduce((sum, r) => sum + (r.amount || 0), 0);
+    const totalRevenue = registrations.filter((r) => r.payment_status === 'confirmed' && r.amount).reduce((sum, r) => sum + Number(r.amount || 0), 0);
 
     return (
         <AdminLayout title="Inscripciones" pageTitle="Gestión de Inscripciones">
-            {/* Header con stats y botón crear */}
-            <div className="mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <StatsCard
-                        icon={UserPlus}
-                        title="Total"
-                        value={filteredRegistrations.length}
-                        subtitle={`${filteredRegistrations.length !== registrations.length ? `de ${registrations.length}` : 'inscripciones'}`}
-                    />
-                    <StatsCard icon={UserPlus} title="Confirmadas" value={confirmedCount} subtitle="pagos completados" variant="success" />
-                    <StatsCard icon={UserPlus} title="Pendientes" value={pendingCount} subtitle="por confirmar" variant="warning" />
+            {/* Cabecera y estadísticas */}
+            <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
+                    <StatsCard icon={Users} title="Total" value={registrations.length} subtitle="inscripciones" />
+                    <StatsCard icon={CheckCircle} title="Confirmadas" value={confirmedCount} subtitle="pagos completados" />
+                    <StatsCard icon={Clock} title="Pendientes" value={pendingCount} subtitle="por confirmar" />
                 </div>
 
                 <button
                     onClick={() => createModal.open()}
-                    className="bg-primary text-secondary hover:bg-primary-dark inline-flex items-center justify-center rounded-lg px-6 py-3 font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
+                    className="bg-accent hover:bg-accent-hover rounded-lg px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:shadow-lg"
                 >
-                    <Plus className="mr-2 h-5 w-5" />
+                    <Plus className="mr-2 inline-block h-4 w-4" strokeWidth={2} />
                     Nueva Inscripción
                 </button>
             </div>
@@ -238,7 +226,7 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
                 filteredCount={filteredRegistrations.length}
             />
 
-            {/* Grid de inscripciones */}
+            {/* Lista de inscripciones */}
             {filteredRegistrations.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {filteredRegistrations.map((registration) => (
@@ -246,29 +234,29 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
                             key={registration.id}
                             registration={registration}
                             onClick={() => navigateTo('admin.registrations.show', registration.id)}
-                            onEdit={() => handleEdit(registration)}
-                            onDelete={() => deleteModal.open(registration)}
+                            onEdit={handleEdit}
+                            onDelete={(r) => deleteModal.open(r)}
                             onQuickAction={handleQuickAction}
                         />
                     ))}
                 </div>
             ) : (
                 <EmptyState
-                    icon={UserPlus}
+                    icon={Users}
                     title={
                         searchTerm || paymentStatusFilter !== 'all' || tournamentFilter !== 'all' || gameFilter !== 'all'
                             ? 'No se encontraron inscripciones'
-                            : 'No hay inscripciones'
+                            : 'No hay inscripciones registradas'
                     }
                     description={
                         searchTerm || paymentStatusFilter !== 'all' || tournamentFilter !== 'all' || gameFilter !== 'all'
-                            ? 'No hay inscripciones que coincidan con los filtros.'
-                            : 'Comienza registrando la primera inscripción para un torneo.'
+                            ? 'No existen inscripciones que coincidan con los filtros aplicados.'
+                            : 'Comienza creando la primera inscripción para un torneo.'
                     }
                     actionText={
                         searchTerm || paymentStatusFilter !== 'all' || tournamentFilter !== 'all' || gameFilter !== 'all'
-                            ? 'Limpiar Filtros'
-                            : 'Primera Inscripción'
+                            ? 'Limpiar filtros'
+                            : 'Nueva inscripción'
                     }
                     onAction={
                         searchTerm || paymentStatusFilter !== 'all' || tournamentFilter !== 'all' || gameFilter !== 'all'
@@ -282,7 +270,7 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
             <ConfirmModal
                 show={deleteModal.isOpen}
                 title="Confirmar Eliminación"
-                message={`¿Estás seguro de que deseas eliminar la inscripción de "${deleteModal.item?.user.name}" al torneo "${deleteModal.item?.tournament.name}"? Esta acción no se puede deshacer.`}
+                message={`¿Seguro que deseas eliminar la inscripción de "${deleteModal.item?.user.name}" al torneo "${deleteModal.item?.tournament.name}"? Esta acción no se puede deshacer.`}
                 confirmText="Eliminar"
                 onConfirm={handleDelete}
                 onCancel={deleteModal.close}

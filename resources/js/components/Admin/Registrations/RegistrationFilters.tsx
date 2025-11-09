@@ -34,43 +34,47 @@ export function RegistrationFilters({
     const games = Array.from(new Map(tournaments.map((t) => [t.game.id, t.game])).values());
 
     return (
-        <div className="border-primary/30 bg-secondary/95 mb-6 rounded-lg border-2 p-4 shadow-lg backdrop-blur-sm">
-            {/* Búsqueda */}
-            <div className="mb-4">
-                <label className="text-text-primary mb-2 block text-sm font-medium">Buscar inscripciones</label>
+        <div className="border-border-primary bg-secondary mb-8 rounded-xl border p-5 shadow-sm">
+            {/* Campo de búsqueda */}
+            <div className="mb-5">
+                <label className="text-t-primary mb-2 block text-sm font-medium">Buscar inscripciones</label>
                 <div className="relative">
                     <input
                         type="text"
-                        placeholder="Buscar por nombre, email o torneo..."
                         value={searchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="border-primary/30 bg-secondary-light text-text-primary placeholder-text-primary/50 focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-3 pl-10 focus:ring-2 focus:outline-none"
+                        placeholder="Buscar por nombre, email o torneo..."
+                        className="border-border-primary bg-tertiary text-t-primary placeholder-t-secondary/60 focus:border-accent focus:ring-accent w-full rounded-lg border px-4 py-2.5 pl-10 text-sm shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     />
-                    <Search className="text-primary/70 absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
+                    <Search className="text-accent absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" strokeWidth={2} />
                     {searchTerm && (
                         <button
                             onClick={() => onSearchChange('')}
-                            className="text-text-primary/50 hover:text-text-primary absolute top-1/2 right-3 -translate-y-1/2"
+                            className="text-t-secondary hover:text-t-primary absolute top-1/2 right-3 -translate-y-1/2"
+                            title="Limpiar búsqueda"
                         >
-                            <XCircle className="h-5 w-5" />
+                            <XCircle className="h-5 w-5" strokeWidth={2} />
                         </button>
                     )}
                 </div>
+
                 {searchTerm && (
-                    <p className="text-text-primary/60 mt-2 text-sm">
-                        Mostrando {filteredCount} de {totalCount} inscripciones
+                    <p className="text-t-secondary mt-2 text-xs">
+                        Mostrando <span className="text-t-primary font-semibold">{filteredCount}</span> de{' '}
+                        <span className="text-t-primary font-semibold">{totalCount}</span> inscripciones.
                     </p>
                 )}
             </div>
 
             {/* Filtros */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Estado de pago */}
                 <div>
-                    <label className="text-text-primary mb-2 block text-sm font-medium">Estado de pago</label>
+                    <label className="text-t-primary mb-2 block text-sm font-medium">Estado de pago</label>
                     <select
                         value={paymentStatusFilter}
                         onChange={(e) => onPaymentStatusChange(e.target.value)}
-                        className="border-primary/30 bg-secondary-light text-text-primary focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
+                        className="border-border-primary bg-tertiary text-t-primary focus:border-accent focus:ring-accent w-full rounded-lg border px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     >
                         <option value="all">Todos</option>
                         <option value="pending">Pendientes</option>
@@ -79,12 +83,13 @@ export function RegistrationFilters({
                     </select>
                 </div>
 
+                {/* Juego */}
                 <div>
-                    <label className="text-text-primary mb-2 block text-sm font-medium">Juego</label>
+                    <label className="text-t-primary mb-2 block text-sm font-medium">Juego</label>
                     <select
                         value={gameFilter}
                         onChange={(e) => onGameChange(e.target.value)}
-                        className="border-primary/30 bg-secondary-light text-text-primary focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
+                        className="border-border-primary bg-tertiary text-t-primary focus:border-accent focus:ring-accent w-full rounded-lg border px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     >
                         <option value="all">Todos</option>
                         {games.map((game) => (
@@ -95,12 +100,13 @@ export function RegistrationFilters({
                     </select>
                 </div>
 
+                {/* Torneo */}
                 <div>
-                    <label className="text-text-primary mb-2 block text-sm font-medium">Torneo</label>
+                    <label className="text-t-primary mb-2 block text-sm font-medium">Torneo</label>
                     <select
                         value={tournamentFilter}
                         onChange={(e) => onTournamentChange(e.target.value)}
-                        className="border-primary/30 bg-secondary-light text-text-primary focus:border-primary focus:ring-primary w-full rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
+                        className="border-border-primary bg-tertiary text-t-primary focus:border-accent focus:ring-accent w-full rounded-lg border px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     >
                         <option value="all">Todos</option>
                         {tournaments
@@ -113,12 +119,13 @@ export function RegistrationFilters({
                     </select>
                 </div>
 
+                {/* Botón limpiar */}
                 <div className="flex items-end">
                     <button
                         onClick={onClearFilters}
-                        className="border-primary/30 bg-secondary-light text-text-primary hover:bg-secondary-lighter w-full rounded-lg border px-4 py-2 transition-colors"
+                        className="border-border-primary hover:bg-accent/10 text-t-primary w-full rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
                     >
-                        Limpiar todo
+                        Limpiar filtros
                     </button>
                 </div>
             </div>

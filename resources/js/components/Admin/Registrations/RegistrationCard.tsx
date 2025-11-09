@@ -1,22 +1,22 @@
 // components/Admin/Registrations/RegistrationCard.tsx
 import type { Registration } from '@/types';
-import { CheckCircle, Clock, Edit, Gamepad2, Mail, Trash2, Trophy, User, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, Edit, Mail, Trash2, Trophy, User, XCircle } from 'lucide-react';
 
 interface RegistrationCardProps {
     registration: Registration;
-    onClick: () => void;
-    onEdit: () => void;
-    onDelete: () => void;
+    onClick?: (registration: Registration) => void;
+    onEdit: (registration: Registration) => void;
+    onDelete: (registration: Registration) => void;
     onQuickAction: (registration: Registration, action: 'confirm' | 'pending' | 'cancel') => void;
 }
 
 const getPaymentStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-        pending: 'bg-warning text-secondary',
-        confirmed: 'bg-success text-text-primary',
-        failed: 'bg-error text-text-primary',
+        pending: 'bg-warning/10 text-warning',
+        confirmed: 'bg-success/10 text-success',
+        failed: 'bg-danger/10 text-danger',
     };
-    return colors[status] || 'bg-secondary text-text-primary';
+    return colors[status] || 'bg-tertiary text-t-primary';
 };
 
 const getPaymentStatusText = (status: string) => {
@@ -37,109 +37,125 @@ const getPaymentMethodText = (method: string) => {
     return texts[method] || method;
 };
 
+function formatAmount(value: unknown): string | null {
+    // admite number, string numérica o null/undefined
+    if (typeof value === 'number' && Number.isFinite(value)) return value.toFixed(2);
+    if (typeof value === 'string') {
+        const n = Number(value);
+        if (Number.isFinite(n)) return n.toFixed(2);
+    }
+    return null;
+}
+
 export function RegistrationCard({ registration, onClick, onEdit, onDelete, onQuickAction }: RegistrationCardProps) {
+    const amountFormatted = formatAmount((registration as any).amount);
+    const dateSrc = (registration as any).registered_at || registration.created_at;
+    const dateLabel = dateSrc ? new Date(dateSrc).toLocaleDateString('es-ES') : '—';
+
     return (
         <div
-            onClick={onClick}
-            className="group border-primary/30 bg-secondary/95 hover:border-primary cursor-pointer rounded-lg border-2 p-6 shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
+            className="border-border-primary bg-secondary group relative flex cursor-pointer flex-col rounded-xl border p-5 shadow-sm transition-all hover:shadow-md"
+            onClick={() => onClick?.(registration)}
         >
-            {/* Header con usuario y estado */}
+            {/* Header */}
             <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-center space-x-3">
-                    <div className="bg-primary/20 flex h-12 w-12 items-center justify-center rounded-full">
-                        <User className="text-primary h-6 w-6" />
+                <div className="flex items-center gap-3">
+                    <div className="bg-accent/10 text-accent flex h-10 w-10 items-center justify-center rounded-full">
+                        <User className="h-5 w-5" strokeWidth={2} />
                     </div>
                     <div>
-                        <h3 className="text-text-primary text-lg font-bold">{registration.user.name}</h3>
-                        <p className="text-text-primary/70 flex items-center text-sm">
-                            <Mail className="mr-1 h-3 w-3" />
+                        <h3 className="text-t-primary text-base font-semibold">{registration.user.name}</h3>
+                        <p className="text-t-secondary flex items-center gap-1 text-xs">
+                            <Mail className="h-3 w-3" strokeWidth={2} />
                             {registration.user.email}
                         </p>
                     </div>
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-medium ${getPaymentStatusColor(registration.payment_status)}`}>
+
+                <span className={`rounded-lg px-2.5 py-1 text-xs font-medium ${getPaymentStatusColor(registration.payment_status)}`}>
                     {getPaymentStatusText(registration.payment_status)}
                 </span>
             </div>
 
-            {/* Info del torneo */}
-            <div className="border-primary/20 bg-secondary-dark/50 mb-4 space-y-2 rounded-lg border p-3">
-                <div className="text-text-primary flex items-center text-sm">
-                    <Trophy className="text-primary mr-2 h-4 w-4" />
-                    <span className="font-medium">{registration.tournament.name}</span>
+            {/* Torneo */}
+            <div className="border-border-primary bg-tertiary mb-4 rounded-lg border p-3 text-sm">
+                <div className="flex items-center gap-2">
+                    <Trophy className="text-accent h-4 w-4" strokeWidth={2} />
+                    <span className="text-t-primary font-medium">{registration.tournament.name}</span>
                 </div>
-                <div className="text-text-primary/70 flex items-center text-sm">
-                    <Gamepad2 className="text-primary/70 mr-2 h-4 w-4" />
-                    <span>{registration.tournament.game.name}</span>
-                </div>
+                <p className="text-t-secondary ml-6 text-xs">{registration.tournament.game.name}</p>
             </div>
 
             {/* Detalles de pago */}
-            <div className="mb-4 space-y-1 text-sm">
-                <div className="text-text-primary/70 flex justify-between">
+            <div className="text-t-secondary mb-4 space-y-1 text-sm">
+                <div className="flex justify-between">
                     <span>Método:</span>
-                    <span className="text-text-primary font-medium">{getPaymentMethodText(registration.payment_method)}</span>
+                    <span className="text-t-primary font-medium">{getPaymentMethodText(registration.payment_method)}</span>
                 </div>
-                {registration.amount && (
-                    <div className="text-text-primary/70 flex justify-between">
+                {amountFormatted !== null && (
+                    <div className="flex justify-between">
                         <span>Importe:</span>
-                        <span className="text-primary font-bold">€{registration.amount}</span>
+                        <span className="text-success font-semibold">€{amountFormatted}</span>
                     </div>
                 )}
-                <div className="text-text-primary/70 flex justify-between">
+                <div className="flex justify-between">
                     <span>Fecha:</span>
-                    <span className="text-text-primary font-medium">{new Date(registration.registered_at).toLocaleDateString('es-ES')}</span>
+                    <span className="text-t-primary font-medium">{dateLabel}</span>
                 </div>
             </div>
 
+            {/* Notas */}
             {registration.payment_notes && (
-                <div className="border-primary/10 bg-secondary-light/30 text-text-primary/60 mb-4 rounded border p-2 text-xs">
-                    <span className="font-medium">Notas:</span> {registration.payment_notes}
+                <div className="border-border-primary bg-tertiary text-t-secondary mb-4 rounded-lg border p-2 text-xs italic">
+                    <span className="text-t-primary font-medium">Notas:</span> {registration.payment_notes}
                 </div>
             )}
 
             {/* Acciones */}
-            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="mt-auto flex flex-wrap gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
                 {registration.payment_status === 'pending' && (
                     <button
                         onClick={() => onQuickAction(registration, 'confirm')}
-                        className="bg-success text-text-primary flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
+                        className="bg-success hover:bg-success/90 flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md"
                         title="Confirmar pago"
                     >
-                        <CheckCircle className="mr-1 h-4 w-4" />
+                        <CheckCircle className="h-3.5 w-3.5" strokeWidth={2} />
                         Confirmar
                     </button>
                 )}
                 {registration.payment_status === 'confirmed' && (
                     <button
                         onClick={() => onQuickAction(registration, 'pending')}
-                        className="bg-warning text-secondary flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
+                        className="bg-warning hover:bg-warning/90 flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md"
                         title="Marcar como pendiente"
                     >
-                        <Clock className="mr-1 h-4 w-4" />
+                        <Clock className="h-3.5 w-3.5" strokeWidth={2} />
                         Pendiente
                     </button>
                 )}
                 <button
-                    onClick={onEdit}
-                    className="bg-info text-text-primary flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
-                    title="Editar"
+                    onClick={() => onEdit(registration)}
+                    className="bg-info hover:bg-info/90 flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md"
+                    title="Editar inscripción"
                 >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="h-3.5 w-3.5" strokeWidth={2} />
+                    Editar
                 </button>
                 <button
                     onClick={() => onQuickAction(registration, 'cancel')}
-                    className="bg-error text-text-primary flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
-                    title="Cancelar"
+                    className="bg-danger/80 hover:bg-danger flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md"
+                    title="Cancelar inscripción"
                 >
-                    <XCircle className="h-4 w-4" />
+                    <XCircle className="h-3.5 w-3.5" strokeWidth={2} />
+                    Cancelar
                 </button>
                 <button
-                    onClick={onDelete}
-                    className="bg-error text-text-primary flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:scale-105"
-                    title="Eliminar"
+                    onClick={() => onDelete(registration)}
+                    className="border-border-primary hover:bg-danger/10 text-danger flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-medium shadow-sm transition-all hover:shadow-md"
+                    title="Eliminar inscripción"
                 >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+                    Eliminar
                 </button>
             </div>
         </div>

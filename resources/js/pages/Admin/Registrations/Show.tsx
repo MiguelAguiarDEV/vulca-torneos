@@ -1,4 +1,4 @@
-// pages/Admin/Registrations/Show.tsx - REFACTORIZADO
+// pages/Admin/Registrations/Show.tsx
 import { RegistrationDetails } from '@/components/Admin/Registrations/RegistrationDetails';
 import { RegistrationForm } from '@/components/Admin/Registrations/RegistrationForm';
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
@@ -10,6 +10,7 @@ import AdminLayout from '@/layouts/AdminLayout';
 import type { Registration, Tournament, User } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle, Clock, Edit, Trash2, XCircle } from 'lucide-react';
+import React from 'react';
 
 interface ShowProps {
     registration: Registration;
@@ -30,10 +31,10 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
         routePrefix: 'admin.registrations',
     });
 
-    // Modal: Eliminar
+    // Modal: Confirmar eliminación
     const deleteModal = useConfirmModal<Registration>();
 
-    // Modal: Editar
+    // Modal: Editar inscripción
     const editModal = useFormModal<EditRegistrationFormValues & { id: number }>({
         initialValues: {
             id: 0,
@@ -48,7 +49,6 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
             if (values.payment_notes.trim()) {
                 data.append('payment_notes', values.payment_notes.trim());
             }
-
             update(values.id, data, () => editModal.close());
         },
     });
@@ -56,9 +56,7 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
     // Handlers
     const handleDelete = () => {
         if (deleteModal.item) {
-            destroy(deleteModal.item.id, () => {
-                navigateTo('admin.registrations.index');
-            });
+            destroy(deleteModal.item.id, () => navigateTo('admin.registrations.index'));
         }
     };
 
@@ -93,11 +91,11 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
 
     const getPaymentStatusColor = (status: string) => {
         const colors: Record<string, string> = {
-            pending: 'bg-warning text-secondary',
-            confirmed: 'bg-success text-text-primary',
-            failed: 'bg-error text-text-primary',
+            pending: 'bg-warning/10 text-warning',
+            confirmed: 'bg-success/10 text-success',
+            failed: 'bg-danger/10 text-danger',
         };
-        return colors[status] || 'bg-secondary text-text-primary';
+        return colors[status] || 'bg-tertiary text-t-primary';
     };
 
     const getPaymentStatusText = (status: string) => {
@@ -111,86 +109,88 @@ const Show: React.FC<ShowProps> = ({ registration, tournaments, users }) => {
 
     return (
         <AdminLayout title={`Inscripción - ${registration.user.name}`} pageTitle="Detalles de la Inscripción">
-            {/* Header */}
-            <div className="mb-8">
-                <div className="border-primary/30 bg-secondary/95 rounded-lg border-2 p-6 shadow-lg backdrop-blur-sm">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <Link
-                                href={route('admin.registrations.index')}
-                                className="border-primary/30 text-text-primary hover:border-primary hover:bg-primary/20 mr-6 rounded-lg border p-3 transition-all duration-200 hover:scale-110"
-                            >
-                                <ArrowLeft className="h-6 w-6" />
-                            </Link>
-                            <div>
-                                <div className="mb-2 flex items-center gap-4">
-                                    <h1 className="text-4xl font-bold text-white drop-shadow-lg">Inscripción #{registration.id}</h1>
-                                    <span
-                                        className={`rounded-full px-4 py-2 text-sm font-medium shadow-lg ${getPaymentStatusColor(registration.payment_status)}`}
-                                    >
-                                        {getPaymentStatusText(registration.payment_status)}
-                                    </span>
-                                </div>
-                                <p className="text-text-primary/70 text-lg">
-                                    {registration.user.name} - {registration.tournament.name}
-                                </p>
-                            </div>
-                        </div>
+            {/* Encabezado */}
+            <div className="border-border-primary bg-secondary mb-8 rounded-xl border p-6 shadow-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href={route('admin.registrations.index')}
+                            className="border-border-primary text-t-primary hover:bg-accent/10 rounded-lg border p-2 transition-all hover:scale-105"
+                            title="Volver al listado"
+                        >
+                            <ArrowLeft className="h-5 w-5" strokeWidth={2} />
+                        </Link>
 
-                        {/* Botones de acción */}
-                        <div className="flex gap-2">
-                            {registration.payment_status === 'pending' && (
-                                <button
-                                    onClick={() => handleQuickAction('confirm')}
-                                    className="bg-success text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
+                        <div>
+                            <div className="mb-1 flex items-center gap-3">
+                                <h1 className="text-t-primary text-2xl font-bold">Inscripción #{registration.id}</h1>
+                                <span
+                                    className={`rounded-full px-3 py-1 text-xs font-medium shadow-sm ${getPaymentStatusColor(
+                                        registration.payment_status
+                                    )}`}
                                 >
-                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                    Confirmar Pago
-                                </button>
-                            )}
-                            {registration.payment_status === 'confirmed' && (
-                                <button
-                                    onClick={() => handleQuickAction('pending')}
-                                    className="bg-warning text-secondary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
-                                >
-                                    <Clock className="mr-2 h-4 w-4" />
-                                    Marcar Pendiente
-                                </button>
-                            )}
-                            <button
-                                onClick={handleEdit}
-                                className="bg-info text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
-                            >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Editar
-                            </button>
-                            <button
-                                onClick={() => handleQuickAction('cancel')}
-                                className="bg-error text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
-                            >
-                                <XCircle className="mr-2 h-4 w-4" />
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={() => deleteModal.open(registration)}
-                                className="bg-error text-text-primary flex items-center rounded-lg px-4 py-2 font-semibold shadow-lg transition-all hover:scale-105"
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Eliminar
-                            </button>
+                                    {getPaymentStatusText(registration.payment_status)}
+                                </span>
+                            </div>
+                            <p className="text-t-secondary text-sm">
+                                {registration.user.name} → {registration.tournament.name}
+                            </p>
                         </div>
+                    </div>
+
+                    {/* Botones de acción */}
+                    <div className="flex flex-wrap gap-2">
+                        {registration.payment_status === 'pending' && (
+                            <button
+                                onClick={() => handleQuickAction('confirm')}
+                                className="bg-success hover:bg-success/90 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-md"
+                            >
+                                <CheckCircle className="h-4 w-4" strokeWidth={2} />
+                                Confirmar Pago
+                            </button>
+                        )}
+                        {registration.payment_status === 'confirmed' && (
+                            <button
+                                onClick={() => handleQuickAction('pending')}
+                                className="bg-warning hover:bg-warning/90 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-md"
+                            >
+                                <Clock className="h-4 w-4" strokeWidth={2} />
+                                Marcar Pendiente
+                            </button>
+                        )}
+                        <button
+                            onClick={handleEdit}
+                            className="bg-info hover:bg-info/90 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-md"
+                        >
+                            <Edit className="h-4 w-4" strokeWidth={2} />
+                            Editar
+                        </button>
+                        <button
+                            onClick={() => handleQuickAction('cancel')}
+                            className="bg-danger hover:bg-danger/90 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-md"
+                        >
+                            <XCircle className="h-4 w-4" strokeWidth={2} />
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={() => deleteModal.open(registration)}
+                            className="border-border-primary hover:bg-danger/10 text-danger flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-all hover:shadow-md"
+                        >
+                            <Trash2 className="h-4 w-4" strokeWidth={2} />
+                            Eliminar
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Detalles de la inscripción */}
+            {/* Detalles */}
             <RegistrationDetails registration={registration} />
 
             {/* Modal: Eliminar */}
             <ConfirmModal
                 show={deleteModal.isOpen}
                 title="Confirmar Eliminación"
-                message={`¿Estás seguro de que deseas eliminar la inscripción de "${registration.user.name}" al torneo "${registration.tournament.name}"? Esta acción no se puede deshacer.`}
+                message={`¿Seguro que deseas eliminar la inscripción de "${registration.user.name}" al torneo "${registration.tournament.name}"? Esta acción no se puede deshacer.`}
                 confirmText="Eliminar"
                 onConfirm={handleDelete}
                 onCancel={deleteModal.close}

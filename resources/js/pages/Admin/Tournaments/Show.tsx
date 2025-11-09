@@ -1,4 +1,3 @@
-// pages/Admin/Tournaments/Show.tsx - REFACTORIZADO
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
 import { FormModal } from '@/components/Admin/Shared/FormModal';
 import { RegistrationForm } from '@/components/Admin/Tournaments/RegistrationForm';
@@ -21,36 +20,6 @@ interface ShowProps {
     games: Game[];
 }
 
-// Tipos para formularios
-interface RegistrationFormValues {
-    user_selection_type: 'existing' | 'new';
-    user_id: number | '';
-    new_user_name: string;
-    new_user_email: string;
-    payment_method: string;
-    payment_status: string;
-    payment_notes: string;
-}
-
-interface EditRegistrationFormValues {
-    payment_method: string;
-    payment_status: string;
-    payment_notes: string;
-}
-
-interface TournamentFormValues {
-    name: string;
-    description: string;
-    game_id: number | '';
-    start_date: string;
-    end_date: string;
-    registration_start: string;
-    entry_fee: string;
-    status: string;
-    has_registration_limit: boolean;
-    registration_limit: string;
-}
-
 const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [], games = [] }) => {
     // CRUD operations
     const { update } = useCRUD({
@@ -63,14 +32,14 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         routePrefix: 'admin.tournaments',
     });
 
-    // Búsqueda
+    // Búsqueda local de inscripciones
     const [searchTerm, setSearchTerm] = useState('');
 
     // Modal: Eliminar inscripción
     const deleteModal = useConfirmModal<Registration>();
 
     // Modal: Crear inscripción
-    const createModal = useFormModal<RegistrationFormValues>({
+    const createModal = useFormModal<any>({
         initialValues: {
             user_selection_type: 'existing',
             user_id: '',
@@ -110,7 +79,6 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                 data.append('payment_notes', values.payment_notes.trim());
             }
 
-            // Usamos router directamente porque es una creación especial
             import('@inertiajs/react').then(({ router }) => {
                 router.post(route('admin.registrations.store'), data, {
                     preserveState: true,
@@ -122,7 +90,7 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
     });
 
     // Modal: Editar inscripción
-    const editModal = useFormModal<EditRegistrationFormValues & { id: number }>({
+    const editModal = useFormModal<any>({
         initialValues: {
             id: 0,
             payment_method: '',
@@ -141,9 +109,9 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
         },
     });
 
-    // Modal: Editar torneo
+    // Modal: Editar torneo (estructura base, puedes completarlo)
     const editImage = useImagePreview();
-    const editTournamentModal = useFormModal<TournamentFormValues & { id: number }>({
+    const editTournamentModal = useFormModal<any>({
         initialValues: {
             id: 0,
             name: '',
@@ -262,34 +230,40 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
     // Estadísticas
     const confirmedCount = registrations.filter((r) => r.payment_status === 'confirmed').length;
     const pendingCount = registrations.filter((r) => r.payment_status === 'pending').length;
-    const totalRevenue = tournament.entry_fee ? confirmedCount * tournament.entry_fee : 0;
+    const totalRevenue = registrations.filter((r) => r.payment_status === 'confirmed').reduce((sum, r) => sum + Number(r.amount || 0), 0);
 
     return (
         <AdminLayout title={`Detalles - ${tournament.name}`} pageTitle="Detalles del Torneo">
             {/* Header */}
-            <TournamentHeader tournament={tournament} onEdit={handleEditTournament} games={games} />
+            <TournamentHeader tournament={tournament} games={games} registrations={registrations} onEdit={handleEditTournament} />
+
+            {/* Estadísticas del torneo */}
+            <TournamentStats
+                confirmedCount={confirmedCount}
+                pendingCount={pendingCount}
+                totalRevenue={totalRevenue}
+                registrationsCount={registrations.length}
+                hasRegistrationLimit={tournament.has_registration_limit}
+                registrationLimit={tournament.registration_limit ?? 0}
+                matchesPlayed={(tournament as any).matches_played ?? 0}
+                totalMatches={(tournament as any).total_matches ?? 0}
+                winnerName={(tournament as any).winner?.name ?? null}
+            />
 
             {/* Información del torneo */}
             <TournamentInfo tournament={tournament} registrations={registrations} />
 
             {/* Lista de inscripciones */}
             <RegistrationList
+                tournament={tournament}
                 registrations={filteredRegistrations}
-                allRegistrationsCount={registrations.length}
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
+                users={users}
                 onEdit={handleEditRegistration}
                 onDelete={(reg) => deleteModal.open(reg)}
                 onQuickAction={handleQuickAction}
                 onCreate={() => createModal.open()}
-            />
-
-            {/* Estadísticas */}
-            <TournamentStats
-                totalRegistrations={registrations.length}
-                confirmedCount={confirmedCount}
-                pendingCount={pendingCount}
-                totalRevenue={totalRevenue}
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
             />
 
             {/* Modal: Eliminar inscripción */}
@@ -328,16 +302,10 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                 onSubmit={editModal.handleSubmit}
                 submitText="Guardar Cambios"
             >
-                <RegistrationForm
-                    values={editModal.values}
-                    errors={editModal.errors}
-                    onChange={(key, value) => editModal.setValue(key, value)}
-                    users={users}
-                    isEditing={true}
-                />
+                <RegistrationForm values={editModal.values} errors={editModal.errors} onChange={editModal.setValue} users={users} isEditing={true} />
             </FormModal>
 
-            {/* Modal: Editar torneo */}
+            {/* Modal: Editar torneo (estructura base) */}
             <FormModal
                 show={editTournamentModal.isOpen}
                 title="Editar Torneo"
@@ -345,10 +313,8 @@ const Show: React.FC<ShowProps> = ({ tournament, registrations = [], users = [],
                 onSubmit={editTournamentModal.handleSubmit}
                 submitText="Guardar Cambios"
             >
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {/* Aquí irían los campos del formulario de torneo */}
-                    {/* Por ahora lo dejo simplificado, pero deberías crear un TournamentEditForm component */}
-                </div>
+                {/* Aquí iría el TournamentEditForm o los campos específicos */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">{/* ... */}</div>
             </FormModal>
         </AdminLayout>
     );

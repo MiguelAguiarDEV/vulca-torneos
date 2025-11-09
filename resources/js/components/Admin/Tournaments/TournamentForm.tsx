@@ -33,9 +33,9 @@ interface TournamentFormProps {
 
 export function TournamentForm({ values, errors, onChange, image, games }: TournamentFormProps) {
     return (
-        <div className="space-y-4">
+        <div className="h-[600px] space-y-4 overflow-y-auto px-2">
             {/* Información Básica */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="Nombre" required error={errors.name} fullWidth>
                     <TextInput
                         type="text"
@@ -66,86 +66,100 @@ export function TournamentForm({ values, errors, onChange, image, games }: Tourn
                 />
             </FormField>
 
-            {/* Fechas */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField label="Fecha de inicio" required error={errors.start_date}>
-                    <TextInput
-                        type="date"
-                        value={values.start_date}
-                        onChange={(e) => onChange('start_date', e.target.value)}
-                        error={!!errors.start_date}
-                    />
-                </FormField>
+            {/* Fechas del torneo */}
+            <div>
+                <h3 className="text-t-primary mb-3 text-sm font-semibold">Fechas del torneo</h3>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <FormField label="Fecha de inicio" required error={errors.start_date}>
+                        <TextInput
+                            type="date"
+                            value={values.start_date}
+                            onChange={(e) => onChange('start_date', e.target.value)}
+                            error={!!errors.start_date}
+                        />
+                    </FormField>
 
-                <FormField label="Fecha de fin" error={errors.end_date}>
-                    <TextInput type="date" value={values.end_date} onChange={(e) => onChange('end_date', e.target.value)} error={!!errors.end_date} />
-                </FormField>
+                    <FormField label="Fecha de fin" error={errors.end_date}>
+                        <TextInput
+                            type="date"
+                            value={values.end_date}
+                            onChange={(e) => onChange('end_date', e.target.value)}
+                            error={!!errors.end_date}
+                        />
+                    </FormField>
+                </div>
             </div>
 
             {/* Período de Inscripción */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField label="Inicio de inscripciones" error={errors.registration_start}>
-                    <TextInput
-                        type="date"
-                        value={values.registration_start}
-                        onChange={(e) => onChange('registration_start', e.target.value)}
-                        error={!!errors.registration_start}
-                    />
-                </FormField>
+            <div>
+                <h3 className="text-t-primary mb-3 text-sm font-semibold">Período de inscripciones</h3>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <FormField label="Inicio de inscripciones" error={errors.registration_start}>
+                        <TextInput
+                            type="date"
+                            value={values.registration_start}
+                            onChange={(e) => onChange('registration_start', e.target.value)}
+                            error={!!errors.registration_start}
+                        />
+                    </FormField>
 
-                <FormField label="Fin de inscripciones" error={errors.registration_end}>
-                    <TextInput
-                        type="date"
-                        value={values.registration_end}
-                        onChange={(e) => onChange('registration_end', e.target.value)}
-                        error={!!errors.registration_end}
-                    />
-                </FormField>
+                    <FormField label="Fin de inscripciones" error={errors.registration_end}>
+                        <TextInput
+                            type="date"
+                            value={values.registration_end}
+                            onChange={(e) => onChange('registration_end', e.target.value)}
+                            error={!!errors.registration_end}
+                        />
+                    </FormField>
+                </div>
             </div>
 
             {/* Configuración */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField label="Estado" required error={errors.status}>
-                    <Select
-                        value={values.status}
-                        onChange={(e) => onChange('status', e.target.value as TournamentFormValues['status'])}
-                        options={[
-                            { value: 'draft', label: 'Borrador' },
-                            { value: 'published', label: 'Publicado' },
-                            { value: 'registration_open', label: 'Inscripciones Abiertas' },
-                            { value: 'registration_closed', label: 'Inscripciones Cerradas' },
-                            { value: 'ongoing', label: 'En Curso' },
-                            { value: 'finished', label: 'Finalizado' },
-                            { value: 'cancelled', label: 'Cancelado' },
-                        ]}
-                        error={!!errors.status}
-                    />
-                </FormField>
+            <div>
+                <h3 className="text-t-primary mb-3 text-sm font-semibold">Configuración</h3>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <FormField label="Estado" required error={errors.status}>
+                        <Select
+                            value={values.status}
+                            onChange={(e) => onChange('status', e.target.value as TournamentFormValues['status'])}
+                            options={[
+                                { value: 'draft', label: 'Borrador' },
+                                { value: 'published', label: 'Publicado' },
+                                { value: 'registration_open', label: 'Inscripciones Abiertas' },
+                                { value: 'registration_closed', label: 'Inscripciones Cerradas' },
+                                { value: 'ongoing', label: 'En Curso' },
+                                { value: 'finished', label: 'Finalizado' },
+                                { value: 'cancelled', label: 'Cancelado' },
+                            ]}
+                            error={!!errors.status}
+                        />
+                    </FormField>
 
-                <FormField label="Cuota de inscripción" error={errors.entry_fee}>
-                    <TextInput
-                        type="number"
-                        value={values.entry_fee}
-                        onChange={(e) => onChange('entry_fee', e.target.value)}
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        error={!!errors.entry_fee}
-                    />
-                </FormField>
+                    <FormField label="Cuota de inscripción (€)" error={errors.entry_fee}>
+                        <TextInput
+                            type="number"
+                            value={values.entry_fee}
+                            onChange={(e) => onChange('entry_fee', e.target.value)}
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            error={!!errors.entry_fee}
+                        />
+                    </FormField>
+                </div>
             </div>
 
             {/* Límite de Inscripciones */}
-            <div className="space-y-2">
-                <div className="flex items-center">
+            <div className="border-border-primary bg-tertiary rounded-lg border p-4">
+                <div className="mb-3 flex items-center gap-2">
                     <input
                         type="checkbox"
                         id="has_registration_limit"
                         checked={values.has_registration_limit}
                         onChange={(e) => onChange('has_registration_limit', e.target.checked)}
-                        className="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
+                        className="border-border-primary text-accent focus:ring-accent focus:ring-offset-tertiary h-4 w-4 rounded focus:ring-2 focus:ring-offset-2"
                     />
-                    <label htmlFor="has_registration_limit" className="text-text-primary ml-2 text-sm font-medium">
+                    <label htmlFor="has_registration_limit" className="text-t-primary text-sm font-medium">
                         Establecer límite de inscripciones
                     </label>
                 </div>
