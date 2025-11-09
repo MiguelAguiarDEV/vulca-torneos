@@ -1,5 +1,4 @@
 // pages/Admin/Registrations/Index.tsx
-import { RegistrationCard } from '@/components/Admin/Registrations/RegistrationCard';
 import { RegistrationFilters } from '@/components/Admin/Registrations/RegistrationFilters';
 import { RegistrationForm } from '@/components/Admin/Registrations/RegistrationForm';
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
@@ -12,7 +11,7 @@ import { useFormModal } from '@/hooks/useFormModal';
 import AdminLayout from '@/layouts/AdminLayout';
 import type { Registration, Tournament, User } from '@/types';
 import { router } from '@inertiajs/react';
-import { CheckCircle, Clock, Plus, Users } from 'lucide-react';
+import { CheckCircle, Clock, Edit, Eye, Plus, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
 
 interface IndexProps {
@@ -228,17 +227,95 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
 
             {/* Lista de inscripciones */}
             {filteredRegistrations.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {filteredRegistrations.map((registration) => (
-                        <RegistrationCard
-                            key={registration.id}
-                            registration={registration}
-                            onClick={() => navigateTo('admin.registrations.show', registration.id)}
-                            onEdit={handleEdit}
-                            onDelete={(r) => deleteModal.open(r)}
-                            onQuickAction={handleQuickAction}
-                        />
-                    ))}
+                <div className="border-border-primary bg-secondary mt-8 h-[580px] overflow-auto rounded-xl border shadow-sm">
+                    <table className="min-w-full border-collapse text-sm">
+                        <thead>
+                            <tr className="border-border-primary text-t-secondary border-b">
+                                <th className="px-4 py-3 text-left font-medium">Jugador</th>
+                                <th className="px-4 py-3 text-left font-medium">Email</th>
+                                <th className="px-4 py-3 text-left font-medium">Torneo</th>
+                                <th className="px-4 py-3 text-left font-medium">Estado</th>
+                                <th className="px-4 py-3 text-left font-medium">Método</th>
+                                <th className="px-4 py-3 text-left font-medium">Monto</th>
+                                <th className="px-4 py-3 text-left font-medium">Fecha</th>
+                                <th className="px-4 py-3 text-right font-medium">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredRegistrations.map((registration) => (
+                                <tr
+                                    key={registration.id}
+                                    className="border-border-primary/50 hover:bg-tertiary/40 border-b transition-colors last:border-0"
+                                >
+                                    <td className="text-t-primary px-4 py-3 font-medium">{registration.user?.name || '—'}</td>
+                                    <td className="text-t-secondary px-4 py-3">{registration.user?.email || '—'}</td>
+                                    <td className="px-4 py-3">{registration.tournament?.name || '—'}</td>
+                                    <td className="px-4 py-3">
+                                        <span
+                                            className={`rounded-full px-2 py-1 text-xs font-medium ${
+                                                registration.payment_status === 'confirmed'
+                                                    ? 'bg-success/10 text-success'
+                                                    : registration.payment_status === 'pending'
+                                                      ? 'bg-warning/10 text-warning'
+                                                      : 'bg-t-muted/10 text-t-muted'
+                                            }`}
+                                        >
+                                            {registration.payment_status === 'confirmed'
+                                                ? 'Confirmado'
+                                                : registration.payment_status === 'pending'
+                                                  ? 'Pendiente'
+                                                  : 'Sin pago'}
+                                        </span>
+                                    </td>
+                                    <td className="text-t-secondary px-4 py-3">
+                                        {registration.payment_method === 'cash'
+                                            ? 'Efectivo'
+                                            : registration.payment_method === 'transfer'
+                                              ? 'Transferencia'
+                                              : registration.payment_method === 'card'
+                                                ? 'Tarjeta'
+                                                : '—'}
+                                    </td>
+                                    <td className="text-t-primary px-4 py-3">
+                                        {registration.amount ? `€${Number(registration.amount).toFixed(2)}` : <span className="text-t-muted">—</span>}
+                                    </td>
+                                    <td className="text-t-secondary px-4 py-3">
+                                        {registration.created_at
+                                            ? new Date(registration.created_at).toLocaleDateString('es-ES', {
+                                                  day: '2-digit',
+                                                  month: 'short',
+                                                  year: 'numeric',
+                                              })
+                                            : '—'}
+                                    </td>
+                                    <td className="px-4 py-3 text-right">
+                                        <div className="flex flex-wrap justify-end gap-2">
+                                            <button
+                                                onClick={() => navigateTo('admin.registrations.show', registration.id)}
+                                                className="bg-info hover:bg-info/90 flex items-center gap-1 rounded-md p-2 text-xs font-medium text-white transition-colors"
+                                            >
+                                                <Eye className="h-4 w-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleEdit(registration)}
+                                                className="bg-accent hover:bg-accent/90 flex items-center gap-1 rounded-md p-2 text-xs font-medium text-white transition-colors"
+                                            >
+                                                <Edit className="h-4 w-4" />
+                                                Editar
+                                            </button>
+                                            <button
+                                                onClick={() => deleteModal.open(registration)}
+                                                className="bg-danger hover:bg-danger/90 flex items-center gap-1 rounded-md p-2 text-xs font-medium text-white transition-colors"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             ) : (
                 <EmptyState
