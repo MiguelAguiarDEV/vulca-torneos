@@ -1,6 +1,6 @@
 // components/Admin/Games/GameHeader.tsx
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, Gamepad2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface Game {
     id: number;
@@ -24,14 +24,6 @@ export function GameHeader({ game }: GameHeaderProps) {
                     >
                         <ArrowLeft className="h-5 w-5" strokeWidth={2} />
                     </Link>
-
-                    {game.image ? (
-                        <img src={game.image} alt={game.name} className="border-border-primary h-20 w-20 rounded-lg border object-cover shadow-sm" />
-                    ) : (
-                        <div className="border-border-primary bg-tertiary flex h-20 w-20 items-center justify-center rounded-lg border shadow-sm">
-                            <Gamepad2 className="text-accent h-10 w-10" strokeWidth={2} />
-                        </div>
-                    )}
 
                     <div className="flex-grow">
                         <h1 className="text-t-primary text-3xl font-bold">{game.name}</h1>
