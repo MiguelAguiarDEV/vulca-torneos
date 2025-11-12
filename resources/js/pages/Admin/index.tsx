@@ -1,4 +1,4 @@
-// pages/Admin/Dashboard/Index.tsx
+// pages/Admin/Dashboard/Index.tsx - OPTIMIZADO
 import { GameForm } from '@/components/Admin/Games/GameForm';
 import { FormModal } from '@/components/Admin/Shared/FormModal';
 import { TournamentForm } from '@/components/Admin/Tournaments/TournamentForm';
@@ -6,13 +6,13 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
-import { Game } from '@/types';
+import { DEFAULT_FORM_VALUES, Game, GameFormValues, TournamentFormValues } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ArrowUpRight, Calendar, Gamepad2, TrendingUp, Trophy, Users } from 'lucide-react';
 import React from 'react';
 
 interface DashboardProps {
-    games: Game[];
+    games?: Game[];
 }
 
 const stats = [
@@ -64,29 +64,47 @@ const recentActivity = [
     },
 ];
 
-// Tipos para los formularios
-interface GameFormValues {
-    name: string;
-    description: string;
-}
+const Dashboard: React.FC<DashboardProps> = ({ games = [] }) => {
+    // ============================================
+    // HELPERS: Construir FormData
+    // ============================================
+    const buildGameFormData = (values: GameFormValues, imageFile: File | null): FormData => {
+        const data = new FormData();
+        data.append('name', values.name.trim());
+        data.append('description', values.description.trim() || '');
+        if (imageFile) {
+            data.append('image', imageFile);
+        }
+        return data;
+    };
 
-type TournamentStatus = 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'ongoing' | 'finished' | 'cancelled';
+    const buildTournamentFormData = (values: TournamentFormValues, imageFile: File | null): FormData => {
+        const data = new FormData();
 
-interface TournamentFormValues {
-    name: string;
-    description: string;
-    game_id: number | '';
-    start_date: string;
-    end_date: string;
-    registration_start: string;
-    registration_end: string;
-    entry_fee: string;
-    has_registration_limit: boolean;
-    registration_limit: string;
-    status: TournamentStatus;
-}
+        // Campos requeridos
+        data.append('name', values.name.trim());
+        data.append('description', values.description.trim() || '');
+        data.append('game_id', String(values.game_id));
+        data.append('start_date', values.start_date);
+        data.append('status', values.status);
 
-const Dashboard: React.FC<DashboardProps> = ({ games }) => {
+        // Campos opcionales
+        if (values.end_date) data.append('end_date', values.end_date);
+        if (values.registration_start) data.append('registration_start', values.registration_start);
+        if (values.registration_end) data.append('registration_end', values.registration_end);
+        if (values.entry_fee) data.append('entry_fee', values.entry_fee);
+
+        // Límite de inscripciones
+        data.append('has_registration_limit', values.has_registration_limit ? '1' : '0');
+        if (values.has_registration_limit && values.registration_limit) {
+            data.append('registration_limit', values.registration_limit);
+        }
+
+        // Imagen
+        if (imageFile) data.append('image', imageFile);
+
+        return data;
+    };
     // ============================================
     // CRUD PARA JUEGOS
     // ============================================
@@ -121,19 +139,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games }) => {
     });
 
     const createTournamentModal = useFormModal<TournamentFormValues>({
-        initialValues: {
-            name: '',
-            description: '',
-            game_id: '',
-            start_date: '',
-            end_date: '',
-            registration_start: '',
-            registration_end: '',
-            entry_fee: '',
-            has_registration_limit: false,
-            registration_limit: '',
-            status: 'draft',
-        },
+        initialValues: DEFAULT_FORM_VALUES.tournament,
         onSubmit: (values) => {
             const data = new FormData();
 
