@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Game;
 
 class AdminController extends Controller
 {
@@ -19,6 +20,9 @@ class AdminController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('Admin/index');
+
+        return Inertia::render('Admin/index', [
+            'games' => Game::all(),
+        ]);
     }
 }
