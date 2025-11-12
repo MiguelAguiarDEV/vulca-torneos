@@ -1,4 +1,4 @@
-// pages/Admin/Registrations/Index.tsx
+// pages/Admin/Registrations/Index.tsx - OPTIMIZADO
 import { RegistrationFilters } from '@/components/Admin/Registrations/RegistrationFilters';
 import { RegistrationForm } from '@/components/Admin/Registrations/RegistrationForm';
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
@@ -9,7 +9,7 @@ import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import AdminLayout from '@/layouts/AdminLayout';
-import type { Registration, Tournament, User } from '@/types';
+import { DEFAULT_FORM_VALUES, Registration, RegistrationFormValues, Tournament, User } from '@/types';
 import { router } from '@inertiajs/react';
 import { CheckCircle, Clock, Edit, Eye, Plus, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
@@ -20,82 +20,105 @@ interface IndexProps {
     users: User[];
 }
 
-interface RegistrationFormValues {
-    user_selection_type: 'existing' | 'new';
-    user_id: number | '';
-    new_user_name: string;
-    new_user_email: string;
-    tournament_id: number | '';
+// ============================================
+// TIPOS ESPECÍFICOS PARA EDICIÓN
+// ============================================
+interface EditRegistrationFormValues {
+    id: number;
     payment_method: string;
     payment_status: string;
     payment_notes: string;
 }
 
-interface EditRegistrationFormValues {
-    payment_method: string;
-    payment_status: string;
-    payment_notes: string;
+// ============================================
+// HELPER: Construir FormData para crear inscripción
+// ============================================
+function buildCreateRegistrationFormData(values: RegistrationFormValues): FormData {
+    const data = new FormData();
+    data.append('user_selection_type', values.user_selection_type || 'existing');
+
+    if (values.user_selection_type === 'existing') {
+        data.append('user_id', values.user_id.toString());
+    } else {
+        data.append('new_user_name', values.new_user_name?.trim() || '');
+        if (values.new_user_email?.trim()) {
+            data.append('new_user_email', values.new_user_email.trim());
+        }
+    }
+
+    data.append('tournament_id', values.tournament_id.toString());
+    data.append('payment_method', values.payment_method || 'cash');
+    data.append('payment_status', values.payment_status || 'pending');
+
+    if (values.payment_notes?.trim()) {
+        data.append('payment_notes', values.payment_notes.trim());
+    }
+
+    return data;
+}
+
+// ============================================
+// HELPER: Construir FormData para editar inscripción
+// ============================================
+function buildEditRegistrationFormData(values: EditRegistrationFormValues): FormData {
+    const data = new FormData();
+    data.append('payment_method', values.payment_method);
+    data.append('payment_status', values.payment_status);
+    if (values.payment_notes?.trim()) {
+        data.append('payment_notes', values.payment_notes.trim());
+    }
+    return data;
+}
+
+// ============================================
+// HELPER: Validar formulario de creación
+// ============================================
+function validateCreateForm(values: RegistrationFormValues): string | null {
+    if (values.user_selection_type === 'existing' && !values.user_id) {
+        return 'Debes seleccionar un usuario.';
+    }
+    if (values.user_selection_type === 'new' && !values.new_user_name?.trim()) {
+        return 'El nombre del nuevo usuario es obligatorio.';
+    }
+    if (!values.tournament_id) {
+        return 'Debes seleccionar un torneo.';
+    }
+    return null;
 }
 
 const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
+    // ============================================
+    // CRUD OPERATIONS
+    // ============================================
     const { update, navigateTo } = useCRUD({
         resourceName: 'inscripción',
         routePrefix: 'admin.registrations',
     });
 
-    // Estado de filtros
+    // ============================================
+    // ESTADO DE FILTROS
+    // ============================================
     const [searchTerm, setSearchTerm] = useState('');
     const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
     const [tournamentFilter, setTournamentFilter] = useState('all');
     const [gameFilter, setGameFilter] = useState('all');
 
-    // Modales
+    // ============================================
+    // MODALES
+    // ============================================
     const deleteModal = useConfirmModal<Registration>();
 
     const createModal = useFormModal<RegistrationFormValues>({
-        initialValues: {
-            user_selection_type: 'existing',
-            user_id: '',
-            new_user_name: '',
-            new_user_email: '',
-            tournament_id: '',
-            payment_method: 'cash',
-            payment_status: 'pending',
-            payment_notes: '',
-        },
+        initialValues: DEFAULT_FORM_VALUES.registration,
         onSubmit: (values) => {
-            if (values.user_selection_type === 'existing' && !values.user_id) {
-                alert('Debes seleccionar un usuario.');
-                return;
-            }
-            if (values.user_selection_type === 'new' && !values.new_user_name.trim()) {
-                alert('El nombre del nuevo usuario es obligatorio.');
-                return;
-            }
-            if (!values.tournament_id) {
-                alert('Debes seleccionar un torneo.');
+            // Validación
+            const error = validateCreateForm(values);
+            if (error) {
+                alert(error);
                 return;
             }
 
-            const data = new FormData();
-            data.append('user_selection_type', values.user_selection_type);
-
-            if (values.user_selection_type === 'existing') {
-                data.append('user_id', values.user_id.toString());
-            } else {
-                data.append('new_user_name', values.new_user_name.trim());
-                if (values.new_user_email.trim()) {
-                    data.append('new_user_email', values.new_user_email.trim());
-                }
-            }
-
-            data.append('tournament_id', values.tournament_id.toString());
-            data.append('payment_method', values.payment_method);
-            data.append('payment_status', values.payment_status);
-
-            if (values.payment_notes.trim()) {
-                data.append('payment_notes', values.payment_notes.trim());
-            }
+            const data = buildCreateRegistrationFormData(values);
 
             router.post(route('admin.registrations.store'), data, {
                 preserveState: true,
@@ -105,25 +128,27 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
         },
     });
 
-    const editModal = useFormModal<EditRegistrationFormValues & { id: number }>({
+    const editModal = useFormModal<EditRegistrationFormValues>({
         initialValues: {
             id: 0,
+            user_selection_type: 'existing',
+            tournament_id: '',
+            user_id: '',
+            new_user_name: '',
+            new_user_email: '',
             payment_method: '',
             payment_status: '',
             payment_notes: '',
         },
         onSubmit: (values) => {
-            const data = new FormData();
-            data.append('payment_method', values.payment_method);
-            data.append('payment_status', values.payment_status);
-            if (values.payment_notes.trim()) {
-                data.append('payment_notes', values.payment_notes.trim());
-            }
+            const data = buildEditRegistrationFormData(values);
             update(values.id, data, () => editModal.close());
         },
     });
 
-    // Handlers
+    // ============================================
+    // HANDLERS
+    // ============================================
     const handleDelete = () => {
         if (deleteModal.item) {
             router.delete(route('admin.registrations.destroy', deleteModal.item.id), {
@@ -170,7 +195,9 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
         setGameFilter('all');
     };
 
-    // Filtrado
+    // ============================================
+    // FILTRADO
+    // ============================================
     const filteredRegistrations = registrations.filter((reg) => {
         const searchMatch =
             !searchTerm ||
@@ -179,15 +206,21 @@ const Index: React.FC<IndexProps> = ({ registrations, tournaments, users }) => {
             reg.tournament.name.toLowerCase().includes(searchTerm.toLowerCase());
 
         const paymentMatch = paymentStatusFilter === 'all' || reg.payment_status === paymentStatusFilter;
+
         const tournamentMatch = tournamentFilter === 'all' || reg.tournament.id.toString() === tournamentFilter;
+
         const gameMatch = gameFilter === 'all' || reg.tournament.game.id.toString() === gameFilter;
 
         return searchMatch && paymentMatch && tournamentMatch && gameMatch;
     });
 
-    // Estadísticas
+    // ============================================
+    // ESTADÍSTICAS
+    // ============================================
     const confirmedCount = registrations.filter((r) => r.payment_status === 'confirmed').length;
+
     const pendingCount = registrations.filter((r) => r.payment_status === 'pending').length;
+
     const totalRevenue = registrations.filter((r) => r.payment_status === 'confirmed' && r.amount).reduce((sum, r) => sum + Number(r.amount || 0), 0);
 
     return (

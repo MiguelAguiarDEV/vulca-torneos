@@ -1,4 +1,4 @@
-// pages/Admin/Games/Index.tsx
+// pages/Admin/Games/Index.tsx - OPTIMIZADO
 import { GameCard } from '@/components/Admin/Games/GameCard';
 import { GameForm } from '@/components/Admin/Games/GameForm';
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
@@ -10,7 +10,7 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
-import { Game } from '@/types';
+import { DEFAULT_FORM_VALUES, Game, GameEditFormValues, GameFormValues } from '@/types';
 import { Gamepad, Gamepad2, Plus } from 'lucide-react';
 import React from 'react';
 
@@ -18,31 +18,37 @@ interface IndexProps {
     games: Game[];
 }
 
-interface GameFormValues {
-    name: string;
-    description: string;
+// ============================================
+// HELPER: Convertir valores del formulario a FormData
+// ============================================
+function buildGameFormData(values: GameFormValues | GameEditFormValues, imageFile: File | null): FormData {
+    const data = new FormData();
+    data.append('name', values.name.trim());
+    data.append('description', values.description.trim() || '');
+    if (imageFile) {
+        data.append('image', imageFile);
+    }
+    return data;
 }
 
 const Index: React.FC<IndexProps> = ({ games }) => {
-    // CRUD operations
+    // ============================================
+    // CRUD OPERATIONS
+    // ============================================
     const { create, update, destroy, navigateTo } = useCRUD({
         resourceName: 'juego',
         routePrefix: 'admin.games',
     });
 
-    // Delete modal
     const deleteModal = useConfirmModal<Game>();
 
-    // Create modal
+    // ============================================
+    // CREATE MODAL
+    // ============================================
     const createModal = useFormModal<GameFormValues>({
-        initialValues: { name: '', description: '' },
+        initialValues: DEFAULT_FORM_VALUES.game,
         onSubmit: (values) => {
-            const data = new FormData();
-            data.append('name', values.name.trim());
-            data.append('description', values.description.trim() || '');
-            if (createImage.file) {
-                data.append('image', createImage.file);
-            }
+            const data = buildGameFormData(values, createImage.file);
             create(data, () => {
                 createModal.close();
                 createImage.reset();
@@ -51,16 +57,16 @@ const Index: React.FC<IndexProps> = ({ games }) => {
     });
     const createImage = useImagePreview();
 
-    // Edit modal
-    const editModal = useFormModal<GameFormValues & { id: number }>({
-        initialValues: { id: 0, name: '', description: '' },
+    // ============================================
+    // EDIT MODAL
+    // ============================================
+    const editModal = useFormModal<GameEditFormValues>({
+        initialValues: {
+            ...DEFAULT_FORM_VALUES.game,
+            id: 0,
+        },
         onSubmit: (values) => {
-            const data = new FormData();
-            data.append('name', values.name.trim());
-            data.append('description', values.description.trim() || '');
-            if (editImage.file) {
-                data.append('image', editImage.file);
-            }
+            const data = buildGameFormData(values, editImage.file);
             update(values.id, data, () => {
                 editModal.close();
                 editImage.reset();
@@ -69,7 +75,9 @@ const Index: React.FC<IndexProps> = ({ games }) => {
     });
     const editImage = useImagePreview();
 
-    // Handlers
+    // ============================================
+    // HANDLERS
+    // ============================================
     const handleEdit = (game: Game) => {
         editModal.open({
             id: game.id,

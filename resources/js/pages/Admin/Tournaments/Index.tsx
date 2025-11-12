@@ -1,4 +1,4 @@
-// pages/Admin/Tournaments/Index.tsx - REFACTORIZADO
+// pages/Admin/Tournaments/Index.tsx - OPTIMIZADO
 import { ConfirmModal } from '@/components/Admin/Shared/ConfirmModal';
 import { EmptyState } from '@/components/Admin/Shared/EmptyState';
 import { FormModal } from '@/components/Admin/Shared/FormModal';
@@ -10,7 +10,7 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
-import { Game, Tournament } from '@/types';
+import { DEFAULT_FORM_VALUES, Game, Tournament, TournamentEditFormValues, TournamentFormValues } from '@/types';
 import { Plus, Trophy } from 'lucide-react';
 import React from 'react';
 
@@ -19,82 +19,65 @@ interface IndexProps {
     games: Game[];
 }
 
-type TournamentStatus = 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'ongoing' | 'finished' | 'cancelled';
+// ============================================
+// HELPER: Convertir valores del formulario a FormData
+// ============================================
+function buildTournamentFormData(values: TournamentFormValues | TournamentEditFormValues, imageFile: File | null): FormData {
+    const data = new FormData();
 
-interface TournamentFormValues {
-    name: string;
-    description: string;
-    game_id: number | '';
-    start_date: string;
-    end_date: string;
-    registration_start: string;
-    registration_end: string;
-    entry_fee: string;
-    has_registration_limit: boolean;
-    registration_limit: string;
-    status: TournamentStatus;
+    // Campos requeridos
+    data.append('name', values.name.trim());
+    data.append('description', values.description.trim() || '');
+    data.append('game_id', String(values.game_id));
+    data.append('start_date', values.start_date);
+    data.append('status', values.status);
+
+    // Campos opcionales
+    if (values.end_date) {
+        data.append('end_date', values.end_date);
+    }
+    if (values.registration_start) {
+        data.append('registration_start', values.registration_start);
+    }
+    if (values.registration_end) {
+        data.append('registration_end', values.registration_end);
+    }
+    if (values.entry_fee) {
+        data.append('entry_fee', values.entry_fee);
+    }
+
+    // Límite de inscripciones
+    data.append('has_registration_limit', values.has_registration_limit ? '1' : '0');
+    if (values.has_registration_limit && values.registration_limit) {
+        data.append('registration_limit', values.registration_limit);
+    }
+
+    // Imagen
+    if (imageFile) {
+        data.append('image', imageFile);
+    }
+
+    return data;
 }
 
 const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
-    // CRUD operations
+    // ============================================
+    // CRUD OPERATIONS
+    // ============================================
     const { create, update, destroy, navigateTo } = useCRUD({
         resourceName: 'torneo',
         routePrefix: 'admin.tournaments',
     });
 
-    // Delete modal
     const deleteModal = useConfirmModal<Tournament>();
 
-    // Create modal
+    // ============================================
+    // CREATE MODAL
+    // ============================================
     const createModal = useFormModal<TournamentFormValues>({
-        initialValues: {
-            name: '',
-            description: '',
-            game_id: '',
-            start_date: '',
-            end_date: '',
-            registration_start: '',
-            registration_end: '',
-            entry_fee: '',
-            has_registration_limit: false,
-            registration_limit: '',
-            status: 'draft',
-        },
+        initialValues: DEFAULT_FORM_VALUES.tournament,
         onSubmit: (values) => {
-            const data = new FormData();
-
-            // Campos requeridos
-            data.append('name', values.name.trim());
-            data.append('description', values.description.trim() || '');
-            data.append('game_id', String(values.game_id));
-            data.append('start_date', values.start_date);
-            data.append('status', values.status);
-
-            // Campos opcionales
-            if (values.end_date) {
-                data.append('end_date', values.end_date);
-            }
-            if (values.registration_start) {
-                data.append('registration_start', values.registration_start);
-            }
-            if (values.registration_end) {
-                data.append('registration_end', values.registration_end);
-            }
-            if (values.entry_fee) {
-                data.append('entry_fee', values.entry_fee);
-            }
-
-            // Límite de inscripciones
-            data.append('has_registration_limit', values.has_registration_limit ? '1' : '0');
-            if (values.has_registration_limit && values.registration_limit) {
-                data.append('registration_limit', values.registration_limit);
-            }
-
-            // Imagen
-            if (createImage.file) {
-                data.append('image', createImage.file);
-            }
-
+            const data = buildTournamentFormData(values, createImage.file);
             create(data, () => {
                 createModal.close();
                 createImage.reset();
@@ -103,61 +86,16 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
     });
     const createImage = useImagePreview();
 
-    // Edit modal
-    type EditFormValues = TournamentFormValues & { id: number };
-    const editModal = useFormModal<EditFormValues>({
+    // ============================================
+    // EDIT MODAL
+    // ============================================
+    const editModal = useFormModal<TournamentEditFormValues>({
         initialValues: {
+            ...DEFAULT_FORM_VALUES.tournament,
             id: 0,
-            name: '',
-            description: '',
-            game_id: '',
-            start_date: '',
-            end_date: '',
-            registration_start: '',
-            registration_end: '',
-            entry_fee: '',
-            has_registration_limit: false,
-            registration_limit: '',
-            status: 'draft',
         },
         onSubmit: (values) => {
-            const data = new FormData();
-
-            // Campos requeridos
-            data.append('name', values.name.trim());
-            data.append('description', values.description.trim() || '');
-            data.append('game_id', String(values.game_id));
-            data.append('start_date', values.start_date);
-            data.append('status', values.status);
-
-            // IMPORTANTE: Laravel necesita _method para actualizar con FormData
-            data.append('_method', 'PUT');
-
-            // Campos opcionales
-            if (values.end_date) {
-                data.append('end_date', values.end_date);
-            }
-            if (values.registration_start) {
-                data.append('registration_start', values.registration_start);
-            }
-            if (values.registration_end) {
-                data.append('registration_end', values.registration_end);
-            }
-            if (values.entry_fee) {
-                data.append('entry_fee', values.entry_fee);
-            }
-
-            // Límite de inscripciones
-            data.append('has_registration_limit', values.has_registration_limit ? '1' : '0');
-            if (values.has_registration_limit && values.registration_limit) {
-                data.append('registration_limit', values.registration_limit);
-            }
-
-            // Imagen
-            if (editImage.file) {
-                data.append('image', editImage.file);
-            }
-
+            const data = buildTournamentFormData(values, editImage.file);
             update(values.id, data, () => {
                 editModal.close();
                 editImage.reset();
@@ -166,7 +104,9 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
     });
     const editImage = useImagePreview();
 
-    // Handlers
+    // ============================================
+    // HANDLERS
+    // ============================================
     const handleEdit = (tournament: Tournament) => {
         editModal.open({
             id: tournament.id,
@@ -180,7 +120,7 @@ const Index: React.FC<IndexProps> = ({ tournaments, games }) => {
             entry_fee: tournament.entry_fee ? String(tournament.entry_fee) : '',
             has_registration_limit: tournament.has_registration_limit,
             registration_limit: tournament.registration_limit ? String(tournament.registration_limit) : '',
-            status: tournament.status as TournamentStatus,
+            status: tournament.status,
         });
         editImage.setPreview(tournament.image || '');
     };
