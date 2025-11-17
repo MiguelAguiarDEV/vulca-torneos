@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\AdminGamesController;
 use App\Http\Controllers\Admin\AdminTournamentController;
 use App\Http\Controllers\Admin\AdminRegistrationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Admin\CalendarController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -90,7 +92,9 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::resource('games', AdminGamesController::class);
     Route::resource('tournaments', AdminTournamentController::class);
     Route::resource('registrations', AdminRegistrationController::class);
+    Route::get('/calendar/events', [CalendarController::class, 'index'])->name('calendar.events');
 });
+
 
 /*
 |--------------------------------------------------------------------------
