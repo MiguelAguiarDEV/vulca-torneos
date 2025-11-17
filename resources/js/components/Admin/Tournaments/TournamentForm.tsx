@@ -33,7 +33,7 @@ interface TournamentFormProps {
 
 export function TournamentForm({ values, errors, onChange, image, games }: TournamentFormProps) {
     return (
-        <div className="h-[600px] space-y-4 overflow-y-auto px-2">
+        <>
             {/* Información Básica */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField label="Nombre" required error={errors.name} fullWidth>
@@ -182,6 +182,6 @@ export function TournamentForm({ values, errors, onChange, image, games }: Tourn
             <FormField label="Imagen del torneo" fullWidth>
                 <FileInput onChange={image.handleFileChange} accept="image/*" preview={image.preview} />
             </FormField>
-        </div>
+        </>
     );
 }

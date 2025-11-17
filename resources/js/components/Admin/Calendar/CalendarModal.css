@@ -1,0 +1,182 @@
+/* resources/js/components/Admin/Calendar/CalendarModal.css */
+
+/* Contenedor principal */
+.calendar-container {
+    background-color: var(--color-primary);
+}
+
+/* Estilos del calendario */
+.rbc-calendar {
+    font-family: inherit;
+    color: var(--color-t-primary);
+}
+
+/* Header del calendario */
+.rbc-header {
+    background-color: var(--color-secondary);
+    border-bottom: 1px solid var(--color-border-primary);
+    padding: 12px 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-t-primary);
+}
+
+/* Toolbar (navegación) */
+.rbc-toolbar {
+    padding: 16px 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--color-border-primary);
+}
+
+.rbc-toolbar button {
+    background-color: var(--color-secondary);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-t-secondary);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.rbc-toolbar button:hover {
+    background-color: var(--color-highlight);
+    color: var(--color-t-primary);
+    border-color: var(--color-accent);
+}
+
+.rbc-toolbar button:active,
+.rbc-toolbar button.rbc-active {
+    background-color: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+}
+
+/* Días de la semana */
+.rbc-month-view {
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Celdas del mes */
+.rbc-day-bg {
+    background-color: var(--color-primary);
+    border-color: var(--color-border-primary);
+}
+
+.rbc-today {
+    background-color: var(--color-accent-subtle);
+}
+
+.rbc-off-range-bg {
+    background-color: var(--color-tertiary);
+}
+
+/* Días con contenido */
+.rbc-date-cell {
+    padding: 8px;
+    text-align: right;
+}
+
+.rbc-button-link {
+    color: var(--color-t-secondary);
+    font-size: 0.875rem;
+}
+
+.rbc-today .rbc-button-link {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* Eventos */
+.rbc-event {
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition:
+        transform 0.2s,
+        opacity 0.2s;
+}
+
+.rbc-event:hover {
+    transform: scale(1.02);
+    opacity: 1 !important;
+}
+
+.rbc-event-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.rbc-event-content {
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Slots seleccionables */
+.rbc-day-slot .rbc-time-slot {
+    border-color: var(--color-border-primary);
+}
+
+.rbc-time-slot:hover {
+    background-color: var(--color-highlight);
+    cursor: pointer;
+}
+
+/* Agenda view */
+.rbc-agenda-view {
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+}
+
+.rbc-agenda-table {
+    border-color: var(--color-border-primary);
+}
+
+.rbc-agenda-date-cell,
+.rbc-agenda-time-cell {
+    background-color: var(--color-secondary);
+    border-color: var(--color-border-primary);
+    color: var(--color-t-primary);
+    padding: 12px;
+}
+
+.rbc-agenda-event-cell {
+    background-color: var(--color-primary);
+    border-color: var(--color-border-primary);
+    padding: 12px;
+}
+
+/* Popup de eventos múltiples */
+.rbc-overlay {
+    background-color: var(--color-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    padding: 8px;
+}
+
+.rbc-overlay-header {
+    border-bottom: 1px solid var(--color-border-primary);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    color: var(--color-t-primary);
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rbc-toolbar {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .rbc-toolbar-label {
+        order: -1;
+        width: 100%;
+        text-align: center;
+    }
+}

@@ -1,4 +1,5 @@
 // pages/Admin/Dashboard/Index.tsx - OPTIMIZADO
+import { CalendarModal } from '@/components/Admin/Calendar/CalendarModal';
 import { GameForm } from '@/components/Admin/Games/GameForm';
 import { FormModal } from '@/components/Admin/Shared/FormModal';
 import { TournamentForm } from '@/components/Admin/Tournaments/TournamentForm';
@@ -6,10 +7,11 @@ import { useCRUD } from '@/hooks/useCRUD';
 import { useFormModal } from '@/hooks/useFormModal';
 import { useImagePreview } from '@/hooks/useImagePreview';
 import AdminLayout from '@/layouts/AdminLayout';
+
 import { DEFAULT_FORM_VALUES, Game, GameFormValues, TournamentFormValues } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { ArrowUpRight, Calendar, Gamepad2, TrendingUp, Trophy, Users } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface DashboardProps {
     games?: Game[];
@@ -46,65 +48,7 @@ const stats = [
     },
 ];
 
-const recentActivity = [
-    {
-        title: 'Nuevo torneo creado',
-        description: 'Pokémon - Spring Championship',
-        time: 'Hace 2 horas',
-    },
-    {
-        title: '15 nuevas inscripciones',
-        description: 'Yu Gi Oh - World Championship',
-        time: 'Hace 5 horas',
-    },
-    {
-        title: 'Juego actualizado',
-        description: 'One Piece - Información actualizada',
-        time: 'Hace 1 día',
-    },
-];
-
 const Dashboard: React.FC<DashboardProps> = ({ games = [] }) => {
-    // ============================================
-    // HELPERS: Construir FormData
-    // ============================================
-    const buildGameFormData = (values: GameFormValues, imageFile: File | null): FormData => {
-        const data = new FormData();
-        data.append('name', values.name.trim());
-        data.append('description', values.description.trim() || '');
-        if (imageFile) {
-            data.append('image', imageFile);
-        }
-        return data;
-    };
-
-    const buildTournamentFormData = (values: TournamentFormValues, imageFile: File | null): FormData => {
-        const data = new FormData();
-
-        // Campos requeridos
-        data.append('name', values.name.trim());
-        data.append('description', values.description.trim() || '');
-        data.append('game_id', String(values.game_id));
-        data.append('start_date', values.start_date);
-        data.append('status', values.status);
-
-        // Campos opcionales
-        if (values.end_date) data.append('end_date', values.end_date);
-        if (values.registration_start) data.append('registration_start', values.registration_start);
-        if (values.registration_end) data.append('registration_end', values.registration_end);
-        if (values.entry_fee) data.append('entry_fee', values.entry_fee);
-
-        // Límite de inscripciones
-        data.append('has_registration_limit', values.has_registration_limit ? '1' : '0');
-        if (values.has_registration_limit && values.registration_limit) {
-            data.append('registration_limit', values.registration_limit);
-        }
-
-        // Imagen
-        if (imageFile) data.append('image', imageFile);
-
-        return data;
-    };
     // ============================================
     // CRUD PARA JUEGOS
     // ============================================
@@ -183,6 +127,25 @@ const Dashboard: React.FC<DashboardProps> = ({ games = [] }) => {
     });
     const createTournamentImage = useImagePreview();
 
+    const [calendarModalOpen, setCalendarModalOpen] = useState(false);
+
+    // Manejar creación de torneo desde el calendario
+    const handleCreateFromCalendar = (date: Date) => {
+        // Pre-llenar la fecha seleccionada
+        const formattedDate = date.toISOString().split('T')[0];
+
+        createTournamentModal.open();
+        createTournamentModal.setValue('start_date', formattedDate);
+
+        setCalendarModalOpen(false);
+    };
+
+    // Manejar selección de torneo existente
+    const handleSelectTournament = (tournamentId: number) => {
+        setCalendarModalOpen(false);
+        router.visit(route('admin.tournaments.show', tournamentId));
+    };
+
     // ============================================
     // ACCIONES RÁPIDAS ACTUALIZADAS
     // ============================================
@@ -210,6 +173,7 @@ const Dashboard: React.FC<DashboardProps> = ({ games = [] }) => {
             description: 'Planifica eventos',
             href: '/admin/calendar',
             icon: Calendar,
+            onClick: () => setCalendarModalOpen(true),
         },
     ];
 
@@ -306,34 +270,6 @@ const Dashboard: React.FC<DashboardProps> = ({ games = [] }) => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Recent Activity - 1 column */}
-                    <div className="lg:col-span-1">
-                        <div className="border-border-primary bg-secondary rounded border p-6 shadow-sm">
-                            <h2 className="text-t-primary mb-4 text-lg font-semibold">Actividad Reciente</h2>
-                            <div className="space-y-4">
-                                {recentActivity.map((activity, i) => (
-                                    <div key={i} className="group relative">
-                                        <div className="flex gap-3">
-                                            <div className="relative mt-1 flex h-2 w-2 shrink-0">
-                                                <span className="bg-accent absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
-                                                <span className="bg-accent relative inline-flex h-2 w-2 rounded-full"></span>
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-t-primary text-sm font-medium">{activity.title}</p>
-                                                <p className="text-t-secondary mt-0.5 text-xs">{activity.description}</p>
-                                                <p className="text-t-muted mt-1 text-xs">{activity.time}</p>
-                                            </div>
-                                        </div>
-                                        {i < recentActivity.length - 1 && <div className="bg-border-primary mt-4 ml-1 h-px w-full"></div>}
-                                    </div>
-                                ))}
-                            </div>
-                            <button className="border-border-primary bg-tertiary text-t-secondary hover:bg-highlight hover:text-t-primary mt-4 w-full rounded border py-2 text-sm font-medium transition-all">
-                                Ver todo
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Overview Chart Placeholder */}
@@ -394,6 +330,14 @@ const Dashboard: React.FC<DashboardProps> = ({ games = [] }) => {
                     games={games}
                 />
             </FormModal>
+
+            {/* Modal Calendario */}
+            <CalendarModal
+                open={calendarModalOpen}
+                onClose={() => setCalendarModalOpen(false)}
+                onCreateTournament={handleCreateFromCalendar}
+                onSelectTournament={handleSelectTournament}
+            />
         </AdminLayout>
     );
 };

@@ -28,7 +28,7 @@ export function FormModal({
             <div className="border-border-primary bg-secondary rounded-xl border p-6 shadow-lg">
                 <h2 className="text-t-primary mb-6 text-xl font-semibold">{title}</h2>
 
-                <div className="mb-6">{children}</div>
+                <div className="h-[400px] space-y-4 overflow-y-auto px-2">{children}</div>
 
                 <div className="flex justify-end gap-3">
                     <button
